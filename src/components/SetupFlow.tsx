@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InstallPrompt from "@/components/InstallPrompt";
 import { openDeepLink } from "@/lib/openDeepLink";
+import { detectDevice, APP_LINKS, type DeviceType } from "@/lib/detectDevice";
 
-const V2RAYTUN_IOS = "https://apps.apple.com/app/v2raytun/id6476628951";
+const STEP1_TITLE: Record<DeviceType, string> = {
+  ios: "Настройка на iOS",
+  android: "Настройка на Android",
+  windows: "Настройка на Windows",
+  macos: "Настройка на macOS",
+  unknown: "Настройка",
+};
 
 type SetupFlowProps = {
   telegramId: number;
@@ -13,6 +20,7 @@ type SetupFlowProps = {
   vpnKeyPlus: string | null;
   tariff: "basic" | "plus";
   subUrl?: string;
+  deviceType?: DeviceType;
 };
 
 export default function SetupFlow({
@@ -22,13 +30,22 @@ export default function SetupFlow({
   vpnKeyPlus,
   tariff,
   subUrl,
+  deviceType: deviceTypeProp,
 }: SetupFlowProps) {
+  const [deviceType, setDeviceType] = useState<DeviceType>(deviceTypeProp ?? "unknown");
   const [step, setStep] = useState(1);
   const [plusKeyChoice, setPlusKeyChoice] = useState<"de" | "plus">("de");
   const [copied, setCopied] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
+  useEffect(() => {
+    if (deviceTypeProp) setDeviceType(deviceTypeProp);
+    else setDeviceType(detectDevice());
+  }, [deviceTypeProp]);
+
   const activeKey = tariff === "plus" && plusKeyChoice === "plus" ? (vpnKeyPlus ?? vpnKey) : vpnKey;
+  const appInfo = APP_LINKS[deviceType];
+  const isWindows = deviceType === "windows";
 
   const copyKey = () => {
     navigator.clipboard.writeText(activeKey).then(() => {
@@ -37,18 +54,29 @@ export default function SetupFlow({
     });
   };
 
+  const copySubUrl = () => {
+    if (!subUrl) return;
+    navigator.clipboard.writeText(subUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   const handleAddConfig = () => {
     if (typeof window === "undefined") return;
+    if (isWindows) return;
     if (!subUrl) {
       setShowInstallPrompt(true);
       return;
     }
     console.log("sub_url:", subUrl);
-    const deepLink = `v2raytun://import/${subUrl}`;
+    const deepLink = appInfo.deeplink ? appInfo.deeplink(subUrl) : `v2raytun://import/${subUrl}`;
     setShowInstallPrompt(false);
     openDeepLink(deepLink);
     setTimeout(() => setShowInstallPrompt(true), 3000);
   };
+
+  const step1Title = STEP1_TITLE[deviceType];
 
   const showBack = step >= 2 && step <= 4;
 
@@ -82,7 +110,7 @@ export default function SetupFlow({
               </svg>
             </div>
             <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
-              Настройка на iOS
+              {step1Title}
             </h2>
             <p className="mb-8 max-w-xs text-center text-sm text-[var(--text-secondary)]">
               Настройка VPN происходит в 3 шага и занимает пару минут
@@ -122,16 +150,16 @@ export default function SetupFlow({
             <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
               Приложение
             </h2>
-            <p className="mb-8 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-              Установите приложение v2RayTun и вернитесь к этому экрану
+            <p className="mb-6 max-w-xs text-center text-sm text-[var(--text-secondary)]">
+              Установите приложение {appInfo.name} и вернитесь к этому экрану
             </p>
             <a
-              href={V2RAYTUN_IOS}
+              href={appInfo.url}
               target="_blank"
               rel="noopener noreferrer"
               className="mb-3 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 text-center font-semibold text-white transition-all hover:opacity-90"
             >
-              Установить ⬇
+              {isWindows ? `Скачать ${appInfo.name}` : `Установить ${appInfo.name}`} ⬇
             </a>
             <button
               type="button"
@@ -145,56 +173,82 @@ export default function SetupFlow({
 
         {step === 3 && (
           <>
-            {tariff === "plus" && (
-              <div className="mb-4 flex w-full max-w-sm gap-2">
+            {isWindows ? (
+              <>
+                <h2 className="mb-4 text-xl font-semibold text-[var(--text-primary)]">
+                  Подписка
+                </h2>
+                <div className="mb-6 w-full max-w-sm space-y-3 text-left text-sm text-[var(--text-secondary)]">
+                  <p>1. Откройте v2RayN</p>
+                  <p>2. Нажмите + → Add subscription</p>
+                  <p>3. Вставьте ссылку ниже:</p>
+                </div>
+                <code className="mb-4 block w-full max-w-sm break-all rounded-[var(--radius-button)] bg-[var(--bg-card)] border border-[var(--border-card)] p-3 text-xs text-[var(--text-primary)]">
+                  {subUrl || "—"}
+                </code>
                 <button
                   type="button"
-                  onClick={() => setPlusKeyChoice("de")}
-                  className={`flex-1 rounded-[var(--radius-button)] py-2 text-sm font-medium transition-all ${
-                    plusKeyChoice === "de"
-                      ? "bg-[var(--accent-green)] text-[var(--bg-primary)]"
-                      : "bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-card)]"
-                  }`}
+                  onClick={copySubUrl}
+                  disabled={!subUrl}
+                  className="mb-4 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
                 >
-                  🇩🇪 Atlas DE
+                  📋 Скопировать ссылку
+                </button>
+              </>
+            ) : (
+              <>
+                {tariff === "plus" && (
+                  <div className="mb-4 flex w-full max-w-sm gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPlusKeyChoice("de")}
+                      className={`flex-1 rounded-[var(--radius-button)] py-2 text-sm font-medium transition-all ${
+                        plusKeyChoice === "de"
+                          ? "bg-[var(--accent-green)] text-[var(--bg-primary)]"
+                          : "bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-card)]"
+                      }`}
+                    >
+                      🇩🇪 Atlas DE
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPlusKeyChoice("plus")}
+                      className={`flex-1 rounded-[var(--radius-button)] py-2 text-sm font-medium transition-all ${
+                        plusKeyChoice === "plus"
+                          ? "bg-[var(--accent-green)] text-[var(--bg-primary)]"
+                          : "bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-card)]"
+                      }`}
+                    >
+                      ⚪️ White List
+                    </button>
+                  </div>
+                )}
+                <div className="ring-rotate mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-[var(--accent)] bg-[var(--bg-card)] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+                  <span className="text-2xl font-bold text-[var(--accent)]">+</span>
+                </div>
+                <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
+                  Подписка
+                </h2>
+                <p className="mb-6 max-w-xs text-center text-sm text-[var(--text-secondary)]">
+                  Добавьте подписку в приложение {appInfo.name} с помощью кнопки ниже
+                </p>
+                <button
+                  type="button"
+                  onClick={handleAddConfig}
+                  disabled={!subUrl && !activeKey}
+                  className="mb-3 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+                >
+                  Добавить конфиг
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPlusKeyChoice("plus")}
-                  className={`flex-1 rounded-[var(--radius-button)] py-2 text-sm font-medium transition-all ${
-                    plusKeyChoice === "plus"
-                      ? "bg-[var(--accent-green)] text-[var(--bg-primary)]"
-                      : "bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-card)]"
-                  }`}
+                  onClick={copyKey}
+                  className="mb-3 text-sm text-[var(--accent)]"
                 >
-                  ⚪️ White List
+                  {copied ? "Скопировано" : "Скопировать ключ"}
                 </button>
-              </div>
+              </>
             )}
-            <div className="ring-rotate mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-[var(--accent)] bg-[var(--bg-card)] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
-              <span className="text-2xl font-bold text-[var(--accent)]">+</span>
-            </div>
-            <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
-              Подписка
-            </h2>
-            <p className="mb-6 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-              Добавьте подписку в приложение v2RayTun с помощью кнопки ниже
-            </p>
-            <button
-              type="button"
-              onClick={handleAddConfig}
-              disabled={!subUrl && !activeKey}
-              className="mb-3 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
-            >
-              Добавить ⊕
-            </button>
-            <button
-              type="button"
-              onClick={copyKey}
-              className="mb-3 text-sm text-[var(--accent)]"
-            >
-              {copied ? "Скопировано" : "Скопировать ключ"}
-            </button>
             <button
               type="button"
               onClick={() => setStep(4)}
@@ -219,7 +273,9 @@ export default function SetupFlow({
               Готово!
             </h2>
             <p className="mb-8 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-              Нажмите на круглую кнопку включения VPN в приложении v2RayTun
+              {isWindows
+                ? "Подключите подписку в v2RayN и включите VPN"
+                : `Нажмите на круглую кнопку включения VPN в приложении ${appInfo.name}`}
             </p>
             <button
               type="button"

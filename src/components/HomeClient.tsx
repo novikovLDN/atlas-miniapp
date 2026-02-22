@@ -5,7 +5,9 @@ import WebApp from "@twa-dev/sdk";
 import ShieldHero from "@/components/ShieldHero";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import SetupFlow from "@/components/SetupFlow";
+import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
+import { detectDevice } from "@/lib/detectDevice";
 
 type SubscriptionResponse =
   | {
@@ -24,9 +26,14 @@ type SubscriptionResponse =
 export default function HomeClient() {
   const [data, setData] = useState<SubscriptionResponse | null>(null);
   const [telegramId, setTelegramId] = useState<number | null>(null);
+  const [deviceType, setDeviceType] = useState<ReturnType<typeof detectDevice>>("unknown");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showSetup, setShowSetup] = useState(false);
+
+  useEffect(() => {
+    setDeviceType(detectDevice());
+  }, []);
 
   useEffect(() => {
     WebApp.ready();
@@ -118,6 +125,7 @@ export default function HomeClient() {
         vpnKeyPlus={data?.is_active ? data.vpn_key_plus ?? null : null}
         tariff={data?.is_active ? data.tariff : "basic"}
         subUrl={data?.is_active ? (data as { sub_url?: string }).sub_url : undefined}
+        deviceType={deviceType}
       />
     );
   }
@@ -145,7 +153,8 @@ export default function HomeClient() {
             onOpenSupport={openSupport}
           />
         )}
-        <div className="py-6">
+        <div className="py-6 space-y-6">
+          <DownloadSection deviceType={deviceType} />
           <SupportLinks />
         </div>
       </div>

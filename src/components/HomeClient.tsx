@@ -152,9 +152,9 @@ export default function HomeClient() {
   const isActive = data?.is_active ?? false;
 
   return (
-    <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <main className="flex min-h-screen flex-col bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <ShieldHero />
-      <div className="px-4">
+      <div className="flex-1 min-h-0 overflow-auto px-4">
         {telegramId !== null && (
           <SubscriptionCard
             telegramId={telegramId}

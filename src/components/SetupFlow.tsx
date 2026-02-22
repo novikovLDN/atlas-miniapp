@@ -13,6 +13,20 @@ const STEP1_TITLE: Record<DeviceType, string> = {
   unknown: "Настройка",
 };
 
+const STEP1_ICON: Record<DeviceType, string> = {
+  ios: "📱",
+  android: "🤖",
+  windows: "🖥",
+  macos: "🍎",
+  unknown: "📱",
+};
+
+const iconCircleBase =
+  "flex h-[100px] w-[100px] items-center justify-center rounded-full border text-[40px] shadow-[0_0_30px_rgba(59,130,246,0.2)]";
+const iconCircleBlue = `${iconCircleBase} border-[rgba(59,130,246,0.3)] bg-[rgba(59,130,246,0.15)]`;
+const iconCircleGreen =
+  "confetti-wrap relative flex h-[100px] w-[100px] items-center justify-center rounded-full border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.2)] text-[40px] shadow-[0_0_30px_rgba(34,197,94,0.3)]";
+
 type SetupFlowProps = {
   telegramId: number;
   onClose: () => void;
@@ -73,7 +87,6 @@ export default function SetupFlow({
       setShowInstallPrompt(true);
       return;
     }
-    console.log("sub_url:", subUrl);
     const deepLink = appInfo.deeplink ? appInfo.deeplink(subUrl) : `v2raytun://import/${subUrl}`;
     setShowInstallPrompt(false);
     openDeepLink(deepLink);
@@ -81,7 +94,6 @@ export default function SetupFlow({
   };
 
   const step1Title = STEP1_TITLE[deviceType];
-
   const showBack = step >= 1 && step <= 4;
   const handleBack = () => {
     if (step === 1) {
@@ -93,125 +105,113 @@ export default function SetupFlow({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[var(--bg-primary)]">
-      {showBack && (
-        <button
-          type="button"
-          onClick={handleBack}
-          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full glass-button-secondary w-10 p-0 text-[var(--text-primary)]"
-          aria-label="Назад"
-        >
-          ←
-        </button>
-      )}
-
-      <div className="flex flex-1 flex-col items-center justify-center px-6 pb-8">
-        <div className="glass-card w-full max-w-sm p-6">
+    <div
+      className="fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center bg-[var(--bg-primary)] p-6"
+      style={{ minHeight: "100vh" }}
+    >
+      <div className="flex w-full max-w-[320px] flex-col items-center">
+        {/* Step 1 */}
         {step === 1 && (
           <>
-            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[var(--glass-bg)] border border-[var(--glass-border)] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
-              <svg
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="text-[var(--accent-blue)]"
-              >
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83M8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0z" />
-              </svg>
+            <div className={iconCircleBlue} aria-hidden>
+              {STEP1_ICON[deviceType]}
             </div>
-            <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
+            <h2 className="mt-6 text-center text-2xl font-bold text-white">
               {step1Title}
             </h2>
-            <p className="mb-8 max-w-xs text-center text-sm text-[var(--text-secondary)]">
+            <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
               Настройка VPN происходит в 3 шага и занимает пару минут
             </p>
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="glass-button mb-3 w-full"
+              className="glass-button mt-8 w-full"
             >
               Начать настройку на этом устройстве
             </button>
             <button
               type="button"
               onClick={onSelectOtherDevice ?? onClose}
-              className="glass-button-secondary w-full"
+              className="glass-button-secondary mt-3 w-full"
             >
               Установить на другом устройстве
             </button>
           </>
         )}
 
+        {/* Step 2 */}
         {step === 2 && (
           <>
-            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-[var(--accent-blue)] bg-[var(--glass-bg)] shadow-[0_4px_12px_rgba(0,0,0,0.2)] animate-[shieldPulse_2s_ease-in-out_infinite]">
-              <svg
-                width="36"
-                height="36"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="text-[var(--accent-blue)]"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-              </svg>
+            <div className={`${iconCircleBlue} animate-[shieldPulse_2s_ease-in-out_infinite]`} aria-hidden>
+              ⬇️
             </div>
-            <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
+            <h2 className="mt-6 text-center text-2xl font-bold text-white">
               Приложение
             </h2>
-            <p className="mb-6 max-w-xs text-center text-sm text-[var(--text-secondary)]">
+            <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
               Установите приложение {appInfo.name} и вернитесь к этому экрану
             </p>
             <a
               href={appInfo.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-button mb-3 block w-full text-center no-underline"
+              className="glass-button mt-8 block w-full text-center no-underline"
             >
               {isWindows ? `Скачать ${appInfo.name}` : `Установить ${appInfo.name}`} ⬇
             </a>
             <button
               type="button"
               onClick={() => setStep(3)}
-              className="glass-button-secondary w-full"
+              className="glass-button-secondary mt-3 w-full"
             >
               Далее →
             </button>
           </>
         )}
 
+        {/* Step 3 */}
         {step === 3 && (
           <>
+            <div className={`${iconCircleBlue} animate-[spin_8s_linear_infinite]`} aria-hidden>
+              ➕
+            </div>
+            <h2 className="mt-6 text-center text-2xl font-bold text-white">
+              Подписка
+            </h2>
+
             {isWindows ? (
               <>
-                <h2 className="mb-4 text-xl font-semibold text-[var(--text-primary)]">
-                  Подписка
-                </h2>
-                <div className="mb-6 w-full max-w-sm space-y-3 text-left text-sm text-[var(--text-secondary)]">
-                  <p>1. Откройте v2RayN</p>
-                  <p>2. Нажмите + → Add subscription</p>
-                  <p>3. Вставьте ссылку ниже:</p>
-                </div>
-                <code className="mb-4 block w-full break-all rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] p-3 text-xs text-[var(--text-primary)]">
+                <p className="mt-2 max-w-[280px] text-left text-sm text-[var(--text-secondary)]">
+                  <span className="block">1. Откройте v2RayN</span>
+                  <span className="block">2. Нажмите + → Add subscription</span>
+                  <span className="block">3. Вставьте ссылку ниже:</span>
+                </p>
+                <code className="mt-4 block w-full break-all rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-3 text-xs text-[var(--text-primary)]">
                   {subUrl || "—"}
                 </code>
                 <button
                   type="button"
                   onClick={copySubUrl}
                   disabled={!subUrl}
-                  className="glass-button mb-4 w-full disabled:opacity-50"
+                  className="glass-button mt-6 w-full disabled:opacity-50"
                 >
                   📋 Скопировать ссылку
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(4)}
+                  className="glass-button-secondary mt-3 w-full"
+                >
+                  Далее →
                 </button>
               </>
             ) : (
               <>
+                <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
+                  Добавьте подписку в приложение {appInfo.name} с помощью кнопки ниже
+                </p>
                 {tariff === "plus" && (
-                  <div className="mb-4 flex w-full max-w-sm gap-2">
+                  <div className="mt-4 flex w-full gap-2">
                     <button
                       type="button"
                       onClick={() => setPlusKeyChoice("de")}
@@ -236,56 +236,48 @@ export default function SetupFlow({
                     </button>
                   </div>
                 )}
-                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-[var(--accent-blue)] bg-[var(--glass-bg)] shadow-[0_4px_12px_rgba(0,0,0,0.2)] animate-[spin_8s_linear_infinite]">
-                  <span className="text-2xl font-bold text-[var(--accent)]">+</span>
-                </div>
-                <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
-                  Подписка
-                </h2>
-                <p className="mb-6 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-                  Добавьте подписку в приложение {appInfo.name} с помощью кнопки ниже
-                </p>
                 <button
                   type="button"
                   onClick={handleAddConfig}
                   disabled={!subUrl && !activeKey}
-                  className="glass-button mb-3 w-full disabled:opacity-50"
+                  className="glass-button mt-6 w-full disabled:opacity-50"
                 >
                   Добавить конфиг
                 </button>
                 <button
                   type="button"
                   onClick={copyKey}
-                  className="mb-3 text-sm text-[var(--accent)]"
+                  className="mt-2 text-sm text-[var(--accent)]"
                 >
                   {copied ? "Скопировано" : "Скопировать ключ"}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(4)}
+                  className="glass-button-secondary mt-3 w-full"
+                >
+                  Далее →
+                </button>
               </>
             )}
-            <button
-              type="button"
-              onClick={() => setStep(4)}
-              className="glass-button-secondary w-full"
-            >
-              Далее →
-            </button>
           </>
         )}
 
+        {/* Step 4 */}
         {step === 4 && (
           <>
-            <div className="confetti-wrap relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[var(--accent-green)] shadow-[0_4px_16px_rgba(34,197,94,0.3)]">
-              <span className="text-4xl text-[var(--bg-primary)]">✓</span>
+            <div className={iconCircleGreen} aria-hidden>
+              ✅
               <span className="confetti-dot" />
               <span className="confetti-dot" />
               <span className="confetti-dot" />
               <span className="confetti-dot" />
               <span className="confetti-dot" />
             </div>
-            <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
+            <h2 className="mt-6 text-center text-2xl font-bold text-white">
               Готово!
             </h2>
-            <p className="mb-8 max-w-xs text-center text-sm text-[var(--text-secondary)]">
+            <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
               {isWindows
                 ? "Подключите подписку в v2RayN и включите VPN"
                 : `Нажмите на круглую кнопку включения VPN в приложении ${appInfo.name}`}
@@ -293,13 +285,24 @@ export default function SetupFlow({
             <button
               type="button"
               onClick={onClose}
-              className="glass-button-secondary w-full border-[var(--accent-blue)] text-[var(--accent-blue)]"
+              className="glass-button mt-8 w-full"
             >
               Завершить настройку
             </button>
           </>
         )}
-        </div>
+
+        {showBack && (
+          <button
+            type="button"
+            onClick={handleBack}
+            className="mt-6 border-0 bg-transparent p-2 px-4 text-sm text-[var(--text-secondary)]"
+            style={{ color: "rgba(255,255,255,0.4)", fontSize: "14px" }}
+            aria-label="Назад"
+          >
+            ← Назад
+          </button>
+        )}
       </div>
 
       {showInstallPrompt && (

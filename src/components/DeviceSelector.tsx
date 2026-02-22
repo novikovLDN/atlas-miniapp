@@ -17,25 +17,16 @@ type DeviceSelectorProps = {
 
 export default function DeviceSelector({ onSelectDevice, onBack }: DeviceSelectorProps) {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[var(--bg-primary)]">
-        <button
-          type="button"
-          onClick={onBack}
-          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full glass-button-secondary w-10 p-0"
-          aria-label="Назад"
-        >
-          ←
-        </button>
-
-      <div className="flex flex-1 flex-col items-center justify-center px-6 pb-8">
-        <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
-          Установить на другом устройстве
+    <div
+      className="fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center bg-[var(--bg-primary)] p-6"
+      style={{ minHeight: "100vh" }}
+    >
+      <div className="flex w-full max-w-[320px] flex-col items-center">
+        <h2 className="text-center text-2xl font-bold text-white">
+          Выберите устройство
         </h2>
-        <p className="mb-8 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-          Выберите устройство для настройки
-        </p>
 
-        <div className="grid w-full max-w-sm grid-cols-2 gap-4">
+        <div className="mt-8 grid w-full max-w-[280px] grid-cols-2 gap-4">
           {DEVICES.map(({ type, label, icon }) => {
             const info = APP_LINKS[type];
             return (
@@ -43,12 +34,12 @@ export default function DeviceSelector({ onSelectDevice, onBack }: DeviceSelecto
                 key={type}
                 type="button"
                 onClick={() => onSelectDevice(type)}
-                className="glass-card flex flex-col items-center justify-center gap-3 p-6 text-[var(--text-primary)] transition-all hover:border-[var(--accent-cyan)]"
+                className="glass-card flex h-[120px] min-h-[120px] flex-col items-center justify-center gap-2 transition-all hover:border-[var(--accent-cyan)]"
               >
-                <span className="text-4xl" aria-hidden>
+                <span className="text-3xl" aria-hidden>
                   {icon}
                 </span>
-                <span className="font-medium">{label}</span>
+                <span className="font-medium text-[var(--text-primary)]">{label}</span>
                 <span className="text-xs text-[var(--text-secondary)]">
                   {info.name}
                 </span>
@@ -56,6 +47,16 @@ export default function DeviceSelector({ onSelectDevice, onBack }: DeviceSelecto
             );
           })}
         </div>
+
+        <button
+          type="button"
+          onClick={onBack}
+          className="mt-8 border-0 bg-transparent p-2 px-4 text-sm"
+          style={{ color: "rgba(255,255,255,0.4)", fontSize: "14px" }}
+          aria-label="Назад"
+        >
+          ← Назад
+        </button>
       </div>
     </div>
   );

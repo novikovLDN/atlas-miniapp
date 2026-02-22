@@ -24,7 +24,7 @@ export default function DownloadSection({ deviceType = "unknown" }: DownloadSect
       : DEVICE_ORDER;
 
   return (
-    <section className="rounded-[var(--radius-card)] bg-[var(--bg-card)] border border-[var(--border-card)] p-5 shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+    <section className="glass-card p-5">
       <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">
         Скачать приложение
       </h3>
@@ -39,10 +39,10 @@ export default function DownloadSection({ deviceType = "unknown" }: DownloadSect
               href={info.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-center justify-center rounded-[var(--radius-button)] border px-3 py-3 text-sm font-medium transition-all ${
+              className={`flex items-center justify-center rounded-2xl border px-3 py-3 text-sm font-medium transition-all ${
                 isCurrent
-                  ? "border-[var(--accent-green)] bg-[var(--accent-green)]/10 text-[var(--text-primary)]"
-                  : "border-[var(--border-card)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]"
+                  ? "border-[var(--accent-green)] bg-[var(--accent-green)]/15 text-[var(--text-primary)]"
+                  : "glass-button-secondary"
               }`}
             >
               {label}

@@ -63,7 +63,7 @@ export default function SubscriptionCard({
 
   return (
     <>
-      <div className="rounded-t-[var(--radius-card)] bg-[var(--bg-card)] border border-[var(--border-card)] border-b-0 p-5 pb-8 shadow-[0_-4px_16px_rgba(0,0,0,0.2)]">
+      <div className="glass-card rounded-t-[24px] border-b-0 p-5 pb-8">
         <div className="mb-2 flex items-center justify-between">
           <span className="font-bold text-[var(--text-primary)]">{name}</span>
           <span className="text-sm font-bold text-[var(--text-primary)]">
@@ -71,27 +71,19 @@ export default function SubscriptionCard({
           </span>
         </div>
         <div className="mb-5 flex items-center justify-between text-sm">
-          <span className="text-[var(--text-secondary)]">
-            <span
-              className={`mr-1.5 inline-block h-2 w-2 rounded-full ${isActive ? "bg-[var(--accent-green)]" : "bg-orange-500"}`}
-              aria-hidden
-            />
-            {isActive ? "online" : "offline"}
+          <span className={isActive ? "badge-active" : "badge-inactive"}>
+            {isActive ? "Активна" : "Неактивна"}
             {isActive && tariff && ` · ${tariff === "plus" ? "Plus" : "Basic"}`}
           </span>
           {isActive ? (
             <span className="text-[var(--accent-green)]">{daysLeft} дн.</span>
           ) : (
-            <span className="text-orange-400">подписка истекла</span>
+            <span className="text-[var(--text-secondary)]">подписка истекла</span>
           )}
         </div>
 
         {isActive ? (
-          <button
-            type="button"
-            onClick={handleConnect}
-            className="mb-3 w-full rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 font-semibold text-white transition-all hover:opacity-90"
-          >
+          <button type="button" onClick={handleConnect} className="glass-button mb-3">
             🚀 Подключиться
           </button>
         ) : (
@@ -99,17 +91,14 @@ export default function SubscriptionCard({
             href={buySubscriptionUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mb-3 block w-full rounded-[var(--radius-button)] bg-[var(--accent-green)] px-4 py-3.5 text-center font-semibold text-[var(--bg-primary)] transition-all hover:opacity-90"
+            className="glass-button mb-3 block text-center"
+            style={{ background: "rgba(34, 197, 94, 0.85)", boxShadow: "0 4px 20px rgba(34,197,94,0.4)" }}
           >
             Купить подписку от 199 ₽
           </a>
         )}
 
-        <button
-          type="button"
-          onClick={onOpenSetup}
-          className="mb-4 w-full rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-primary)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
-        >
+        <button type="button" onClick={onOpenSetup} className="glass-button-secondary mb-4">
           ⚙️ Установка и настройка
         </button>
 
@@ -117,14 +106,14 @@ export default function SubscriptionCard({
           <button
             type="button"
             onClick={() => setShowProfile(true)}
-            className="flex-1 rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-secondary)] transition-all hover:border-[var(--text-muted)]"
+            className="glass-button-secondary flex-1 py-2.5"
           >
             👤 Профиль
           </button>
           <button
             type="button"
             onClick={onOpenSupport}
-            className="flex-1 rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-primary)] px-3 py-2 text-sm text-[var(--text-secondary)] transition-all hover:border-[var(--text-muted)]"
+            className="glass-button-secondary flex-1 py-2.5"
           >
             💬 Поддержка
           </button>
@@ -138,7 +127,7 @@ export default function SubscriptionCard({
             onClick={() => setShowProfile(false)}
             aria-hidden
           />
-          <div className="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-card)] bg-[var(--bg-card)] border border-[var(--border-card)] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
+          <div className="glass-card fixed left-1/2 top-1/2 z-50 w-[90%] max-w-sm -translate-x-1/2 -translate-y-1/2 p-5">
             <h3 className="mb-4 text-lg font-semibold text-[var(--text-primary)]">
               Профиль
             </h3>
@@ -174,7 +163,7 @@ export default function SubscriptionCard({
             <button
               type="button"
               onClick={() => setShowProfile(false)}
-              className="mt-4 w-full rounded-[var(--radius-button)] border border-[var(--border-card)] py-2.5 text-sm font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--bg-primary)]"
+              className="glass-button-secondary mt-4"
             >
               Закрыть
             </button>

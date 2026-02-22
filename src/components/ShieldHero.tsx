@@ -1,153 +1,173 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useMemo } from "react";
 
-const CANVAS_SIZE = 300;
-const CENTER = CANVAS_SIZE / 2;
-const PARTICLE_PALETTE = ["#4f8ef7", "#22c55e", "#a855f7", "#f59e0b", "#ffffff"];
-const RING_RADII = [80, 110, 140];
-const RING_OPACITIES = [0.6, 0.4, 0.2];
-const RING_SPEEDS = [(2 * Math.PI) / 20, -(2 * Math.PI) / 15, (2 * Math.PI) / 25]; // rad/s
-
-type Particle = {
-  angle: number;
-  speed: number;
-  orbitX: number;
-  orbitY: number;
-  radius: number;
-  color: string;
-};
-
-function initParticles(count: number): Particle[] {
-  const out: Particle[] = [];
-  for (let i = 0; i < count; i++) {
-    out.push({
-      angle: Math.random() * 2 * Math.PI,
-      speed: 0.002 + Math.random() * 0.004,
-      orbitX: 60 + Math.random() * 80,
-      orbitY: 50 + Math.random() * 70,
-      radius: 2 + Math.random() * 2,
-      color: PARTICLE_PALETTE[Math.floor(Math.random() * PARTICLE_PALETTE.length)],
-    });
-  }
-  return out;
-}
+const PARTICLE_COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#ffffff", "#a78bfa"];
 
 export default function ShieldHero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>(initParticles(20));
-  const ringAnglesRef = useRef([0, 0, 0]);
-  const rafRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let running = true;
-
-    const loop = (now: number) => {
-      if (!running) return;
-      const delta = (now - lastTimeRef.current) / 1000;
-      lastTimeRef.current = now;
-
-      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-      // Rings
-      for (let i = 0; i < 3; i++) {
-        ringAnglesRef.current[i] += RING_SPEEDS[i] * delta;
-        const a = ringAnglesRef.current[i];
-        ctx.save();
-        ctx.translate(CENTER, CENTER);
-        ctx.rotate(a);
-        ctx.strokeStyle = `rgba(59, 130, 246, ${RING_OPACITIES[i]})`;
-        ctx.setLineDash([6, 8]);
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(0, 0, RING_RADII[i], 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // Particles
-      const particles = particlesRef.current;
-      particles.forEach((p) => {
-        p.angle += p.speed;
-        const x = CENTER + Math.cos(p.angle) * p.orbitX;
-        const y = CENTER + Math.sin(p.angle) * p.orbitY;
-        const opacity = 0.4 + Math.sin(p.angle * 2) * 0.6;
-        ctx.beginPath();
-        ctx.arc(x, y, p.radius, 0, 2 * Math.PI);
-        const hex = p.color.slice(1);
-        const r = parseInt(hex.slice(0, 2), 16);
-        const g = parseInt(hex.slice(2, 4), 16);
-        const b = parseInt(hex.slice(4, 6), 16);
-        ctx.fillStyle = `rgba(${r},${g},${b},${opacity})`;
-        ctx.fill();
-      });
-
-      rafRef.current = requestAnimationFrame(loop);
-    };
-
-    lastTimeRef.current = performance.now();
-    rafRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      running = false;
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 15 }, (_, i) => ({
+        x: 10 + Math.random() * 80,
+        y: 10 + Math.random() * 80,
+        size: 2 + Math.random() * 4,
+        color: PARTICLE_COLORS[i % 5],
+        duration: 3 + Math.random() * 4,
+        delay: Math.random() * 3,
+      })),
+    []
+  );
 
   return (
     <div
       className="relative flex h-[50vh] min-h-[240px] w-full flex-shrink-0 items-center justify-center overflow-hidden"
       style={{
-        background: "radial-gradient(circle at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
       aria-hidden
     >
-      <div className="relative h-[300px] w-[300px]">
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_SIZE}
-          height={CANVAS_SIZE}
-          className="absolute inset-0 h-full w-full"
-          style={{ display: "block" }}
+      {/* Animated background orbs */}
+      <div
+        style={{
+          position: "absolute",
+          width: "200px",
+          height: "200px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(59,130,246,0.3), transparent 70%)",
+          animation: "liquidOrb1 8s ease-in-out infinite",
+          filter: "blur(20px)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          width: "150px",
+          height: "150px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(139,92,246,0.25), transparent 70%)",
+          animation: "liquidOrb2 6s ease-in-out infinite",
+          filter: "blur(15px)",
+          top: "20%",
+          right: "15%",
+        }}
+      />
+
+      {/* Rotating rings */}
+      <svg
+        style={{ position: "absolute", animation: "spin 20s linear infinite" }}
+        width={260}
+        height={260}
+        viewBox="0 0 260 260"
+        aria-hidden
+      >
+        <circle
+          cx={130}
+          cy={130}
+          r={120}
+          fill="none"
+          stroke="rgba(59,130,246,0.2)"
+          strokeWidth={1}
+          strokeDasharray="8 12"
         />
-        <div className="shield-pulse absolute left-1/2 top-1/2 flex h-[120px] w-[100px] -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-          <svg
-            width="100"
-            height="120"
-            viewBox="0 0 56 64"
+      </svg>
+      <svg
+        style={{ position: "absolute", animation: "spinReverse 15s linear infinite" }}
+        width={200}
+        height={200}
+        viewBox="0 0 200 200"
+        aria-hidden
+      >
+        <circle
+          cx={100}
+          cy={100}
+          r={90}
+          fill="none"
+          stroke="rgba(139,92,246,0.15)"
+          strokeWidth={1}
+          strokeDasharray="4 8"
+        />
+      </svg>
+
+      {/* Glass shield */}
+      <div
+        style={{
+          width: "110px",
+          height: "130px",
+          position: "relative",
+          filter: "drop-shadow(0 0 30px rgba(59,130,246,0.6))",
+          animation: "shieldPulse 3s ease-in-out infinite",
+        }}
+      >
+        <svg viewBox="0 0 110 130" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="rgba(147,197,253,0.9)" />
+              <stop offset="40%" stopColor="rgba(59,130,246,0.8)" />
+              <stop offset="100%" stopColor="rgba(29,78,216,0.9)" />
+            </linearGradient>
+            <linearGradient id="shieldHighlight" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+            </linearGradient>
+            <filter id="shieldGlow">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path
+            d="M55 5 L100 22 L100 60 C100 88 80 110 55 125 C30 110 10 88 10 60 L10 22 Z"
+            fill="url(#shieldGrad)"
+            filter="url(#shieldGlow)"
+          />
+          <path
+            d="M55 8 L95 23 L95 58 C95 84 77 105 55 119"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-full w-full"
-          >
-            <defs>
-              <linearGradient id="shield-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#60a5fa" />
-                <stop offset="50%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#1e40af" />
-              </linearGradient>
-              <linearGradient id="shield-highlight" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
-                <stop offset="40%" stopColor="rgba(255,255,255,0)" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M28 0L56 16V32C56 50 44 58 28 64C12 58 0 50 0 32V16L28 0Z"
-              fill="url(#shield-gradient)"
-            />
-            <path
-              d="M28 0L56 16V32C56 50 44 58 28 64C12 58 0 50 0 32V16L28 0Z"
-              fill="url(#shield-highlight)"
-            />
-          </svg>
-        </div>
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={2}
+          />
+          <path
+            d="M55 12 L90 26 L90 56 C90 78 74 97 55 110 C36 97 20 78 20 56 L20 26 Z"
+            fill="url(#shieldHighlight)"
+            opacity={0.3}
+          />
+          <rect x={42} y={58} width={26} height={20} rx={4} fill="rgba(255,255,255,0.9)" />
+          <path
+            d="M47 58 L47 52 C47 45 63 45 63 52 L63 58"
+            fill="none"
+            stroke="rgba(255,255,255,0.9)"
+            strokeWidth={3.5}
+            strokeLinecap="round"
+          />
+          <circle cx={55} cy={68} r={3} fill="rgba(59,130,246,0.8)" />
+        </svg>
       </div>
+
+      {/* Floating particles */}
+      {particles.map((p, i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            borderRadius: "50%",
+            background: p.color,
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            animation: `float${i % 3} ${p.duration}s ease-in-out infinite`,
+            animationDelay: `${p.delay}s`,
+            opacity: 0.7,
+            boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+            pointerEvents: "none",
+          }}
+          aria-hidden
+        />
+      ))}
     </div>
   );
 }

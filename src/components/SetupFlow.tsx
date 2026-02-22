@@ -98,7 +98,7 @@ export default function SetupFlow({
         <button
           type="button"
           onClick={handleBack}
-          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
+          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full glass-button-secondary w-10 p-0 text-[var(--text-primary)]"
           aria-label="Назад"
         >
           ←
@@ -106,9 +106,10 @@ export default function SetupFlow({
       )}
 
       <div className="flex flex-1 flex-col items-center justify-center px-6 pb-8">
+        <div className="glass-card w-full max-w-sm p-6">
         {step === 1 && (
           <>
-            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[var(--glass-bg)] border border-[var(--glass-border)] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
               <svg
                 width="40"
                 height="40"
@@ -116,7 +117,7 @@ export default function SetupFlow({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="text-[var(--accent)]"
+                className="text-[var(--accent-blue)]"
               >
                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83M8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0z" />
               </svg>
@@ -130,14 +131,14 @@ export default function SetupFlow({
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="mb-3 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 font-semibold text-white transition-all hover:opacity-90"
+              className="glass-button mb-3 w-full"
             >
               Начать настройку на этом устройстве
             </button>
             <button
               type="button"
               onClick={onSelectOtherDevice ?? onClose}
-              className="w-full max-w-sm rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
+              className="glass-button-secondary w-full"
             >
               Установить на другом устройстве
             </button>
@@ -146,7 +147,7 @@ export default function SetupFlow({
 
         {step === 2 && (
           <>
-            <div className="ring-pulse mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--bg-card)] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+            <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-[var(--accent-blue)] bg-[var(--glass-bg)] shadow-[0_4px_12px_rgba(0,0,0,0.2)] animate-[shieldPulse_2s_ease-in-out_infinite]">
               <svg
                 width="36"
                 height="36"
@@ -154,7 +155,7 @@ export default function SetupFlow({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="text-[var(--accent)]"
+                className="text-[var(--accent-blue)]"
               >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
               </svg>
@@ -169,14 +170,14 @@ export default function SetupFlow({
               href={appInfo.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mb-3 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 text-center font-semibold text-white transition-all hover:opacity-90"
+              className="glass-button mb-3 block w-full text-center no-underline"
             >
               {isWindows ? `Скачать ${appInfo.name}` : `Установить ${appInfo.name}`} ⬇
             </a>
             <button
               type="button"
               onClick={() => setStep(3)}
-              className="w-full max-w-sm rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
+              className="glass-button-secondary w-full"
             >
               Далее →
             </button>
@@ -195,14 +196,14 @@ export default function SetupFlow({
                   <p>2. Нажмите + → Add subscription</p>
                   <p>3. Вставьте ссылку ниже:</p>
                 </div>
-                <code className="mb-4 block w-full max-w-sm break-all rounded-[var(--radius-button)] bg-[var(--bg-card)] border border-[var(--border-card)] p-3 text-xs text-[var(--text-primary)]">
+                <code className="mb-4 block w-full break-all rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] p-3 text-xs text-[var(--text-primary)]">
                   {subUrl || "—"}
                 </code>
                 <button
                   type="button"
                   onClick={copySubUrl}
                   disabled={!subUrl}
-                  className="mb-4 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+                  className="glass-button mb-4 w-full disabled:opacity-50"
                 >
                   📋 Скопировать ссылку
                 </button>
@@ -214,10 +215,10 @@ export default function SetupFlow({
                     <button
                       type="button"
                       onClick={() => setPlusKeyChoice("de")}
-                      className={`flex-1 rounded-[var(--radius-button)] py-2 text-sm font-medium transition-all ${
+                      className={`flex-1 rounded-2xl py-2 text-sm font-medium transition-all ${
                         plusKeyChoice === "de"
                           ? "bg-[var(--accent-green)] text-[var(--bg-primary)]"
-                          : "bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-card)]"
+                          : "glass-button-secondary"
                       }`}
                     >
                       🇩🇪 Atlas DE
@@ -225,17 +226,17 @@ export default function SetupFlow({
                     <button
                       type="button"
                       onClick={() => setPlusKeyChoice("plus")}
-                      className={`flex-1 rounded-[var(--radius-button)] py-2 text-sm font-medium transition-all ${
+                      className={`flex-1 rounded-2xl py-2 text-sm font-medium transition-all ${
                         plusKeyChoice === "plus"
                           ? "bg-[var(--accent-green)] text-[var(--bg-primary)]"
-                          : "bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-card)]"
+                          : "glass-button-secondary"
                       }`}
                     >
                       ⚪️ White List
                     </button>
                   </div>
                 )}
-                <div className="ring-rotate mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-[var(--accent)] bg-[var(--bg-card)] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-[var(--accent-blue)] bg-[var(--glass-bg)] shadow-[0_4px_12px_rgba(0,0,0,0.2)] animate-[spin_8s_linear_infinite]">
                   <span className="text-2xl font-bold text-[var(--accent)]">+</span>
                 </div>
                 <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
@@ -248,7 +249,7 @@ export default function SetupFlow({
                   type="button"
                   onClick={handleAddConfig}
                   disabled={!subUrl && !activeKey}
-                  className="mb-3 w-full max-w-sm rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3.5 font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+                  className="glass-button mb-3 w-full disabled:opacity-50"
                 >
                   Добавить конфиг
                 </button>
@@ -264,7 +265,7 @@ export default function SetupFlow({
             <button
               type="button"
               onClick={() => setStep(4)}
-              className="w-full max-w-sm rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
+              className="glass-button-secondary w-full"
             >
               Далее →
             </button>
@@ -292,12 +293,13 @@ export default function SetupFlow({
             <button
               type="button"
               onClick={onClose}
-              className="w-full max-w-sm rounded-[var(--radius-button)] border-2 border-[var(--accent)] bg-[var(--bg-primary)] px-4 py-3.5 font-medium text-[var(--accent)] transition-all hover:bg-[var(--bg-card)]"
+              className="glass-button-secondary w-full border-[var(--accent-blue)] text-[var(--accent-blue)]"
             >
               Завершить настройку
             </button>
           </>
         )}
+        </div>
       </div>
 
       {showInstallPrompt && (

@@ -18,14 +18,14 @@ type DeviceSelectorProps = {
 export default function DeviceSelector({ onSelectDevice, onBack }: DeviceSelectorProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[var(--bg-primary)]">
-      <button
-        type="button"
-        onClick={onBack}
-        className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
-        aria-label="Назад"
-      >
-        ←
-      </button>
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full glass-button-secondary w-10 p-0"
+          aria-label="Назад"
+        >
+          ←
+        </button>
 
       <div className="flex flex-1 flex-col items-center justify-center px-6 pb-8">
         <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
@@ -43,7 +43,7 @@ export default function DeviceSelector({ onSelectDevice, onBack }: DeviceSelecto
                 key={type}
                 type="button"
                 onClick={() => onSelectDevice(type)}
-                className="flex flex-col items-center justify-center gap-3 rounded-[var(--radius-card)] border-2 border-[var(--border-card)] bg-[var(--bg-card)] p-6 text-[var(--text-primary)] transition-all hover:border-[var(--accent-green)] hover:bg-[var(--bg-card)]"
+                className="glass-card flex flex-col items-center justify-center gap-3 p-6 text-[var(--text-primary)] transition-all hover:border-[var(--accent-cyan)]"
               >
                 <span className="text-4xl" aria-hidden>
                   {icon}

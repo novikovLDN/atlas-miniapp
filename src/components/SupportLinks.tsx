@@ -23,7 +23,7 @@ export default function SupportLinks() {
           key={label}
           type="button"
           onClick={() => openTelegramLink(url)}
-          className="rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-2.5 text-center text-sm font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
+          className="glass-button-secondary flex-1 py-2.5 text-center sm:flex-initial"
         >
           {label}
         </button>

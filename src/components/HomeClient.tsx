@@ -7,7 +7,8 @@ import SubscriptionCard from "@/components/SubscriptionCard";
 import SetupFlow from "@/components/SetupFlow";
 import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
-import { detectDevice } from "@/lib/detectDevice";
+import { detectDevice, type DeviceType } from "@/lib/detectDevice";
+import DeviceSelector from "@/components/DeviceSelector";
 
 type SubscriptionResponse =
   | {
@@ -29,7 +30,9 @@ export default function HomeClient() {
   const [deviceType, setDeviceType] = useState<ReturnType<typeof detectDevice>>("unknown");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showSetup, setShowSetup] = useState(false);
+  type ViewState = "main" | "setup" | "device_select" | "setup_manual";
+  const [view, setView] = useState<ViewState>("main");
+  const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
 
   useEffect(() => {
     setDeviceType(detectDevice());
@@ -116,16 +119,31 @@ export default function HomeClient() {
     );
   }
 
-  if (showSetup && telegramId !== null) {
+  if (view === "device_select") {
+    return (
+      <DeviceSelector
+        onSelectDevice={(device) => {
+          setSelectedDevice(device);
+          setView("setup_manual");
+        }}
+        onBack={() => setView("main")}
+      />
+    );
+  }
+
+  if ((view === "setup" || view === "setup_manual") && telegramId !== null) {
+    const setupDeviceType = view === "setup_manual" ? selectedDevice : deviceType;
     return (
       <SetupFlow
         telegramId={telegramId}
-        onClose={() => setShowSetup(false)}
+        onClose={() => setView("main")}
         vpnKey={data?.is_active ? data.vpn_key : ""}
         vpnKeyPlus={data?.is_active ? data.vpn_key_plus ?? null : null}
         tariff={data?.is_active ? data.tariff : "basic"}
         subUrl={data?.is_active ? (data as { sub_url?: string }).sub_url : undefined}
-        deviceType={deviceType}
+        deviceType={setupDeviceType}
+        onSelectOtherDevice={() => setView("device_select")}
+        onBackFromStep1={view === "setup_manual" ? () => setView("device_select") : undefined}
       />
     );
   }
@@ -149,7 +167,7 @@ export default function HomeClient() {
             vpnKey={data?.is_active ? data.vpn_key : undefined}
             vpnKeyPlus={data?.is_active ? data.vpn_key_plus : undefined}
             subUrl={data?.is_active ? (data as { sub_url?: string }).sub_url : undefined}
-            onOpenSetup={() => setShowSetup(true)}
+            onOpenSetup={() => setView("setup")}
             onOpenSupport={openSupport}
           />
         )}

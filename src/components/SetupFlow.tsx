@@ -21,6 +21,8 @@ type SetupFlowProps = {
   tariff: "basic" | "plus";
   subUrl?: string;
   deviceType?: DeviceType;
+  onSelectOtherDevice?: () => void;
+  onBackFromStep1?: () => void;
 };
 
 export default function SetupFlow({
@@ -31,6 +33,8 @@ export default function SetupFlow({
   tariff,
   subUrl,
   deviceType: deviceTypeProp,
+  onSelectOtherDevice,
+  onBackFromStep1,
 }: SetupFlowProps) {
   const [deviceType, setDeviceType] = useState<DeviceType>(deviceTypeProp ?? "unknown");
   const [step, setStep] = useState(1);
@@ -78,14 +82,22 @@ export default function SetupFlow({
 
   const step1Title = STEP1_TITLE[deviceType];
 
-  const showBack = step >= 2 && step <= 4;
+  const showBack = step >= 1 && step <= 4;
+  const handleBack = () => {
+    if (step === 1) {
+      if (onBackFromStep1) onBackFromStep1();
+      else onClose();
+    } else {
+      setStep((s) => s - 1);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[var(--bg-primary)]">
       {showBack && (
         <button
           type="button"
-          onClick={() => (step === 1 ? onClose() : setStep((s) => s - 1))}
+          onClick={handleBack}
           className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
           aria-label="Назад"
         >
@@ -124,7 +136,7 @@ export default function SetupFlow({
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={onSelectOtherDevice ?? onClose}
               className="w-full max-w-sm rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-card)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
             >
               Установить на другом устройстве

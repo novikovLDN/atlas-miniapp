@@ -127,6 +127,7 @@ export default function HomeClient() {
           setView("setup_manual");
         }}
         onBack={() => setView("main")}
+        detectedDevice={deviceType === "unknown" ? undefined : deviceType}
       />
     );
   }

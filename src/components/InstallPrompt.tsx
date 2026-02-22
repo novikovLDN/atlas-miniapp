@@ -11,39 +11,54 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
   return (
     <>
       <div
-        className="fixed inset-0 z-50 bg-black/70"
+        className="fixed inset-0 z-[999] bg-black/50"
         onClick={onClose}
         aria-hidden
       />
-      <div className="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-card)] bg-[var(--bg-card)] border border-[var(--border-card)] p-5 shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
-        <h3 className="mb-3 text-lg font-semibold text-[var(--text-primary)]">
-          v2RayTun не установлен
-        </h3>
-        <p className="mb-4 text-sm text-[var(--text-secondary)]">
-          Установите приложение для подключения к VPN
+      <div
+        className="fixed bottom-6 left-4 right-4 z-[1000]"
+        style={{
+          background: "rgba(15, 25, 40, 0.85)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "20px",
+          padding: "20px",
+          boxShadow:
+            "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
+          animation: "slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        }}
+      >
+        <p className="mb-2 font-semibold text-white">
+          Установите v2RayTun
         </p>
-        <div className="flex flex-col gap-2">
-          <a
-            href={V2RAYTUN_IOS}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[var(--radius-button)] bg-[var(--accent)] px-4 py-3 text-center font-medium text-white transition-all hover:opacity-90"
-          >
-            📱 Установить для iOS
-          </a>
-          <a
-            href={V2RAYTUN_ANDROID}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[var(--radius-button)] border border-[var(--border-card)] bg-[var(--bg-primary)] px-4 py-3 text-center text-sm font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-muted)]"
-          >
-            🤖 Установить для Android
-          </a>
-        </div>
+        <p
+          className="mb-4 text-sm"
+          style={{ color: "rgba(255,255,255,0.55)" }}
+        >
+          Для подключения необходимо приложение v2RayTun
+        </p>
+        <a
+          href={V2RAYTUN_IOS}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="glass-button block w-full text-center no-underline"
+        >
+          📱 Установить для iOS
+        </a>
+        <a
+          href={V2RAYTUN_ANDROID}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="glass-button-secondary mt-2 block w-full text-center no-underline"
+        >
+          🤖 Установить для Android
+        </a>
         <button
           type="button"
           onClick={onClose}
-          className="mt-4 w-full rounded-[var(--radius-button)] border border-[var(--border-card)] py-2.5 text-sm text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-primary)]"
+          className="mt-3 w-full cursor-pointer border-0 bg-transparent text-sm"
+          style={{ color: "rgba(255,255,255,0.4)" }}
         >
           Закрыть
         </button>

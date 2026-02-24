@@ -8,13 +8,43 @@ const CORS_HEADERS = {
   "Content-Type": "text/plain; charset=utf-8",
 };
 
-function setFragment(key: string, fragment: string): string {
-  const k = (key ?? "").trim();
-  if (!k) return k;
-  if (k.includes("#")) {
-    return k.replace(/#[^#]*$/, "#" + fragment);
-  }
-  return k + "#" + fragment;
+function buildKeys(vpnKey: string, subscriptionType: string): string {
+  const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
+  if (!match) return vpnKey;
+
+  const uuid = match[1];
+  const ip = match[2];
+
+  const basicConfigs = [
+    { port: 4443, sni: "www.microsoft.com", fp: "chrome", type: "tcp", flow: true, sid: "b1a2c3d4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas DE #1" },
+    { port: 4446, sni: "www.microsoft.com", fp: "ios", type: "grpc", flow: false, sid: "aa111111", pbk: "dR2MBi1bbIkgYrilOJQEl18TywoTt1rWPTiLcExzfhE", name: "🇩🇪 Atlas DE #2" },
+    { port: 4448, sni: "ads.x5.ru", fp: "qq", type: "tcp", flow: true, sid: "cc333333", pbk: "_R-zHevgkVd_AECSVeoS3t1l3OZsurXA-FbFbaStkA0", name: "🇪🇺 White List ⚡️" },
+    { port: 4449, sni: "api-maps.yandex.ru", fp: "qq", type: "tcp", flow: true, sid: "dd444444", pbk: "g3Kqz_IBfXzKtayjIg8dFG2AsgFJhy_2RhcgDqvcCSM", name: "🇪🇺 White List #2 ⚡️" },
+    { port: 4453, sni: "ads.x5.ru", fp: "qq", type: "xhttp", flow: false, sid: "bb22cc33", pbk: "z8EwZFpj21UuWHE7fl6aVoqx-obD-Sh4vmhe-q2Caj4", name: "🇪🇺 White List #3⚡️" },
+    { port: 4454, sni: "api-maps.yandex.ru", fp: "qq", type: "grpc", flow: false, sid: "cc33dd44", pbk: "RSKePiWjjJyLt1-8qZdeQXO802GmtQ1e2ZfxQv6yMxE", name: "🇪🇺 White List #4⚡️" },
+  ];
+
+  const plusConfigs = [
+    { port: 4445, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp", flow: true, sid: "d1e2f3a4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇪🇺 White List⚡️" },
+    { port: 4456, sni: "www.microsoft.com", fp: "ios", type: "grpc", flow: false, sid: "aa111111", pbk: "dR2MBi1bbIkgYrilOJQEl18TywoTt1rWPTiLcExzfhE", name: "🇩🇪 Atlas Plus 💎" },
+    { port: 4458, sni: "ads.x5.ru", fp: "qq", type: "tcp", flow: true, sid: "cc333333", pbk: "_R-zHevgkVd_AECSVeoS3t1l3OZsurXA-FbFbaStkA0", name: "🇪🇺 White List #2⚡️" },
+    { port: 4459, sni: "api-maps.yandex.ru", fp: "qq", type: "tcp", flow: true, sid: "dd444444", pbk: "g3Kqz_IBfXzKtayjIg8dFG2AsgFJhy_2RhcgDqvcCSM", name: "🇪🇺 White List #3⚡️" },
+    { port: 4463, sni: "ads.x5.ru", fp: "qq", type: "xhttp", flow: false, sid: "ee55ff66", pbk: "z8EwZFpj21UuWHE7fl6aVoqx-obD-Sh4vmhe-q2Caj4", name: "🇪🇺 White List #4⚡️" },
+    { port: 4464, sni: "api-maps.yandex.ru", fp: "qq", type: "grpc", flow: false, sid: "ff66aa77", pbk: "RSKePiWjjJyLt1-8qZdeQXO802GmtQ1e2ZfxQv6yMxE", name: "⚪️ Atlas GC 🛡️" },
+  ];
+
+  const configs = subscriptionType === "plus" ? plusConfigs : basicConfigs;
+
+  return configs
+    .map((c) => {
+      let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
+      if (c.flow) params += "&flow=xtls-rprx-vision";
+      if (c.type === "grpc") params += "&type=grpc&serviceName=grpc";
+      else if (c.type === "xhttp") params += "&type=xhttp&path=/xhttp";
+      else params += "&type=tcp";
+      return `vless://${uuid}@${ip}:${c.port}?${params}#${c.name}`;
+    })
+    .join("\n");
 }
 
 export async function GET(
@@ -65,17 +95,8 @@ export async function GET(
       return new Response("Not found", { status: 404, headers: CORS_HEADERS });
     }
 
-    let keys: string;
     const key1 = (row.vpn_key ?? "").trim();
-    const key2 = (row.vpn_key_plus ?? "").trim();
-
-    if (row.subscription_type === "plus" && key2) {
-      const line1 = setFragment(key1, "🇩🇪 Atlas DE");
-      const line2 = setFragment(key2, "⚪️ White List");
-      keys = line1 + "\n" + line2;
-    } else {
-      keys = key1;
-    }
+    const keys = buildKeys(key1, row.subscription_type ?? "basic");
 
     console.log("Returning keys:", keys?.substring(0, 50));
 

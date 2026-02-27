@@ -16,21 +16,109 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
   const ip = match[2];
 
   const basicConfigs = [
-    { port: 4443, sni: "www.microsoft.com", fp: "chrome", type: "tcp", flow: true, sid: "b1a2c3d4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas DE #1" },
-    { port: 4446, sni: "www.microsoft.com", fp: "ios", type: "grpc", flow: false, sid: "aa111111", pbk: "dR2MBi1bbIkgYrilOJQEl18TywoTt1rWPTiLcExzfhE", name: "🇩🇪 Atlas DE #2" },
-    { port: 4448, sni: "ads.x5.ru", fp: "qq", type: "tcp", flow: true, sid: "cc333333", pbk: "_R-zHevgkVd_AECSVeoS3t1l3OZsurXA-FbFbaStkA0", name: "🇪🇺 White List ⚡️" },
-    { port: 4449, sni: "api-maps.yandex.ru", fp: "qq", type: "tcp", flow: true, sid: "dd444444", pbk: "g3Kqz_IBfXzKtayjIg8dFG2AsgFJhy_2RhcgDqvcCSM", name: "🇪🇺 White List #2 ⚡️" },
-    { port: 4453, sni: "ads.x5.ru", fp: "qq", type: "xhttp", flow: false, sid: "bb22cc33", pbk: "z8EwZFpj21UuWHE7fl6aVoqx-obD-Sh4vmhe-q2Caj4", name: "🇪🇺 White List #3⚡️" },
-    { port: 4454, sni: "api-maps.yandex.ru", fp: "qq", type: "grpc", flow: false, sid: "cc33dd44", pbk: "RSKePiWjjJyLt1-8qZdeQXO802GmtQ1e2ZfxQv6yMxE", name: "🇪🇺 White List #4⚡️" },
+    {
+      port: 4443,
+      sni: "www.microsoft.com",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "b1a2c3d4",
+      pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0",
+      name: "🇩🇪 Atlas DE #1",
+    },
+    {
+      port: 4447,
+      sni: "travel.yandex.ru",
+      fp: "qq",
+      type: "tcp",
+      flow: true,
+      sid: "7cc45820",
+      pbk: "zUvxsR3IhwfsxaCu6R5UG0VhftQ4VJehOPr3isPjbGQ",
+      name: "🇪🇺 White List ⚡️",
+    },
+    {
+      port: 4448,
+      sni: "m.vk.com",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "63bc7c7a",
+      pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA",
+      name: "🇪🇺 White List #2 ⚡️",
+    },
+    {
+      port: 4449,
+      sni: "ads.x5.ru",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "2844595f",
+      pbk: "ANEnn-cu4I2dgguXjvGu_WChZDjpyC9jx-6UL9ZZgQw",
+      name: "🇪🇺 White List #3 ⚡️",
+    },
+    {
+      port: 4450,
+      sni: "api-maps.yandex.ru",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "fbbfd5ca",
+      pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo",
+      name: "🇪🇺 White List #4 ⚡️",
+    },
   ];
 
   const plusConfigs = [
-    { port: 4445, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp", flow: true, sid: "d1e2f3a4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇪🇺 White List⚡️" },
-    { port: 4456, sni: "www.microsoft.com", fp: "ios", type: "grpc", flow: false, sid: "aa111111", pbk: "dR2MBi1bbIkgYrilOJQEl18TywoTt1rWPTiLcExzfhE", name: "🇩🇪 Atlas Plus 💎" },
-    { port: 4458, sni: "ads.x5.ru", fp: "qq", type: "tcp", flow: true, sid: "cc333333", pbk: "_R-zHevgkVd_AECSVeoS3t1l3OZsurXA-FbFbaStkA0", name: "🇪🇺 White List #2⚡️" },
-    { port: 4459, sni: "api-maps.yandex.ru", fp: "qq", type: "tcp", flow: true, sid: "dd444444", pbk: "g3Kqz_IBfXzKtayjIg8dFG2AsgFJhy_2RhcgDqvcCSM", name: "🇪🇺 White List #3⚡️" },
-    { port: 4463, sni: "ads.x5.ru", fp: "qq", type: "xhttp", flow: false, sid: "ee55ff66", pbk: "z8EwZFpj21UuWHE7fl6aVoqx-obD-Sh4vmhe-q2Caj4", name: "🇪🇺 White List #4⚡️" },
-    { port: 4464, sni: "api-maps.yandex.ru", fp: "qq", type: "grpc", flow: false, sid: "ff66aa77", pbk: "RSKePiWjjJyLt1-8qZdeQXO802GmtQ1e2ZfxQv6yMxE", name: "⚪️ Atlas GC 🛡️" },
+    {
+      port: 4445,
+      sni: "api-maps.yandex.ru",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "d1e2f3a4",
+      pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0",
+      name: "🇪🇺 White List ⚡️",
+    },
+    {
+      port: 4457,
+      sni: "travel.yandex.ru",
+      fp: "qq",
+      type: "tcp",
+      flow: true,
+      sid: "7cc45820",
+      pbk: "zUvxsR3IhwfsxaCu6R5UG0VhftQ4VJehOPr3isPjbGQ",
+      name: "🇪🇺 White List #2 ⚡️",
+    },
+    {
+      port: 4458,
+      sni: "m.vk.com",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "63bc7c7a",
+      pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA",
+      name: "🇪🇺 White List #3 ⚡️",
+    },
+    {
+      port: 4459,
+      sni: "ads.x5.ru",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "2844595f",
+      pbk: "ANEnn-cu4I2dgguXjvGu_WChZDjpyC9jx-6UL9ZZgQw",
+      name: "🇪🇺 White List #4 ⚡️",
+    },
+    {
+      port: 4460,
+      sni: "api-maps.yandex.ru",
+      fp: "chrome",
+      type: "tcp",
+      flow: true,
+      sid: "fbbfd5ca",
+      pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo",
+      name: "🇩🇪 Atlas Plus 💎",
+    },
   ];
 
   const configs = subscriptionType === "plus" ? plusConfigs : basicConfigs;
@@ -39,10 +127,8 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     .map((c) => {
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      if (c.type === "grpc") params += "&type=grpc&serviceName=grpc";
-      else if (c.type === "xhttp") params += "&type=xhttp&path=/xhttp";
-      else params += "&type=tcp";
-      return `vless://${uuid}@${ip}:${c.port}?${params}#${c.name}`;
+      params += "&type=tcp";
+      return `vless://${uuid}@${ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");
 }

@@ -25,12 +25,13 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
   ];
 
   // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
+  // ВАЖНО: SNI, pbk, sid должны ТОЧНО совпадать с xray config на сервере
   const plusExtraConfigs = [
     { port: 4445, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "d1e2f3a4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas Platinum 💎" },
-    { port: 4457, sni: "ads.x5.ru",          fp: "chrome", type: "tcp",   flow: true,  sid: "2844595f", pbk: "ANEnn-cu4I2dgguXjvGu_WChZDjpyC9jx-6UL9ZZgQw", name: "🇪🇺 Platinum White List ⚡️" },
-    { port: 4458, sni: "travel.yandex.ru",   fp: "qq",     type: "tcp",   flow: true,  sid: "7cc45820", pbk: "zUvxsR3IhwfsxaCu6R5UG0VhftQ4VJehOPr3isPjbGQ", name: "🇪🇺 Platinum White List #2 ⚡️" },
-    { port: 4459, sni: "m.vk.com",           fp: "chrome", type: "tcp",   flow: true,  sid: "63bc7c7a", pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA", name: "🇪🇺 Platinum White List #3 ⚡️" },
-    { port: 4461, sni: "ads.x5.ru",          fp: "chrome", type: "xhttp", flow: false, sid: "8825fe9f", pbk: "ANEnn-cu4I2dgguXjvGu_WChZDjpyC9jx-6UL9ZZgQw", path: "/api/v1/update", name: "🇪🇺 Platinum xHTTP ⚡️" },
+    { port: 4457, sni: "travel.yandex.ru",   fp: "qq",     type: "tcp",   flow: true,  sid: "7cc45820", pbk: "zUvxsR3IhwfsxaCu6R5UG0VhftQ4VJehOPr3isPjbGQ", name: "🇪🇺 Platinum White List ⚡️" },
+    { port: 4458, sni: "m.vk.com",           fp: "chrome", type: "tcp",   flow: true,  sid: "63bc7c7a", pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA", name: "🇪🇺 Platinum White List #2 ⚡️" },
+    { port: 4459, sni: "ads.x5.ru",          fp: "chrome", type: "tcp",   flow: true,  sid: "2844595f", pbk: "ANEnn-cu4I2dgguXjvGu_WChZDjpyC9jx-6UL9ZZgQw", name: "🇪🇺 Platinum White List #3 ⚡️" },
+    { port: 4461, sni: "m.vk.com",           fp: "chrome", type: "xhttp", flow: false, sid: "8825fe9f", pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA", path: "/api/v1/update", name: "🇪🇺 Platinum xHTTP ⚡️" },
     { port: 4462, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp", flow: false, sid: "509ab3a0", pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo", path: "/api/v1/data",   name: "🇪🇺 Platinum xHTTP #2 ⚡️" },
   ];
 

@@ -66,6 +66,28 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
       pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo",
       name: "🇪🇺 White List #4 ⚡️",
     },
+    {
+      port: 4451,
+      sni: "m.vk.com",
+      fp: "chrome",
+      type: "xhttp",
+      flow: false,
+      sid: "d5503280",
+      pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA",
+      path: "/api/v1/update",
+      name: "🇪🇺 WL xHTTP ⚡️",
+    },
+    {
+      port: 4452,
+      sni: "api-maps.yandex.ru",
+      fp: "chrome",
+      type: "xhttp",
+      flow: false,
+      sid: "0ce5e61f",
+      pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo",
+      path: "/api/v1/data",
+      name: "🇪🇺 WL xHTTP #2 ⚡️",
+    },
   ];
 
   const plusConfigs = [
@@ -119,6 +141,28 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
       pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo",
       name: "🇩🇪 Atlas Plus 💎",
     },
+    {
+      port: 4461,
+      sni: "m.vk.com",
+      fp: "chrome",
+      type: "xhttp",
+      flow: false,
+      sid: "8825fe9f",
+      pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA",
+      path: "/api/v1/update",
+      name: "🇪🇺 WL xHTTP ⚡️",
+    },
+    {
+      port: 4462,
+      sni: "api-maps.yandex.ru",
+      fp: "chrome",
+      type: "xhttp",
+      flow: false,
+      sid: "509ab3a0",
+      pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo",
+      path: "/api/v1/data",
+      name: "🇪🇺 WL xHTTP #2 ⚡️",
+    },
   ];
 
   const configs = subscriptionType === "plus" ? plusConfigs : basicConfigs;
@@ -127,7 +171,11 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     .map((c) => {
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      params += "&type=tcp";
+      if (c.type === "xhttp") {
+        params += `&type=xhttp&path=${encodeURIComponent((c as { path?: string }).path || "/xhttp")}`;
+      } else {
+        params += "&type=tcp";
+      }
       return `vless://${uuid}@${ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");

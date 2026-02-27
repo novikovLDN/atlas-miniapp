@@ -90,7 +90,8 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     },
   ];
 
-  const plusConfigs = [
+  // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
+  const plusExtraConfigs = [
     {
       port: 4445,
       sni: "api-maps.yandex.ru",
@@ -165,7 +166,11 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     },
   ];
 
-  const configs = subscriptionType === "plus" ? plusConfigs : basicConfigs;
+  // basic = 7 конфигов, plus = 7 basic + 7 extra = 14 конфигов
+  // Basic конфиги общие для ВСЕХ — при смене тарифа basic ключи всегда работают
+  const configs = subscriptionType === "plus"
+    ? [...basicConfigs, ...plusExtraConfigs]
+    : basicConfigs;
 
   return configs
     .map((c) => {

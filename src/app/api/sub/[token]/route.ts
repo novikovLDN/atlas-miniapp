@@ -17,25 +17,20 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   // Basic configs — у ВСЕХ юзеров (basic и plus)
   const basicConfigs = [
-    { port: 4443, sni: "www.microsoft.com",  fp: "chrome", type: "tcp",   flow: true,  sid: "b1a2c3d4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas DE #1" },
-    { port: 4447, sni: "travel.yandex.ru",   fp: "qq",     type: "tcp",   flow: true,  sid: "7cc45820", pbk: "zUvxsR3IhwfsxaCu6R5UG0VhftQ4VJehOPr3isPjbGQ", name: "🇪🇺 White List ⚡️" },
-    { port: 4448, sni: "m.vk.com",           fp: "chrome", type: "tcp",   flow: true,  sid: "63bc7c7a", pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA", name: "🇪🇺 White List #2 ⚡️" },
-    { port: 4451, sni: "m.vk.com",           fp: "chrome", type: "xhttp", flow: false, sid: "d5503280", pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA", path: "/api/v1/update", name: "🇪🇺 WL xHTTP ⚡️" },
-    { port: 4452, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp", flow: false, sid: "0ce5e61f", pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo", path: "/api/v1/data",   name: "🇪🇺 WL xHTTP #2 ⚡️" },
+    { port: 4443, sni: "www.microsoft.com",       fp: "chrome", type: "tcp",   flow: true,  sid: "b1a2c3d4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas DE #1" },
+    { port: 2053, sni: "cdn.static.tinkoff.ru",   fp: "chrome", type: "tcp",   flow: true,  sid: "a2b3c4d5", pbk: "Lw5vcZBsHW6aqAOmJvsXzAbojp5_18NfwZc72L_Z9Uw", name: "🇪🇺 White List ⚡️" },
+    { port: 2083, sni: "storage.yandexcloud.net", fp: "chrome", type: "xhttp", flow: false, sid: "b3c4d5e6", pbk: "QT5gUdaAAZquSrOW1-_90yRmXcrbLwL3kpFzGsazbWY", path: "/api/v1/update", name: "🇪🇺 WL xHTTP ⚡️" },
   ];
 
   // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
   // ВАЖНО: SNI, pbk, sid должны ТОЧНО совпадать с xray config на сервере
   const plusExtraConfigs = [
-    { port: 4445, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "d1e2f3a4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas Platinum 💎" },
-    { port: 4457, sni: "travel.yandex.ru",   fp: "qq",     type: "tcp",   flow: true,  sid: "7cc45820", pbk: "zUvxsR3IhwfsxaCu6R5UG0VhftQ4VJehOPr3isPjbGQ", name: "🇪🇺 Platinum White List ⚡️" },
-    { port: 4458, sni: "m.vk.com",           fp: "chrome", type: "tcp",   flow: true,  sid: "63bc7c7a", pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA", name: "🇪🇺 Platinum White List #2 ⚡️" },
-    { port: 4459, sni: "ads.x5.ru",          fp: "chrome", type: "tcp",   flow: true,  sid: "2844595f", pbk: "ANEnn-cu4I2dgguXjvGu_WChZDjpyC9jx-6UL9ZZgQw", name: "🇪🇺 Platinum White List #3 ⚡️" },
-    { port: 4461, sni: "m.vk.com",           fp: "chrome", type: "xhttp", flow: false, sid: "8825fe9f", pbk: "-4eX3L0sqbNnwr-6nRg64EwHiXCjgYQ0zwMqXi9UHHA", path: "/api/v1/update", name: "🇪🇺 Platinum xHTTP ⚡️" },
-    { port: 4462, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp", flow: false, sid: "509ab3a0", pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo", path: "/api/v1/data",   name: "🇪🇺 Platinum xHTTP #2 ⚡️" },
+    { port: 8883, sni: "yastatic.net",      fp: "chrome", type: "tcp",   flow: true,  sid: "c4d5e6f7", pbk: "9eMRz87_9pbXYL0sSNMTvT3pcOs1_syOBPbbrJgfdW0", name: "🇩🇪 Atlas Platinum 💎" },
+    { port: 5228, sni: "static.avito.ru",   fp: "chrome", type: "tcp",   flow: true,  sid: "d5e6f7a8", pbk: "rlq-Fw1NQt7-JjURlHfz7vQ-r4uP8W3RSvGh5kLEhS0", name: "🇪🇺 Platinum White List ⚡️" },
+    { port: 2087, sni: "mc.yandex.ru",      fp: "chrome", type: "xhttp", flow: false, sid: "e6f7a8b9", pbk: "BA-1uIamsQSttBvUxDrjiyVrXz0NXIEC9CZ7hFc0CCs", path: "/api/v1/update", name: "🇪🇺 Platinum xHTTP ⚡️" },
   ];
 
-  // basic = 5 конфигов, plus = 5 basic + 6 extra = 11 конфигов
+  // basic = 3 конфигов, plus = 3 basic + 3 extra = 6 конфигов
   // Basic конфиги общие для ВСЕХ — при смене тарифа basic ключи всегда работают
   const configs = subscriptionType === "plus"
     ? [...basicConfigs, ...plusExtraConfigs]

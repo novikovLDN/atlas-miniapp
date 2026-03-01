@@ -26,8 +26,8 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
   // ВАЖНО: SNI, pbk, sid должны ТОЧНО совпадать с xray config на сервере
   const plusExtraConfigs = [
     { port: 8883, sni: "yastatic.net",      fp: "chrome", type: "tcp",   flow: true,  sid: "c4d5e6f7", pbk: "9eMRz87_9pbXYL0sSNMTvT3pcOs1_syOBPbbrJgfdW0", name: "🇩🇪 Atlas Platinum 💎" },
-    { port: 5228, sni: "mc.yandex.ru",      fp: "chrome", type: "tcp",   flow: true,  sid: "d5e6f7a8", pbk: "rlq-Fw1NQt7-JjURlHfz7vQ-r4uP8W3RSvGh5kLEhS0", name: "🇪🇺 Platinum White List ⚡️" },
-    { port: 2087, sni: "mc.yandex.ru",      fp: "chrome", type: "xhttp", flow: false, sid: "e6f7a8b9", pbk: "BA-1uIamsQSttBvUxDrjiyVrXz0NXIEC9CZ7hFc0CCs", path: "/api/v1/update", name: "🇪🇺 Platinum xHTTP ⚡️" },
+    { port: 5228, sni: "s3.yandex.net",     fp: "chrome", type: "tcp",   flow: true,  sid: "d5e6f7a8", pbk: "rlq-Fw1NQt7-JjURlHfz7vQ-r4uP8W3RSvGh5kLEhS0", name: "🇪🇺 Platinum White List ⚡️" },
+    { port: 2087, sni: "yandex.ru",         fp: "chrome", type: "xhttp", flow: false, sid: "e6f7a8b9", pbk: "BA-1uIamsQSttBvUxDrjiyVrXz0NXIEC9CZ7hFc0CCs", path: "/api/v1/update", name: "🇪🇺 Platinum xHTTP ⚡️" },
   ];
 
   // basic = 3 конфигов, plus = 3 basic + 3 extra = 6 конфигов

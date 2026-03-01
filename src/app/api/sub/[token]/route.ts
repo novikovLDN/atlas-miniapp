@@ -39,12 +39,12 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   // Latvia Basic configs — for ALL users
   const lvBasicConfigs = [
-    { port: 4443, sni: "www.microsoft.com",  fp: "chrome", type: "tcp",   flow: true,  sid: "b1c2d3e4", pbk: "EVoJMuppKdcskRKJ2bTRfiIiyj-9Xnwjkow9iC3HeBs", name: "🇱🇻 Atlas LV #1" },
+    { port: 8443, sni: "www.microsoft.com",  fp: "chrome", type: "tcp",   flow: true,  sid: "b1c2d3e4", pbk: "EVoJMuppKdcskRKJ2bTRfiIiyj-9Xnwjkow9iC3HeBs", name: "🇱🇻 Atlas LV #1" },
   ];
 
   // Latvia Plus configs — only for plus users
   const lvPlusConfigs = [
-    { port: 4445, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "e2f3a4b5", pbk: "LQom_b09WHxHlORLOMixNWl54oR_YeESG0ujpgb4s3M", name: "🇱🇻 Atlas LV Platinum 💎" },
+    { port: 8444, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "e2f3a4b5", pbk: "LQom_b09WHxHlORLOMixNWl54oR_YeESG0ujpgb4s3M", name: "🇱🇻 Atlas LV Platinum 💎" },
   ];
 
   // basic = 5 конфигов, plus = 5 basic + 6 extra = 11 конфигов

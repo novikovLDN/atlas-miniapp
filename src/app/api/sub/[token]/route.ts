@@ -35,29 +35,13 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     { port: 4462, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp", flow: false, sid: "509ab3a0", pbk: "8k7QAj0oYUcJzqrv0vridHONBNv4Lpj_TTXLiTO2gzo", path: "/api/v1/data",   name: "🇪🇺 Platinum xHTTP #2 ⚡️" },
   ];
 
-  const LV_IP = "194.58.34.195";
-
-  // Latvia Basic configs — for ALL users
-  const lvBasicConfigs = [
-    { port: 8443, sni: "www.microsoft.com",  fp: "chrome", type: "tcp",   flow: true,  sid: "b1c2d3e4", pbk: "EVoJMuppKdcskRKJ2bTRfiIiyj-9Xnwjkow9iC3HeBs", name: "🇱🇻 Atlas LV #1" },
-  ];
-
-  // Latvia Plus configs — only for plus users
-  const lvPlusConfigs = [
-    { port: 8444, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "e2f3a4b5", pbk: "LQom_b09WHxHlORLOMixNWl54oR_YeESG0ujpgb4s3M", name: "🇱🇻 Atlas LV Platinum 💎" },
-  ];
-
   // basic = 5 конфигов, plus = 5 basic + 6 extra = 11 конфигов
   // Basic конфиги общие для ВСЕХ — при смене тарифа basic ключи всегда работают
   const configs = subscriptionType === "plus"
     ? [...basicConfigs, ...plusExtraConfigs]
     : basicConfigs;
 
-  const lvConfigs = subscriptionType === "plus"
-    ? [...lvBasicConfigs, ...lvPlusConfigs]
-    : lvBasicConfigs;
-
-  const deLinks = configs
+  return configs
     .map((c) => {
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
@@ -67,21 +51,8 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
         params += "&type=tcp";
       }
       return `vless://${uuid}@${ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
-    });
-
-  const lvLinks = lvConfigs
-    .map((c) => {
-      let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
-      if (c.flow) params += "&flow=xtls-rprx-vision";
-      if (c.type === "xhttp") {
-        params += `&type=xhttp&path=${encodeURIComponent((c as { path?: string }).path || "/xhttp")}`;
-      } else {
-        params += "&type=tcp";
-      }
-      return `vless://${uuid}@${LV_IP}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
-    });
-
-  return [...deLinks, ...lvLinks].join("\n");
+    })
+    .join("\n");
 }
 
 export async function GET(

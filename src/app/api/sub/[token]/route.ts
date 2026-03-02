@@ -19,19 +19,14 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
   const basicConfigs = [
     { port: 4443, sni: "www.microsoft.com",  fp: "chrome", type: "tcp",   flow: true,  sid: "a1b2c3d4", pbk: "gQPfOqCTdgQrJFniIU6Glq2fMHbNSw7bHwRLLl_0Hg4", name: "🇩🇪 Atlas DE #1" },
     { port: 4447, sni: "travel.yandex.ru",   fp: "chrome", type: "tcp",   flow: true,  sid: "64af3654", pbk: "2Jh2TFg134Bm860UKpgo5TDNcYOlE-I4IlW9QxHs3jc", name: "🇪🇺 White List ⚡️" },
-    { port: 4448, sni: "m.vk.com",           fp: "chrome", type: "tcp",   flow: true,  sid: "9d11e5f0", pbk: "kO0H9uVYoCDrlRxcEicrxvtrhcQ_bNDnN3rGuPFT7TQ", name: "🇪🇺 White List #2 ⚡️" },
     { port: 4451, sni: "m.vk.com",           fp: "chrome", type: "xhttp", flow: false, sid: "93086209", pbk: "b4RO9dVLFYsYbYvNzgDqcqjYq-yfLKMvIzGkLCUSxxM", path: "/api/v1/update", name: "🇪🇺 WL xHTTP ⚡️" },
-    { port: 4452, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp", flow: false, sid: "46a0dd5d", pbk: "MiLd0lXprOM8nsa2hKQp7VfjZR0T6QSHnYZYpXY4yy8", path: "/api/v1/data",   name: "🇪🇺 WL xHTTP #2 ⚡️" },
   ];
 
   // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
   const plusExtraConfigs = [
     { port: 4445, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "d1e2f3a4", pbk: "8-MsUEs6AihnQzPs3gO7IJLYB9DWgksw3DbJE9YwQxo", name: "🇩🇪 Atlas Platinum 💎" },
     { port: 4457, sni: "travel.yandex.ru",   fp: "chrome", type: "tcp",   flow: true,  sid: "a34c3cf1", pbk: "6LSkEW9CJ33UgwjvnaJ8XeuvBsAphcwKGLlF6oa6A0o", name: "🇪🇺 Platinum White List ⚡️" },
-    { port: 4458, sni: "m.vk.com",           fp: "chrome", type: "tcp",   flow: true,  sid: "24499ac7", pbk: "utGuKWACmDs2qaK1Ekgq2nv2FN0ffTiyxjk9DvdIrQM", name: "🇪🇺 Platinum White List #2 ⚡️" },
-    { port: 4459, sni: "ads.x5.ru",          fp: "chrome", type: "tcp",   flow: true,  sid: "3977c554", pbk: "wVbp90sUEkvPMZYn6QmuSFZMlm_pntOwNxADK1GZjXs", name: "🇪🇺 Platinum White List #3 ⚡️" },
     { port: 4461, sni: "m.vk.com",           fp: "chrome", type: "xhttp", flow: false, sid: "1425b7be", pbk: "cuYnX6xOaFGAR-9yJhARP4HEiqbVjKbFbs2lJ2XYkFE", path: "/api/v1/update", name: "🇪🇺 Platinum xHTTP ⚡️" },
-    { port: 4462, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp", flow: false, sid: "ce41344a", pbk: "sSZ2iC_C07K4BuuegWTcRh5eZLQAeED3JrmqUWsKWxw", path: "/api/v1/data",   name: "🇪🇺 Platinum xHTTP #2 ⚡️" },
   ];
 
   const configs = subscriptionType === "plus"

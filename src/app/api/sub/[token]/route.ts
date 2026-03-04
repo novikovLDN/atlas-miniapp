@@ -17,9 +17,12 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   // Basic configs — у ВСЕХ юзеров (basic и plus)
   const basicConfigs = [
-    { port: 4443, sni: "www.microsoft.com", fp: "chrome", type: "tcp",   flow: true,  sid: "b1a2c3d4", pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas DE #1" },
-    { port: 4447, sni: "travel.yandex.ru",   fp: "chrome", type: "tcp",   flow: true,  sid: "a2b3c4d5", pbk: "Lw5vcZBsHW6aqAOmJvsXzAbojp5_18NfwZc72L_Z9Uw", name: "🇪🇺 White List ⚡️" },
-    { port: 4451, sni: "m.vk.com",           fp: "chrome", type: "xhttp", flow: false, sid: "b3c4d5e6", pbk: "QT5gUdaAAZquSrOW1-_90yRmXcrbLwL3kpFzGsazbWY", path: "/api/v1/update", name: "🇪🇺 WL xHTTP ⚡️" },
+    { port: 4443, sni: "www.microsoft.com", fp: "chrome", type: "tcp",       flow: true,  sid: "b1a2c3d4",        pbk: "ksv47qlBSKVAAQ98x_wkDDl7owwmszqEYY93kSf0OU0", name: "🇩🇪 Atlas DE #1" },
+    { port: 4447, sni: "travel.yandex.ru",   fp: "chrome", type: "tcp",       flow: true,  sid: "a2b3c4d5",        pbk: "Lw5vcZBsHW6aqAOmJvsXzAbojp5_18NfwZc72L_Z9Uw", name: "🇪🇺 White List ⚡️" },
+    { port: 4451, sni: "m.vk.com",           fp: "chrome", type: "xhttp",     flow: false, sid: "b3c4d5e6",        pbk: "QT5gUdaAAZquSrOW1-_90yRmXcrbLwL3kpFzGsazbWY", path: "/api/v1/update",  name: "🇪🇺 WL xHTTP ⚡️" },
+    { port: 443,  sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",       flow: true,  sid: "7cc59ce76c0b3c95", pbk: "pF6LPb9vJT4Qww3dQmg5cr3yI_Ilw8Gg_Kc_IS0UT2k",  name: "🇪🇺 WL Priority 🔥" },
+    { port: 4453, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp",     flow: false, sid: "627da0640c7f70d6", pbk: "cD8pjCNJoFp_dd6g4woN7rOr70mIV7us1FJi8gJxzkw", name: "🇪🇺 WL xHTTP 2 ⚡️", path: "/api/v2/maps" },
+    { port: 4455, sni: "api-maps.yandex.ru", fp: "chrome", type: "splithttp", flow: false, sid: "bf2dd681bd00090d", pbk: "xVZdhAovukh8CjIGihc0EaTcwHScPMY84z1MfkMhNTM", name: "🇪🇺 WL Split ⚡️",   path: "/api/v2/route" },
   ];
 
   // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
@@ -40,8 +43,8 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     .map((c) => {
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      if (c.type === "xhttp") {
-        params += `&type=xhttp&path=${encodeURIComponent((c as { path?: string }).path || "/xhttp")}`;
+      if (c.type === "xhttp" || c.type === "splithttp") {
+        params += `&type=${c.type}&path=${encodeURIComponent((c as { path?: string }).path || "/xhttp")}`;
       } else {
         params += "&type=tcp";
       }

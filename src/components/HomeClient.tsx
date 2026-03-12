@@ -7,6 +7,7 @@ import SubscriptionCard from "@/components/SubscriptionCard";
 import SetupFlow from "@/components/SetupFlow";
 import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
+import AddDeviceScreen from "@/components/AddDeviceScreen";
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import DeviceSelector from "@/components/DeviceSelector";
 
@@ -30,7 +31,7 @@ export default function HomeClient() {
   const [deviceType, setDeviceType] = useState<ReturnType<typeof detectDevice>>("unknown");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  type ViewState = "main" | "setup" | "device_select" | "setup_manual";
+  type ViewState = "main" | "setup" | "device_select" | "setup_manual" | "add_device";
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
 
@@ -119,6 +120,20 @@ export default function HomeClient() {
     );
   }
 
+  if (view === "add_device" && telegramId !== null) {
+    const hasActive = data?.is_active ?? false;
+    return (
+      <AddDeviceScreen
+        telegramId={telegramId}
+        hasActiveSubscription={hasActive}
+        subUrl={hasActive ? (data as { sub_url?: string }).sub_url : undefined}
+        buySubscriptionUrl={buyUrl}
+        onBack={() => setView("main")}
+        onOpenSupport={openSupport}
+      />
+    );
+  }
+
   if (view === "device_select") {
     return (
       <DeviceSelector
@@ -170,6 +185,7 @@ export default function HomeClient() {
             subUrl={data?.is_active ? (data as { sub_url?: string }).sub_url : undefined}
             onOpenSetup={() => setView("setup")}
             onOpenSupport={openSupport}
+            onOpenAddDevice={() => setView("add_device")}
           />
         )}
         <div className="py-6 space-y-6">

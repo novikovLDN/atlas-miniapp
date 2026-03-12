@@ -17,17 +17,13 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   // Basic configs — у ВСЕХ юзеров (basic и plus)
   const basicConfigs = [
-    { port: 4443, sni: "www.microsoft.com",  fp: "chrome", type: "tcp",   flow: true,  sid: "a1b2c3d4",  pbk: "gQPfOqCTdgQrJFniIU6Glq2fMHbNSw7bHwRLLl_0Hg4", name: "🇩🇪 Atlas DE #1" },
-    { port: 2053, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "64af3654",  pbk: "2Jh2TFg134Bm860UKpgo5TDNcYOlE-I4IlW9QxHs3jc", name: "🇪🇺 White List ⚡️" },
-    { port: 8443, sni: "api-maps.yandex.ru", fp: "chrome", type: "xhttp", flow: false, sid: "93086209",  pbk: "b4RO9dVLFYsYbYvNzgDqcqjYq-yfLKMvIzGkLCUSxxM", path: "/api/v1/update",   name: "🇪🇺 WL xHTTP ⚡️" },
+    { port: 4443, sni: "myvpncloud.net", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇳🇱 Atlas Fast #1", ip: "159.195.20.201" },
+    { port: 443,  sni: "ads.x5.ru",      fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇷🇺 White List #1 ⚡️", ip: "62.84.123.132" },
+    { port: 8443, sni: "yandex.ru",      fp: "chrome", type: "tcp", flow: true, sid: "b2c3d4e5", pbk: "WHlvowEffIH0xWQC7hTbYAn1PqcLCHSHGkkW2fWI2Rk", name: "🇷🇺 White List #2 ⚡️", ip: "62.84.123.132" },
   ];
 
   // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
-  const plusExtraConfigs = [
-    { port: 4445, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "d1e2f3a4",  pbk: "8-MsUEs6AihnQzPs3gO7IJLYB9DWgksw3DbJE9YwQxo", name: "🇩🇪 Atlas Platinum 💎" },
-    { port: 2096, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp",   flow: true,  sid: "a34c3cf1",  pbk: "6LSkEW9CJ33UgwjvnaJ8XeuvBsAphcwKGLlF6oa6A0o", name: "🇪🇺 Platinum White List ⚡️" },
-    { port: 2087, sni: "ads.x5.ru",          fp: "chrome", type: "xhttp", flow: false, sid: "1425b7be",  pbk: "cuYnX6xOaFGAR-9yJhARP4HEiqbVjKbFbs2lJ2XYkFE", path: "/api/v1/update",   name: "🇪🇺 Platinum xHTTP ⚡️" },
-  ];
+  const plusExtraConfigs: Array<(typeof basicConfigs)[number]> = [];
 
   const configs = subscriptionType === "plus"
     ? [...basicConfigs, ...plusExtraConfigs]
@@ -35,6 +31,7 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   return configs
     .map((c) => {
+      const serverIp = (c as any).ip || ip;
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
       if (c.type === "xhttp") {
@@ -42,7 +39,7 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
       } else {
         params += "&type=tcp";
       }
-      return `vless://${uuid}@${ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
+      return `vless://${uuid}@${serverIp}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");
 }
@@ -111,7 +108,7 @@ export async function GET(
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
       "subscription-userinfo": `upload=0; download=0; total=0; expire=${expireTimestamp}`,
-      "profile-update-interval": "24",
+      "profile-update-interval": "12",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };
     if (profileWebPageUrl) {

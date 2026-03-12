@@ -17,6 +17,7 @@ type SubscriptionCardProps = {
   subUrl?: string;
   onOpenSetup: () => void;
   onOpenSupport: () => void;
+  onOpenAddDevice: () => void;
 };
 
 export default function SubscriptionCard({
@@ -32,6 +33,7 @@ export default function SubscriptionCard({
   subUrl,
   onOpenSetup,
   onOpenSupport,
+  onOpenAddDevice,
 }: SubscriptionCardProps) {
   const [showProfile, setShowProfile] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -98,8 +100,16 @@ export default function SubscriptionCard({
           </a>
         )}
 
-        <button type="button" onClick={onOpenSetup} className="glass-button-secondary mb-4">
+        <button type="button" onClick={onOpenSetup} className="glass-button-secondary mb-2">
           ⚙️ Установка и настройка
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpenAddDevice}
+          className="glass-button-secondary mb-4"
+        >
+          📲 Добавить другое устройство
         </button>
 
         <div className="flex gap-3">

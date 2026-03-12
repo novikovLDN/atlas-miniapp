@@ -44,6 +44,15 @@ export default function HomeClient() {
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
   const [activeTab, setActiveTab] = useState<Tab>("home");
+  const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
+
+  const switchTab = (tab: Tab) => {
+    if (tab === activeTab) return;
+    setBlobAnim(tab === "profile" ? "to-right" : "to-left");
+    setActiveTab(tab);
+    // Clear animation class after it finishes so it can replay
+    setTimeout(() => setBlobAnim(""), 460);
+  };
 
   useEffect(() => {
     setDeviceType(detectDevice());
@@ -290,10 +299,17 @@ export default function HomeClient() {
           style={{ background: "var(--bg-container)" }}
         >
           <div className="bottom-pill">
+            {/* Liquid blob indicator */}
+            <div
+              className={`bottom-pill-blob ${blobAnim}`}
+              style={{
+                transform: activeTab === "profile" ? "translateX(52px)" : "translateX(0)",
+              }}
+            />
             <button
               type="button"
               className={`bottom-pill-item ${activeTab === "home" ? "active" : ""}`}
-              onClick={() => setActiveTab("home")}
+              onClick={() => switchTab("home")}
               aria-label="Главная"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -303,7 +319,7 @@ export default function HomeClient() {
             <button
               type="button"
               className={`bottom-pill-item ${activeTab === "profile" ? "active" : ""}`}
-              onClick={() => setActiveTab("profile")}
+              onClick={() => switchTab("profile")}
               aria-label="Профиль"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">

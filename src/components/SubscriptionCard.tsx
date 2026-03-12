@@ -52,7 +52,7 @@ export default function SubscriptionCard({
   return (
     <>
       <div
-        className="rounded-[var(--radius-card)] p-5"
+        className="rounded-[var(--radius-card)] p-4"
         style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}
       >
         {/* Header */}
@@ -64,7 +64,7 @@ export default function SubscriptionCard({
         </div>
 
         {/* Status row */}
-        <div className="mb-5 flex items-center justify-between text-sm">
+        <div className="mb-4 flex items-center justify-between text-sm">
           <span
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
             style={{
@@ -93,7 +93,7 @@ export default function SubscriptionCard({
           <button
             type="button"
             onClick={handleConnect}
-            className="mb-3 w-full rounded-[14px] py-4 text-center text-[15px] font-semibold"
+            className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
             style={{ background: "#ffffff", color: "var(--bg-card-active)" }}
           >
             Подключиться
@@ -110,7 +110,7 @@ export default function SubscriptionCard({
                 window.open(buySubscriptionUrl, "_blank");
               }
             }}
-            className="btn-green mb-3 w-full"
+            className="btn-green mb-2 w-full"
           >
             Купить подписку от 149 ₽
           </button>
@@ -120,7 +120,7 @@ export default function SubscriptionCard({
         <button
           type="button"
           onClick={onOpenSetup}
-          className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-medium"
+          className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
           style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
         >
           Установка и настройка
@@ -129,7 +129,7 @@ export default function SubscriptionCard({
         <button
           type="button"
           onClick={onOpenAddDevice}
-          className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-medium"
+          className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
           style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
         >
           Добавить устройство

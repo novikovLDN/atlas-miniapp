@@ -208,11 +208,13 @@ export default function HomeClient() {
   const isActive = data?.is_active ?? false;
 
   return (
-    <main style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
-      <div className="app-container" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-
-        {/* ─── Tab content ─── */}
-        <div className="flex-1 min-h-0 overflow-auto">
+    <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
+      <div
+        className="app-container"
+        style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}
+      >
+        {/* ─── Tab content (scrollable area) ─── */}
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {/* Home tab */}
           <div
             style={{
@@ -221,7 +223,7 @@ export default function HomeClient() {
             }}
           >
             <ShieldHero />
-            <div className="px-5 pb-24">
+            <div className="px-5 pb-4">
               {telegramId !== null && (
                 <SubscriptionCard
                   telegramId={telegramId}
@@ -246,7 +248,7 @@ export default function HomeClient() {
                 />
               )}
 
-              <div className="mt-5 space-y-4">
+              <div className="mt-4 space-y-3">
                 <DownloadSection deviceType={deviceType} />
                 <SupportLinks />
               </div>
@@ -282,10 +284,10 @@ export default function HomeClient() {
           </div>
         </div>
 
-        {/* ─── Bottom bar (2 items: home + profile) ─── */}
+        {/* ─── Bottom bar (fixed at bottom, no scroll needed) ─── */}
         <div
-          className="sticky bottom-0 flex justify-center pb-6 pt-3"
-          style={{ background: "linear-gradient(transparent, var(--bg-container) 30%)" }}
+          className="flex-shrink-0 flex justify-center pb-4 pt-2"
+          style={{ background: "var(--bg-container)" }}
         >
           <div className="bottom-pill">
             <button

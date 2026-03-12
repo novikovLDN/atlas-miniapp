@@ -267,7 +267,8 @@ export default function SetupFlow({
                   </button>
                   <button
                     type="button"
-                    onClick={copyKey}
+                    onClick={copySubUrl}
+                    disabled={!subUrl}
                     className="mt-2 text-sm font-semibold"
                     style={{ color: "var(--accent-blue)", background: "transparent", border: "none" }}
                   >
@@ -285,28 +286,31 @@ export default function SetupFlow({
             </div>
           )}
 
+          {/* Fullscreen confetti (outside step container) */}
+          {step === 4 && showConfetti && (
+            <div className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none" style={{ top: 0, left: 0, width: "100vw", height: "100vh" }} aria-hidden>
+              {confettiPieces.map((p) => (
+                <div
+                  key={p.id}
+                  className="absolute -top-5"
+                  style={{
+                    left: `${p.x}%`,
+                    width: p.shape === "rect-wide" ? `${p.size * 2}px` : `${p.size}px`,
+                    height: `${p.size}px`,
+                    borderRadius: p.shape === "circle" ? "50%" : "2px",
+                    background: p.color,
+                    opacity: 0.9,
+                    animation: `confettiFall ${p.duration}s ${p.delay}s ease-in forwards`,
+                    transform: `rotate(${p.rotation}deg)`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
           {/* Step 4 */}
           {step === 4 && (
             <div className="step-enter flex w-full flex-col items-center">
-              {showConfetti && (
-                <div className="fixed inset-0 z-[999] overflow-hidden pointer-events-none" aria-hidden>
-                  {confettiPieces.map((p) => (
-                    <div
-                      key={p.id}
-                      className="absolute -top-5 opacity-90"
-                      style={{
-                        left: `${p.x}%`,
-                        width: p.shape === "rect-wide" ? `${p.size * 2}px` : `${p.size}px`,
-                        height: `${p.size}px`,
-                        borderRadius: p.shape === "circle" ? "50%" : "2px",
-                        background: p.color,
-                        animation: `confettiFall ${p.duration}s ${p.delay}s ease-in forwards`,
-                        transform: `rotate(${p.rotation}deg)`,
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
               <div
                 className="success-check-circle flex items-center justify-center"
                 style={{

@@ -17,9 +17,10 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   // Basic configs — у ВСЕХ юзеров (basic и plus)
   const basicConfigs = [
-    { port: 4443, sni: "myvpncloud.net", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇳🇱 Atlas Fast #1", ip: "159.195.20.201" },
-    { port: 443,  sni: "ads.x5.ru",      fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇷🇺 White List #1 ⚡️", ip: "62.84.123.132" },
-    { port: 8443, sni: "yandex.ru",      fp: "chrome", type: "tcp", flow: true, sid: "b2c3d4e5", pbk: "WHlvowEffIH0xWQC7hTbYAn1PqcLCHSHGkkW2fWI2Rk", name: "🇷🇺 White List #2 ⚡️", ip: "62.84.123.132" },
+    { port: 4443, sni: "myvpncloud.net", fp: "chrome", type: "tcp",  flow: true,  sid: "a1b2c3d4",  pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇳🇱 Atlas Fast #1",              ip: "159.195.20.201" },
+    { port: 443,  sni: "ads.x5.ru",      fp: "chrome", type: "tcp",  flow: true,  sid: "a1b2c3d4",  pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇷🇺 White List #1 ⚡️",          ip: "62.84.123.132" },
+    { port: 8443, sni: "yandex.ru",      fp: "chrome", type: "tcp",  flow: true,  sid: "b2c3d4e5",  pbk: "WHlvowEffIH0xWQC7hTbYAn1PqcLCHSHGkkW2fWI2Rk", name: "🇷🇺 White List #2 ⚡️",          ip: "62.84.123.132" },
+    { port: 2053, sni: "yastatic.net",   fp: "chrome", type: "tcp",  flow: false, sid: "c3d4e5f6",  pbk: "711YGx9-9zLTL4Qe3j8ENJHr0ks-CV0czsiydFJ3pXI", name: "🇷🇺 White List #3 Резерв ⚡️", ip: "62.84.123.132" },
   ];
 
   // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)

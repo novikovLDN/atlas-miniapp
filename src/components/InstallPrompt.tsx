@@ -1,7 +1,8 @@
 "use client";
 
 const V2RAYTUN_IOS = "https://apps.apple.com/app/v2raytun/id6476628951";
-const V2RAYTUN_ANDROID = "https://play.google.com/store/apps/details?id=com.v2raytun.android";
+const V2RAYTUN_ANDROID =
+  "https://play.google.com/store/apps/details?id=com.v2raytun.android";
 
 type InstallPromptProps = {
   onClose: () => void;
@@ -11,40 +12,39 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
   return (
     <>
       <div
-        className="fixed inset-0 z-[999] bg-black/50"
+        className="overlay-backdrop fixed inset-0 z-[999] page-fade"
         onClick={onClose}
         aria-hidden
       />
       <div
-        className="fixed bottom-6 left-4 right-4 z-[1000]"
+        className="fixed bottom-0 left-0 right-0 z-[1000] slide-up"
         style={{
-          background: "rgba(15, 25, 40, 0.85)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.12)",
-          borderRadius: "20px",
-          padding: "20px",
-          boxShadow:
-            "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
-          animation: "slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+          background: "var(--bg-container, #ffffff)",
+          borderRadius: "24px 24px 0 0",
+          padding: "20px 20px 36px",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.08)",
         }}
       >
-        <p className="mb-2 font-semibold text-white">
+        {/* Handle bar */}
+        <div
+          className="mx-auto mb-5 rounded-full"
+          style={{ width: "36px", height: "4px", background: "#d1d1d6" }}
+        />
+
+        <p className="mb-1 text-base font-bold text-[var(--text-primary)]">
           Установите v2RayTun
         </p>
-        <p
-          className="mb-4 text-sm"
-          style={{ color: "rgba(255,255,255,0.55)" }}
-        >
+        <p className="mb-5 text-sm" style={{ color: "var(--text-secondary)" }}>
           Для подключения необходимо приложение v2RayTun
         </p>
+
         <a
           href={V2RAYTUN_IOS}
           target="_blank"
           rel="noopener noreferrer"
           className="glass-button block w-full text-center no-underline"
         >
-          📱 Установить для iOS
+          Установить для iOS
         </a>
         <a
           href={V2RAYTUN_ANDROID}
@@ -52,13 +52,13 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
           rel="noopener noreferrer"
           className="glass-button-secondary mt-2 block w-full text-center no-underline"
         >
-          🤖 Установить для Android
+          Установить для Android
         </a>
         <button
           type="button"
           onClick={onClose}
-          className="mt-3 w-full cursor-pointer border-0 bg-transparent text-sm"
-          style={{ color: "rgba(255,255,255,0.4)" }}
+          className="mt-4 w-full cursor-pointer border-0 bg-transparent text-sm font-medium"
+          style={{ color: "var(--text-muted)" }}
         >
           Закрыть
         </button>

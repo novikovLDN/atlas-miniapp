@@ -40,90 +40,114 @@ export default function AddDeviceScreen({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // ignore copy errors
+      // ignore
     }
   };
 
   if (!hasActiveSubscription) {
     return (
-      <div className="fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center bg-[var(--bg-primary)] p-6">
-        <div className="flex w-full max-w-[360px] flex-col items-center text-center">
-          <h2 className="text-2xl font-bold text-white">Добавить устройство</h2>
-          <p className="mt-3 text-sm text-[var(--text-secondary)]">
-            Для подключения устройства необходима активная подписка.
-          </p>
-          <a
-            href={buySubscriptionUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass-button mt-6 w-full text-center"
-          >
-            💳 Купить подписку
-          </a>
-          <button
-            type="button"
-            onClick={onBack}
-            className="mt-6 border-0 bg-transparent p-2 px-4 text-sm text-[var(--text-secondary)]"
-            style={{ color: "rgba(255,255,255,0.4)", fontSize: "14px" }}
-          >
-            ← Назад
-          </button>
+      <div style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
+        <div className="app-container fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center px-8 page-fade">
+          <div className="flex w-full max-w-[340px] flex-col items-center text-center">
+            <div
+              className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px] text-[34px]"
+              style={{ background: "var(--bg-card)" }}
+            >
+              📲
+            </div>
+            <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
+              Добавить устройство
+            </h2>
+            <p className="mt-3 text-sm text-[var(--text-secondary)]">
+              Для подключения устройства необходима активная подписка.
+            </p>
+            <a
+              href={buySubscriptionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-green mt-6 w-full text-center no-underline"
+            >
+              Купить подписку
+            </a>
+            <button
+              type="button"
+              onClick={onBack}
+              className="mt-6 border-0 bg-transparent p-2 px-4 text-sm font-medium"
+              style={{ color: "var(--text-muted)" }}
+            >
+              ← Назад
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center bg-[var(--bg-primary)] p-6">
-      <div className="flex w-full max-w-[360px] flex-col items-center text-center">
-        <h2 className="text-2xl font-bold text-white">Добавить устройство</h2>
-        <p className="mt-3 text-sm text-[var(--text-secondary)]">
-          Скопируйте ссылку и вставьте её в V2RayTun или Hiddify на другом устройстве.
-        </p>
+    <div style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
+      <div className="app-container fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center px-8 page-fade">
+        <div className="flex w-full max-w-[340px] flex-col items-center text-center">
+          <div
+            className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px] text-[34px]"
+            style={{ background: "var(--bg-card)" }}
+          >
+            📲
+          </div>
+          <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
+            Добавить устройство
+          </h2>
+          <p className="mt-3 text-sm text-[var(--text-secondary)]">
+            Скопируйте ссылку и вставьте её в V2RayTun или Hiddify на другом устройстве.
+          </p>
 
-        <button
-          type="button"
-          className="glass-button mt-6 w-full"
-          onClick={handleCopy}
-          disabled={!subscriptionUrl}
-        >
-          📋 Скопировать ссылку
-        </button>
-
-        <button
-          type="button"
-          onClick={handleCopy}
-          disabled={!subscriptionUrl}
-          className="mt-3 w-full cursor-pointer rounded-[16px] border border-[var(--glass-border)] bg-[rgba(15,25,40,0.85)] p-3 text-left font-mono text-xs text-[var(--text-secondary)]"
-          style={{ wordBreak: "break-word" }}
-        >
-          {subscriptionUrl || "Ссылка появится после активации подписки"}
-        </button>
-
-        <div className="mt-8 w-full space-y-2">
           <button
             type="button"
-            onClick={onBack}
-            className="glass-button-secondary w-full"
+            className="glass-button mt-6 w-full"
+            onClick={handleCopy}
+            disabled={!subscriptionUrl}
           >
-            ← Назад
+            {copied ? "Скопировано ✓" : "Скопировать ссылку"}
           </button>
+
           <button
             type="button"
-            onClick={onOpenSupport}
-            className="mt-1 w-full border-0 bg-transparent text-sm text-[var(--accent)]"
+            onClick={handleCopy}
+            disabled={!subscriptionUrl}
+            className="mt-3 w-full cursor-pointer rounded-[14px] p-3 text-left font-mono text-xs"
+            style={{
+              background: "var(--bg-card)",
+              color: "var(--text-secondary)",
+              border: "none",
+              wordBreak: "break-word",
+            }}
           >
-            💬 Поддержка
+            {subscriptionUrl || "Ссылка появится после активации подписки"}
           </button>
+
+          <div className="mt-8 w-full space-y-2">
+            <button type="button" onClick={onBack} className="glass-button-secondary w-full">
+              ← Назад
+            </button>
+            <button
+              type="button"
+              onClick={onOpenSupport}
+              className="mt-1 w-full border-0 bg-transparent text-sm font-semibold"
+              style={{ color: "var(--accent-blue)" }}
+            >
+              Поддержка
+            </button>
+          </div>
         </div>
+
+        {copied && (
+          <div
+            className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-5 py-2.5 text-sm font-medium slide-up"
+            style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}
+          >
+            Ссылка скопирована ✓
+          </div>
+        )}
       </div>
-
-      {copied && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-black/80 px-4 py-2 text-xs text-white">
-          Ссылка скопирована ✓
-        </div>
-      )}
     </div>
   );
 }
-

@@ -1,173 +1,84 @@
 "use client";
 
-import { useMemo } from "react";
-
-const PARTICLE_COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#ffffff", "#a78bfa"];
-
 export default function ShieldHero() {
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 15 }, (_, i) => ({
-        x: 10 + Math.random() * 80,
-        y: 10 + Math.random() * 80,
-        size: 2 + Math.random() * 4,
-        color: PARTICLE_COLORS[i % 5],
-        duration: 3 + Math.random() * 4,
-        delay: Math.random() * 3,
-      })),
-    []
-  );
-
   return (
     <div
-      className="relative flex h-[50vh] min-h-[240px] w-full flex-shrink-0 items-center justify-center overflow-hidden"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      className="relative flex w-full flex-shrink-0 items-center justify-center"
+      style={{ height: "200px", overflow: "hidden" }}
       aria-hidden
     >
-      {/* Animated background orbs */}
+      {/* Soft glow behind shield */}
       <div
+        className="absolute"
         style={{
-          position: "absolute",
-          width: "200px",
-          height: "200px",
+          width: "180px",
+          height: "180px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(59,130,246,0.3), transparent 70%)",
-          animation: "liquidOrb1 8s ease-in-out infinite",
-          filter: "blur(20px)",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          width: "150px",
-          height: "150px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(139,92,246,0.25), transparent 70%)",
-          animation: "liquidOrb2 6s ease-in-out infinite",
-          filter: "blur(15px)",
-          top: "20%",
-          right: "15%",
+          background: "radial-gradient(circle, rgba(52,120,246,0.12) 0%, transparent 70%)",
+          animation: "shieldPulse 4s ease-in-out infinite",
         }}
       />
 
-      {/* Rotating rings */}
+      {/* Dashed ring (like reference decorative elements) */}
       <svg
-        style={{ position: "absolute", animation: "spin 20s linear infinite" }}
-        width={260}
-        height={260}
-        viewBox="0 0 260 260"
-        aria-hidden
+        className="absolute"
+        width="180"
+        height="180"
+        viewBox="0 0 180 180"
+        style={{ animation: "ringRotate 30s linear infinite" }}
       >
         <circle
-          cx={130}
-          cy={130}
-          r={120}
+          cx="90"
+          cy="90"
+          r="85"
           fill="none"
-          stroke="rgba(59,130,246,0.2)"
-          strokeWidth={1}
-          strokeDasharray="8 12"
-        />
-      </svg>
-      <svg
-        style={{ position: "absolute", animation: "spinReverse 15s linear infinite" }}
-        width={200}
-        height={200}
-        viewBox="0 0 200 200"
-        aria-hidden
-      >
-        <circle
-          cx={100}
-          cy={100}
-          r={90}
-          fill="none"
-          stroke="rgba(139,92,246,0.15)"
-          strokeWidth={1}
-          strokeDasharray="4 8"
+          stroke="rgba(28,28,30,0.06)"
+          strokeWidth="1"
+          strokeDasharray="6 8"
         />
       </svg>
 
-      {/* Glass shield */}
+      {/* Shield icon */}
       <div
         style={{
-          width: "110px",
-          height: "130px",
+          width: "80px",
+          height: "96px",
           position: "relative",
-          filter: "drop-shadow(0 0 30px rgba(59,130,246,0.6))",
-          animation: "shieldPulse 3s ease-in-out infinite",
+          animation: "shieldFloat 4s ease-in-out infinite",
         }}
       >
-        <svg viewBox="0 0 110 130" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <svg
+          viewBox="0 0 80 96"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-full w-full"
+          style={{ filter: "drop-shadow(0 4px 12px rgba(28,28,30,0.15))" }}
+        >
           <defs>
-            <linearGradient id="shieldGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="rgba(147,197,253,0.9)" />
-              <stop offset="40%" stopColor="rgba(59,130,246,0.8)" />
-              <stop offset="100%" stopColor="rgba(29,78,216,0.9)" />
+            <linearGradient id="shieldG" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#3d3d40" />
+              <stop offset="50%" stopColor="#1c1c1e" />
+              <stop offset="100%" stopColor="#0a0a0a" />
             </linearGradient>
-            <linearGradient id="shieldHighlight" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
-              <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-            </linearGradient>
-            <filter id="shieldGlow">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
           </defs>
           <path
-            d="M55 5 L100 22 L100 60 C100 88 80 110 55 125 C30 110 10 88 10 60 L10 22 Z"
-            fill="url(#shieldGrad)"
-            filter="url(#shieldGlow)"
+            d="M40 4 L74 16 L74 44 C74 64 60 80 40 92 C20 80 6 64 6 44 L6 16 Z"
+            fill="url(#shieldG)"
           />
+          {/* Lock body */}
+          <rect x="29" y="44" width="22" height="16" rx="3.5" fill="rgba(255,255,255,0.9)" />
+          {/* Lock shackle */}
           <path
-            d="M55 8 L95 23 L95 58 C95 84 77 105 55 119"
-            fill="none"
-            stroke="rgba(255,255,255,0.3)"
-            strokeWidth={2}
-          />
-          <path
-            d="M55 12 L90 26 L90 56 C90 78 74 97 55 110 C36 97 20 78 20 56 L20 26 Z"
-            fill="url(#shieldHighlight)"
-            opacity={0.3}
-          />
-          <rect x={42} y={58} width={26} height={20} rx={4} fill="rgba(255,255,255,0.9)" />
-          <path
-            d="M47 58 L47 52 C47 45 63 45 63 52 L63 58"
+            d="M34 44 L34 38 C34 32.5 46 32.5 46 38 L46 44"
             fill="none"
             stroke="rgba(255,255,255,0.9)"
-            strokeWidth={3.5}
+            strokeWidth="2.5"
             strokeLinecap="round"
           />
-          <circle cx={55} cy={68} r={3} fill="rgba(59,130,246,0.8)" />
+          {/* Green dot (active indicator, like reference) */}
+          <circle cx="40" cy="52" r="2.5" fill="#34c759" />
         </svg>
       </div>
-
-      {/* Floating particles */}
-      {particles.map((p, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            borderRadius: "50%",
-            background: p.color,
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            animation: `float${i % 3} ${p.duration}s ease-in-out infinite`,
-            animationDelay: `${p.delay}s`,
-            opacity: 0.7,
-            boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
-            pointerEvents: "none",
-          }}
-          aria-hidden
-        />
-      ))}
     </div>
   );
 }

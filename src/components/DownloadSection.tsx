@@ -6,32 +6,43 @@ import { APP_LINKS } from "@/lib/detectDevice";
 const DEVICE_ORDER: DeviceType[] = ["ios", "android", "windows", "macos"];
 
 const LABELS: Record<DeviceType, string> = {
-  ios: "📱 iOS",
-  android: "🤖 Android",
-  windows: "🖥 Windows",
-  macos: "🍎 macOS",
-  unknown: "📱 Установить",
+  ios: "iOS",
+  android: "Android",
+  windows: "Windows",
+  macos: "macOS",
+  unknown: "Установить",
+};
+
+const ICONS: Record<DeviceType, string> = {
+  ios: "📱",
+  android: "🤖",
+  windows: "🖥",
+  macos: "🍎",
+  unknown: "📱",
 };
 
 type DownloadSectionProps = {
   deviceType?: DeviceType;
 };
 
-export default function DownloadSection({ deviceType = "unknown" }: DownloadSectionProps) {
+export default function DownloadSection({
+  deviceType = "unknown",
+}: DownloadSectionProps) {
   const ordered =
     deviceType !== "unknown" && DEVICE_ORDER.includes(deviceType)
       ? [deviceType, ...DEVICE_ORDER.filter((d) => d !== deviceType)]
       : DEVICE_ORDER;
 
   return (
-    <section className="glass-card p-5">
-      <h3 className="mb-4 text-base font-semibold text-[var(--text-primary)]">
+    <section>
+      <h3 className="mb-3 text-lg font-bold text-[var(--text-primary)]">
         Скачать приложение
       </h3>
       <div className="grid grid-cols-2 gap-3">
         {ordered.map((d) => {
           const info = APP_LINKS[d];
           const label = LABELS[d];
+          const icon = ICONS[d];
           const isCurrent = d === deviceType;
           return (
             <a
@@ -39,12 +50,13 @@ export default function DownloadSection({ deviceType = "unknown" }: DownloadSect
               href={info.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-center justify-center rounded-2xl border px-3 py-3 text-sm font-medium transition-all ${
-                isCurrent
-                  ? "border-[var(--accent-green)] bg-[var(--accent-green)]/15 text-[var(--text-primary)]"
-                  : "glass-button-secondary"
-              }`}
+              className="flex items-center justify-center gap-2 rounded-[var(--radius-card)] px-3 py-4 text-sm font-semibold no-underline transition-all"
+              style={{
+                background: isCurrent ? "var(--bg-card-active)" : "var(--bg-card)",
+                color: isCurrent ? "var(--text-on-dark)" : "var(--text-primary)",
+              }}
             >
+              <span>{icon}</span>
               {label}
             </a>
           );

@@ -1,255 +1,202 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #060d1a;
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-highlight: rgba(255, 255, 255, 0.08);
-  --glass-shadow: rgba(0, 0, 0, 0.4);
-  --accent-blue: #3b82f6;
-  --accent-purple: #8b5cf6;
-  --accent-cyan: #06b6d4;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --glow-blue: rgba(59, 130, 246, 0.35);
-  --glow-purple: rgba(139, 92, 246, 0.25);
-  /* Legacy aliases for components still using them */
-  --accent: #3b82f6;
-  --accent-green: #22c55e;
-  --bg-card: var(--glass-bg);
-  --border-card: var(--glass-border);
-  --text-muted: rgba(255, 255, 255, 0.4);
-  --radius-card: 24px;
+  --bg-dark: #0a0a0a;
+  --bg-container: #ffffff;
+  --bg-card: #f2f2f7;
+  --bg-card-active: #1c1c1e;
+  --accent-green: #34c759;
+  --accent-blue: #3478f6;
+  --accent-red: #ff3b30;
+  --text-primary: #1c1c1e;
+  --text-secondary: #8e8e93;
+  --text-muted: #c7c7cc;
+  --text-on-dark: #ffffff;
+  --radius-container: 32px;
+  --radius-card: 22px;
   --radius-button: 16px;
+  --radius-pill: 999px;
+  /* Legacy aliases */
+  --accent: var(--accent-blue);
+  --bg-primary: var(--bg-dark);
+  --glass-bg: var(--bg-container);
+  --glass-border: transparent;
+  --border-light: transparent;
 }
 
 @theme inline {
-  --color-bg-primary: var(--bg-primary);
+  --color-bg-primary: var(--bg-dark);
   --color-accent: var(--accent);
   --color-accent-green: var(--accent-green);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg-dark);
+}
+
 body {
-  background: var(--bg-primary);
-  background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 60%);
+  background: var(--bg-dark);
   color: var(--text-primary);
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
 }
 
-/* Smooth transitions */
-button,
-a,
-[class*="rounded-"] {
+/* ─── White container (like reference) ─── */
+.app-container {
+  background: var(--bg-container);
+  border-radius: var(--radius-container) var(--radius-container) 0 0;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Smooth transitions ─── */
+button, a {
   transition: all 0.2s ease;
 }
 
-/* Liquid Glass card */
+/* ─── Card (flat, no shadow, no border) ─── */
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  box-shadow:
-    0 8px 32px var(--glass-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  background: var(--bg-card);
+  border: none;
+  border-radius: var(--radius-card);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
 }
 
 .glass-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  pointer-events: none;
+  display: none;
 }
 
-/* Glass button */
+/* ─── Primary button (dark) ─── */
 .glass-button {
-  background: rgba(59, 130, 246, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  color: white;
+  background: var(--bg-card-active);
+  border: none;
+  border-radius: 14px;
+  color: var(--text-on-dark);
   font-weight: 600;
+  font-size: 15px;
   padding: 16px 24px;
   width: 100%;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow:
-    0 4px 20px rgba(59, 130, 246, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  display: block;
 }
 
 .glass-button:active {
   transform: scale(0.97);
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+  opacity: 0.85;
 }
 
+/* ─── Secondary button (light gray, flat) ─── */
 .glass-button-secondary {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  color: rgba(255, 255, 255, 0.8);
+  background: var(--bg-card);
+  border: none;
+  border-radius: 14px;
+  color: var(--text-primary);
   font-weight: 500;
+  font-size: 15px;
   padding: 14px 24px;
   width: 100%;
-  transition: all 0.2s ease;
   cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
 }
 
 .glass-button-secondary:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: #e8e8ed;
   transform: scale(0.98);
 }
 
-/* Liquid orb background */
-@keyframes liquidOrb1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -20px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 15px) scale(0.95);
-  }
+/* ─── Green button ─── */
+.btn-green {
+  background: var(--accent-green);
+  border: none;
+  border-radius: 14px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 16px 24px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-@keyframes liquidOrb2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(-25px, 20px) scale(1.05);
-  }
-  66% {
-    transform: translate(20px, -15px) scale(1.1);
-  }
+.btn-green:active {
+  transform: scale(0.97);
+  opacity: 0.85;
 }
 
-/* Floating particles */
-@keyframes float0 {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(8px, -12px);
-  }
+/* ─── Page & step animations ─── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes float1 {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(-10px, 8px);
-  }
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes float2 {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(6px, 10px);
-  }
-}
-
-@keyframes shieldPulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.04);
-  }
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes spinReverse {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(100px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
-/* Full-screen confetti (SetupFlow step 4) */
+.page-enter { animation: pageIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.page-fade { animation: pageFadeIn 0.3s ease forwards; }
+.step-enter { animation: stepIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ─── Shield animations ─── */
+@keyframes shieldFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes shieldPulse {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.08); opacity: 0.25; }
+}
+
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Confetti ─── */
 @keyframes confettiFall {
-  0% {
-    transform: translateY(0) rotate(0deg) scale(1);
-    opacity: 1;
-  }
-  70% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(110vh) rotate(720deg) scale(0.5);
-    opacity: 0;
-  }
+  0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0; }
 }
 
-/* Success checkmark */
+/* ─── Success checkmark ─── */
 @keyframes checkPop {
-  from {
-    transform: scale(0);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 @keyframes drawCheck {
-  from {
-    stroke-dashoffset: 40;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
+  from { stroke-dashoffset: 40; }
+  to { stroke-dashoffset: 0; }
 }
 
 .success-check-path {
@@ -262,155 +209,147 @@ a,
   animation: checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* Legacy confetti (kept for reference, unused) */
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(-10px) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100px) rotate(720deg);
-    opacity: 0;
-  }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.confetti-wrap {
-  position: relative;
-  overflow: hidden;
-}
-
-.confetti-wrap::before,
-.confetti-wrap::after {
-  content: "";
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: var(--accent-green);
-  border-radius: 2px;
-  animation: confetti-fall 1.5s ease-out forwards;
-  pointer-events: none;
-}
-
-.confetti-wrap::before {
-  left: 20%;
-  top: 10%;
-  animation-delay: 0s;
-}
-
-.confetti-wrap::after {
-  left: 70%;
-  top: 20%;
-  animation-delay: 0.2s;
-  background: #ffffff;
-}
-
-.confetti-dot {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-green);
-  animation: confetti-fall 1.8s ease-out forwards;
-  pointer-events: none;
-}
-
-.confetti-dot:nth-child(1) {
-  left: 30%;
-  top: 5%;
-  animation-delay: 0.1s;
-  background: #ffffff;
-}
-
-.confetti-dot:nth-child(2) {
-  left: 60%;
-  top: 15%;
-  animation-delay: 0.3s;
-}
-
-.confetti-dot:nth-child(3) {
-  left: 45%;
-  top: 0%;
-  animation-delay: 0.15s;
-  background: rgba(255, 255, 255, 0.55);
-}
-
-.confetti-dot:nth-child(4) {
-  left: 80%;
-  top: 10%;
-  animation-delay: 0.25s;
-}
-
-.confetti-dot:nth-child(5) {
-  left: 15%;
-  top: 20%;
-  animation-delay: 0.05s;
-}
-
-/* Status badge pills */
+/* ─── Status badges ─── */
 .badge-active {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #22c55e;
-  border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  background: rgba(52, 199, 89, 0.12);
+  color: #2da44e;
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  border: none;
 }
 
 .badge-active::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  background: var(--accent-green);
 }
 
 .badge-inactive {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
-  border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--accent-red);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  border: none;
 }
 
 .badge-inactive::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--accent-red);
 }
 
-/* Device selector cards */
+/* ─── Device cards (reference style) ─── */
 .device-card {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  border: none;
+  box-shadow: none;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.device-card:hover {
-  border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(59, 130, 246, 0.1);
+.device-card:active {
+  transform: scale(0.96);
 }
 
 .device-card--detected {
-  border-color: rgba(59, 130, 246, 0.6);
-  background: rgba(59, 130, 246, 0.12);
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
 }
 
-.device-card--detected:hover {
-  border-color: rgba(59, 130, 246, 0.6);
-  background: rgba(59, 130, 246, 0.12);
+/* ─── Toggle switch (iOS style, like reference) ─── */
+.toggle-track {
+  width: 40px;
+  height: 24px;
+  border-radius: 12px;
+  background: #e5e5ea;
+  position: relative;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggle-track.active {
+  background: var(--accent-green);
+}
+
+.toggle-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-track.active .toggle-thumb {
+  transform: translateX(16px);
+}
+
+/* ─── Overlay ─── */
+.overlay-backdrop {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ─── Bottom pill bar ─── */
+.bottom-pill {
+  background: var(--bg-card);
+  border-radius: var(--radius-pill);
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bottom-pill-item {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.bottom-pill-item.active {
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
+}
+
+/* ─── Scrollbar hide ─── */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* ─── Legacy confetti ─── */
+.confetti-wrap {
+  position: relative;
+  overflow: hidden;
 }

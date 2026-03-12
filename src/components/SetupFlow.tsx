@@ -42,8 +42,6 @@ const STEP1_ICON: Record<DeviceType, string> = {
 type SetupFlowProps = {
   telegramId: number;
   onClose: () => void;
-  vpnKey: string;
-  vpnKeyPlus: string | null;
   tariff: "basic" | "plus";
   subUrl?: string;
   deviceType?: DeviceType;
@@ -54,8 +52,6 @@ type SetupFlowProps = {
 export default function SetupFlow({
   telegramId,
   onClose,
-  vpnKey,
-  vpnKeyPlus,
   tariff,
   subUrl,
   deviceType: deviceTypeProp,
@@ -82,16 +78,8 @@ export default function SetupFlow({
     else setDeviceType(detectDevice());
   }, [deviceTypeProp]);
 
-  const activeKey = vpnKey;
   const appInfo = APP_LINKS[deviceType];
   const isWindows = deviceType === "windows";
-
-  const copyKey = () => {
-    navigator.clipboard.writeText(activeKey).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   const copySubUrl = () => {
     if (!subUrl) return;
@@ -260,7 +248,7 @@ export default function SetupFlow({
                   <button
                     type="button"
                     onClick={handleAddConfig}
-                    disabled={!subUrl && !activeKey}
+                    disabled={!subUrl}
                     className="glass-button mt-6 w-full disabled:opacity-50"
                   >
                     Добавить конфиг

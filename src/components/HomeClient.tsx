@@ -10,6 +10,7 @@ import SupportLinks from "@/components/SupportLinks";
 import AddDeviceScreen from "@/components/AddDeviceScreen";
 import ProfileScreen from "@/components/ProfileScreen";
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
+import { openTelegramLink } from "@/lib/openTelegramLink";
 import DeviceSelector from "@/components/DeviceSelector";
 
 type SubscriptionResponse =
@@ -20,8 +21,6 @@ type SubscriptionResponse =
       expires_at: string;
       expires_formatted: string;
       days_left: number;
-      vpn_key: string;
-      vpn_key_plus: string | null;
       sub_url?: string;
     }
   | { is_active: false; name: string };
@@ -50,7 +49,7 @@ export default function HomeClient() {
     if (tab === activeTab) return;
     setBlobAnim(tab === "profile" ? "to-right" : "to-left");
     setActiveTab(tab);
-    setTimeout(() => setBlobAnim(""), 700);
+    setTimeout(() => setBlobAnim(""), 400);
   };
 
   useEffect(() => {
@@ -73,9 +72,7 @@ export default function HomeClient() {
 
     setTelegramId(userId);
 
-    const base =
-      typeof window !== "undefined" ? window.location.origin : "";
-    fetch(`${base}/api/subscription?telegram_id=${userId}`, {
+    fetch(`/api/subscription?telegram_id=${userId}`, {
       headers: { "x-telegram-init-data": initData },
     })
       .then((res) => {
@@ -99,20 +96,7 @@ export default function HomeClient() {
   const buyUrl =
     process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/atlassecure_bot?start=buy";
 
-  const openSupport = () => {
-    if (typeof window === "undefined") return;
-    const w = window as unknown as {
-      Telegram?: {
-        WebApp?: { openTelegramLink?: (u: string) => void };
-      };
-    };
-    const tg = w.Telegram?.WebApp;
-    if (tg && typeof tg.openTelegramLink === "function") {
-      tg.openTelegramLink("https://t.me/asc_support");
-    } else {
-      window.open("https://t.me/asc_support", "_blank");
-    }
-  };
+  const openSupport = () => openTelegramLink("https://t.me/asc_support");
 
   /* ─── Loading ─── */
   if (loading) {
@@ -155,7 +139,6 @@ export default function HomeClient() {
     const hasActive = data?.is_active ?? false;
     return (
       <AddDeviceScreen
-        telegramId={telegramId}
         hasActiveSubscription={hasActive}
         subUrl={
           hasActive ? (data as { sub_url?: string }).sub_url : undefined
@@ -192,8 +175,6 @@ export default function HomeClient() {
       <SetupFlow
         telegramId={telegramId}
         onClose={() => setView("main")}
-        vpnKey={data?.is_active ? data.vpn_key : ""}
-        vpnKeyPlus={data?.is_active ? (data.vpn_key_plus ?? null) : null}
         tariff={data?.is_active ? data.tariff : "basic"}
         subUrl={
           data?.is_active
@@ -234,7 +215,6 @@ export default function HomeClient() {
             <div className="px-5 pb-4">
               {telegramId !== null && (
                 <SubscriptionCard
-                  telegramId={telegramId}
                   name={name}
                   isActive={isActive}
                   tariff={data?.is_active ? data.tariff : undefined}
@@ -243,8 +223,6 @@ export default function HomeClient() {
                   }
                   daysLeft={data?.is_active ? data.days_left : undefined}
                   buySubscriptionUrl={buyUrl}
-                  vpnKey={data?.is_active ? data.vpn_key : undefined}
-                  vpnKeyPlus={data?.is_active ? data.vpn_key_plus : undefined}
                   subUrl={
                     data?.is_active
                       ? (data as { sub_url?: string }).sub_url

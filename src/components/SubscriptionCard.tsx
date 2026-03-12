@@ -3,17 +3,15 @@
 import { useState } from "react";
 import InstallPrompt from "@/components/InstallPrompt";
 import { openDeepLink } from "@/lib/openDeepLink";
+import { openTelegramLink } from "@/lib/openTelegramLink";
 
 type SubscriptionCardProps = {
-  telegramId: number;
   name: string;
   isActive: boolean;
   tariff?: "basic" | "plus";
   expiresFormatted?: string;
   daysLeft?: number;
   buySubscriptionUrl: string;
-  vpnKey?: string;
-  vpnKeyPlus?: string | null;
   subUrl?: string;
   onOpenSetup: () => void;
   onOpenSupport: () => void;
@@ -21,15 +19,12 @@ type SubscriptionCardProps = {
 };
 
 export default function SubscriptionCard({
-  telegramId,
   name,
   isActive,
   tariff,
   expiresFormatted,
   daysLeft = 0,
   buySubscriptionUrl,
-  vpnKey = "",
-  vpnKeyPlus,
   subUrl,
   onOpenSetup,
   onOpenSupport,
@@ -101,15 +96,7 @@ export default function SubscriptionCard({
         ) : (
           <button
             type="button"
-            onClick={() => {
-              const w = window as unknown as { Telegram?: { WebApp?: { openTelegramLink?: (u: string) => void } } };
-              const tg = w.Telegram?.WebApp;
-              if (tg?.openTelegramLink) {
-                tg.openTelegramLink(buySubscriptionUrl);
-              } else {
-                window.open(buySubscriptionUrl, "_blank");
-              }
-            }}
+            onClick={() => openTelegramLink(buySubscriptionUrl)}
             className="btn-green mb-2 w-full"
           >
             Купить подписку от 149 ₽

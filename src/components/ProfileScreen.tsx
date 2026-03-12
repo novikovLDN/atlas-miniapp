@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { openTelegramLink } from "@/lib/openTelegramLink";
 
 type ProfileScreenProps = {
   name: string;
@@ -13,18 +14,6 @@ type ProfileScreenProps = {
   buyUrl: string;
   onOpenSupport: () => void;
 };
-
-function openTelegramLink(url: string) {
-  const w = window as unknown as {
-    Telegram?: { WebApp?: { openTelegramLink?: (u: string) => void } };
-  };
-  const tg = w.Telegram?.WebApp;
-  if (tg?.openTelegramLink) {
-    tg.openTelegramLink(url);
-  } else {
-    window.open(url, "_blank");
-  }
-}
 
 export default function ProfileScreen({
   name,

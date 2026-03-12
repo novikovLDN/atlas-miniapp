@@ -50,8 +50,7 @@ export default function HomeClient() {
     if (tab === activeTab) return;
     setBlobAnim(tab === "profile" ? "to-right" : "to-left");
     setActiveTab(tab);
-    // Clear animation class after it finishes so it can replay
-    setTimeout(() => setBlobAnim(""), 460);
+    setTimeout(() => setBlobAnim(""), 700);
   };
 
   useEffect(() => {

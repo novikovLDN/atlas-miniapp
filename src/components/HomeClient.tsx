@@ -85,7 +85,7 @@ export default function HomeClient() {
   }, []);
 
   const buyUrl =
-    process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/your_bot";
+    process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/atlassecure_bot?start=buy";
 
   const openSupport = () => {
     if (typeof window === "undefined") return;

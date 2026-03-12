@@ -116,14 +116,21 @@ export default function SubscriptionCard({
             Подключиться
           </button>
         ) : (
-          <a
-            href={buySubscriptionUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-green mb-3 block text-center no-underline"
+          <button
+            type="button"
+            onClick={() => {
+              const w = window as unknown as { Telegram?: { WebApp?: { openTelegramLink?: (u: string) => void } } };
+              const tg = w.Telegram?.WebApp;
+              if (tg?.openTelegramLink) {
+                tg.openTelegramLink(buySubscriptionUrl);
+              } else {
+                window.open(buySubscriptionUrl, "_blank");
+              }
+            }}
+            className="btn-green mb-3 w-full"
           >
-            Купить подписку от 199 ₽
-          </a>
+            Купить подписку от 149 ₽
+          </button>
         )}
 
         {/* Secondary actions */}

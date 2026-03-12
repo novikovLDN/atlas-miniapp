@@ -107,15 +107,20 @@ export async function GET(
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
+      "support-url": "https://t.me/your_support_bot",
       "subscription-userinfo": `upload=0; download=0; total=0; expire=${expireTimestamp}`,
-      "profile-update-interval": "24",
+      "profile-update-interval": "12",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };
     if (profileWebPageUrl) {
       responseHeaders["profile-web-page-url"] = profileWebPageUrl;
     }
 
-    return new Response(keys, {
+    const remarks =
+      "# Если что-то не работает — просто обновите подписку 🔄 Нужна помощь? Мы всегда на связи в поддержке 🤍";
+    const body = `${remarks}\n${keys}`;
+
+    return new Response(body, {
       status: 200,
       headers: responseHeaders,
     });

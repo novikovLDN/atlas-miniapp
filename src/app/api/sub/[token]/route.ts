@@ -9,41 +9,21 @@ const CORS_HEADERS = {
 };
 
 function buildKeys(vpnKey: string, subscriptionType: string): string {
-  const match = vpnKey.match(/vless:\/\/([^@]+)@/);
+  const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return vpnKey;
 
   const uuid = match[1];
-  const defaultIp = "159.195.20.201";
+  const ip = match[2];
 
   // Basic configs — у ВСЕХ юзеров (basic и plus)
   const basicConfigs = [
-    {
-      port: 4443,
-      sni: "myvpncloud.net",
-      fp: "chrome",
-      type: "tcp",
-      flow: true,
-      sid: "a1b2c3d4",
-      pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg",
-      name: "🇳🇱 Atlas NL #1",
-    },
-    {
-      port: 443,
-      sni: "myvpncloud.net",
-      fp: "chrome",
-      type: "tcp",
-      flow: true,
-      sid: "a1b2c3d4",
-      pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg",
-      name: "🇷🇺 Atlas Bridge ⚡️",
-      ip: "62.84.123.132",
-    },
+    { port: 4443, sni: "myvpncloud.net", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇳🇱 Atlas Fast #1", ip: "159.195.20.201" },
+    { port: 443,  sni: "ads.x5.ru",      fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇷🇺 White List #1 ⚡️", ip: "62.84.123.132" },
+    { port: 8443, sni: "yandex.ru",      fp: "chrome", type: "tcp", flow: true, sid: "b2c3d4e5", pbk: "WHlvowEffIH0xWQC7hTbYAn1PqcLCHSHGkkW2fWI2Rk", name: "🇷🇺 White List #2 ⚡️", ip: "62.84.123.132" },
   ];
 
   // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
-  const plusExtraConfigs: Array<
-    (typeof basicConfigs)[number] & { ip?: string }
-  > = [];
+  const plusExtraConfigs: Array<(typeof basicConfigs)[number]> = [];
 
   const configs = subscriptionType === "plus"
     ? [...basicConfigs, ...plusExtraConfigs]
@@ -51,15 +31,15 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   return configs
     .map((c) => {
-      const host = (c as { ip?: string }).ip || defaultIp;
+      const serverIp = (c as any).ip || ip;
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      if (c.type === "xhttp" || c.type === "splithttp") {
-        params += `&type=${c.type}&path=${encodeURIComponent((c as { path?: string }).path || "/xhttp")}`;
+      if (c.type === "xhttp") {
+        params += `&type=xhttp&path=${encodeURIComponent((c as { path?: string }).path || "/xhttp")}`;
       } else {
         params += "&type=tcp";
       }
-      return `vless://${uuid}@${host}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
+      return `vless://${uuid}@${serverIp}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");
 }

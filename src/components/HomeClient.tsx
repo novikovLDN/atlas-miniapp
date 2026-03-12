@@ -8,6 +8,7 @@ import SetupFlow from "@/components/SetupFlow";
 import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
 import AddDeviceScreen from "@/components/AddDeviceScreen";
+import ProfileScreen from "@/components/ProfileScreen";
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import DeviceSelector from "@/components/DeviceSelector";
 
@@ -25,6 +26,8 @@ type SubscriptionResponse =
     }
   | { is_active: false; name: string };
 
+type Tab = "home" | "profile";
+
 export default function HomeClient() {
   const [data, setData] = useState<SubscriptionResponse | null>(null);
   const [telegramId, setTelegramId] = useState<number | null>(null);
@@ -40,6 +43,7 @@ export default function HomeClient() {
     | "add_device";
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
+  const [activeTab, setActiveTab] = useState<Tab>("home");
 
   useEffect(() => {
     setDeviceType(detectDevice());
@@ -199,64 +203,111 @@ export default function HomeClient() {
     );
   }
 
-  /* ─── Main view ─── */
+  /* ─── Main view (with tabs) ─── */
   const name = data?.name ?? "Пользователь";
   const isActive = data?.is_active ?? false;
 
   return (
     <main style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
-      <div className="app-container page-enter" style={{ minHeight: "100vh" }}>
-        <ShieldHero />
+      <div className="app-container" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
 
-        <div className="px-5 pb-8">
-          {telegramId !== null && (
-            <SubscriptionCard
-              telegramId={telegramId}
-              name={name}
-              isActive={isActive}
-              tariff={data?.is_active ? data.tariff : undefined}
-              expiresFormatted={
-                data?.is_active ? data.expires_formatted : undefined
-              }
-              daysLeft={data?.is_active ? data.days_left : undefined}
-              buySubscriptionUrl={buyUrl}
-              vpnKey={data?.is_active ? data.vpn_key : undefined}
-              vpnKeyPlus={data?.is_active ? data.vpn_key_plus : undefined}
-              subUrl={
-                data?.is_active
-                  ? (data as { sub_url?: string }).sub_url
-                  : undefined
-              }
-              onOpenSetup={() => setView("setup")}
-              onOpenSupport={openSupport}
-              onOpenAddDevice={() => setView("add_device")}
-            />
-          )}
+        {/* ─── Tab content ─── */}
+        <div className="flex-1 min-h-0 overflow-auto">
+          {/* Home tab */}
+          <div
+            style={{
+              display: activeTab === "home" ? "block" : "none",
+              animation: activeTab === "home" ? "tabFadeIn 0.3s ease forwards" : "none",
+            }}
+          >
+            <ShieldHero />
+            <div className="px-5 pb-24">
+              {telegramId !== null && (
+                <SubscriptionCard
+                  telegramId={telegramId}
+                  name={name}
+                  isActive={isActive}
+                  tariff={data?.is_active ? data.tariff : undefined}
+                  expiresFormatted={
+                    data?.is_active ? data.expires_formatted : undefined
+                  }
+                  daysLeft={data?.is_active ? data.days_left : undefined}
+                  buySubscriptionUrl={buyUrl}
+                  vpnKey={data?.is_active ? data.vpn_key : undefined}
+                  vpnKeyPlus={data?.is_active ? data.vpn_key_plus : undefined}
+                  subUrl={
+                    data?.is_active
+                      ? (data as { sub_url?: string }).sub_url
+                      : undefined
+                  }
+                  onOpenSetup={() => setView("setup")}
+                  onOpenSupport={openSupport}
+                  onOpenAddDevice={() => setView("add_device")}
+                />
+              )}
 
-          <div className="mt-5 space-y-4">
-            <DownloadSection deviceType={deviceType} />
-            <SupportLinks />
+              <div className="mt-5 space-y-4">
+                <DownloadSection deviceType={deviceType} />
+                <SupportLinks />
+              </div>
+            </div>
+          </div>
+
+          {/* Profile tab */}
+          <div
+            style={{
+              display: activeTab === "profile" ? "block" : "none",
+              animation: activeTab === "profile" ? "tabFadeIn 0.3s ease forwards" : "none",
+            }}
+          >
+            {telegramId !== null && (
+              <ProfileScreen
+                name={name}
+                telegramId={telegramId}
+                isActive={isActive}
+                tariff={data?.is_active ? data.tariff : undefined}
+                expiresFormatted={
+                  data?.is_active ? data.expires_formatted : undefined
+                }
+                daysLeft={data?.is_active ? data.days_left : undefined}
+                subUrl={
+                  data?.is_active
+                    ? (data as { sub_url?: string }).sub_url
+                    : undefined
+                }
+                buyUrl={buyUrl}
+                onOpenSupport={openSupport}
+              />
+            )}
           </div>
         </div>
 
-        {/* Bottom pill navigation (decorative, like reference) */}
-        <div className="sticky bottom-0 flex justify-center pb-6 pt-2" style={{ background: "linear-gradient(transparent, var(--bg-container) 30%)" }}>
+        {/* ─── Bottom bar (2 items: home + profile) ─── */}
+        <div
+          className="sticky bottom-0 flex justify-center pb-6 pt-3"
+          style={{ background: "linear-gradient(transparent, var(--bg-container) 30%)" }}
+        >
           <div className="bottom-pill">
-            <div className="bottom-pill-item active">
+            <button
+              type="button"
+              className={`bottom-pill-item ${activeTab === "home" ? "active" : ""}`}
+              onClick={() => setActiveTab("home")}
+              aria-label="Главная"
+            >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 12.5L12 3.5L21 12.5H18V20.5H14V14.5H10V20.5H6V12.5H3Z"/>
+                <path d="M3 12.5L12 3.5L21 12.5H18V20.5H14V14.5H10V20.5H6V12.5H3Z" />
               </svg>
-            </div>
-            <div className="bottom-pill-item">
+            </button>
+            <button
+              type="button"
+              className={`bottom-pill-item ${activeTab === "profile" ? "active" : ""}`}
+              onClick={() => setActiveTab("profile")}
+              aria-label="Профиль"
+            >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 3H10V10H3V3ZM14 3H21V10H14V3ZM14 14H21V21H14V14ZM3 14H10V21H3V14Z" opacity="0.85"/>
+                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" />
               </svg>
-            </div>
-            <div className="bottom-pill-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
-              </svg>
-            </div>
+            </button>
           </div>
         </div>
       </div>

@@ -35,23 +35,7 @@ export default function SubscriptionCard({
   onOpenSupport,
   onOpenAddDevice,
 }: SubscriptionCardProps) {
-  const [showProfile, setShowProfile] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-
-  const displayKey =
-    tariff === "plus" && vpnKeyPlus ? (vpnKeyPlus ?? vpnKey) : vpnKey;
-  const maskedKey = displayKey
-    ? `${displayKey.slice(0, 20)}...${displayKey.slice(-8)}`
-    : "—";
-
-  const copyKey = () => {
-    if (!displayKey) return;
-    navigator.clipboard.writeText(displayKey).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   const handleConnect = () => {
     if (typeof window === "undefined") return;
@@ -67,7 +51,6 @@ export default function SubscriptionCard({
 
   return (
     <>
-      {/* ─── Main subscription card (dark, like reference active card) ─── */}
       <div
         className="rounded-[var(--radius-card)] p-5"
         style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}
@@ -146,95 +129,21 @@ export default function SubscriptionCard({
         <button
           type="button"
           onClick={onOpenAddDevice}
-          className="mb-4 w-full rounded-[14px] py-3.5 text-center text-[15px] font-medium"
+          className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-medium"
           style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
         >
           Добавить устройство
         </button>
 
-        {/* Quick actions row */}
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => setShowProfile(true)}
-            className="flex-1 rounded-[14px] py-3 text-center text-[14px] font-medium"
-            style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}
-          >
-            Профиль
-          </button>
-          <button
-            type="button"
-            onClick={onOpenSupport}
-            className="flex-1 rounded-[14px] py-3 text-center text-[14px] font-medium"
-            style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}
-          >
-            Поддержка
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onOpenSupport}
+          className="w-full rounded-[14px] py-3.5 text-center text-[14px] font-medium"
+          style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}
+        >
+          Поддержка
+        </button>
       </div>
-
-      {/* ─── Profile modal ─── */}
-      {showProfile && (
-        <>
-          <div
-            className="overlay-backdrop fixed inset-0 z-40 page-fade"
-            onClick={() => setShowProfile(false)}
-            aria-hidden
-          />
-          <div
-            className="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-card)] p-6 page-enter"
-            style={{ background: "var(--bg-container)" }}
-          >
-            <h3 className="mb-5 text-xl font-bold text-[var(--text-primary)]">
-              Профиль
-            </h3>
-            <dl className="space-y-3.5 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-[var(--text-secondary)]">Тариф</dt>
-                <dd className="font-semibold text-[var(--text-primary)]">
-                  {tariff === "plus" ? "Plus" : "Basic"}
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-[var(--text-secondary)]">Активна до</dt>
-                <dd className="font-semibold text-[var(--text-primary)]">
-                  {expiresFormatted ?? "—"}
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-[var(--text-secondary)]">Осталось дней</dt>
-                <dd className="font-semibold text-[var(--text-primary)]">
-                  {daysLeft ?? 0}
-                </dd>
-              </div>
-              <div className="flex flex-col gap-2">
-                <dt className="text-[var(--text-secondary)]">Ключ</dt>
-                <dd
-                  className="break-all rounded-[14px] p-3 font-mono text-xs"
-                  style={{ background: "var(--bg-card)", color: "var(--text-secondary)" }}
-                >
-                  {maskedKey}
-                </dd>
-                <button
-                  type="button"
-                  onClick={copyKey}
-                  className="text-left text-sm font-semibold"
-                  style={{ color: "var(--accent-blue)" }}
-                >
-                  {copied ? "Скопировано ✓" : "Скопировать ключ"}
-                </button>
-              </div>
-            </dl>
-            <button
-              type="button"
-              onClick={() => setShowProfile(false)}
-              className="glass-button mt-5"
-            >
-              Закрыть
-            </button>
-          </div>
-        </>
-      )}
 
       {showInstallPrompt && (
         <InstallPrompt onClose={() => setShowInstallPrompt(false)} />

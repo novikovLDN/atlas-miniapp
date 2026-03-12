@@ -147,6 +147,21 @@ export default function ProfileScreen({
           </button>
         )}
 
+        {/* Invite friend */}
+        <button
+          type="button"
+          onClick={() => {
+            const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || "atlassecure_bot";
+            const refLink = `https://t.me/${botUsername}?start=ref_${telegramId}`;
+            const shareText = "Попробуй Atlas VPN — быстрый и надёжный VPN!";
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`;
+            openTelegramLink(shareUrl);
+          }}
+          className="glass-button-secondary w-full"
+        >
+          Пригласить друга
+        </button>
+
         <button
           type="button"
           onClick={onOpenSupport}

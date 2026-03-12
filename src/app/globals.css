@@ -34,6 +34,7 @@
 * {
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
+  touch-action: manipulation;
 }
 
 html {
@@ -339,66 +340,113 @@ button, a {
   background: var(--bg-card-active);
   top: 6px;
   left: 6px;
-  transition:
-    transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-    border-radius 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
   pointer-events: none;
+  will-change: transform, width, border-radius;
 }
 
 /* Stretch blob while moving right */
 .bottom-pill-blob.to-right {
-  animation: blobRight 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: blobRight 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Stretch blob while moving left */
 .bottom-pill-blob.to-left {
-  animation: blobLeft 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: blobLeft 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* When idle (no animation), just snap to position */
+.bottom-pill-blob:not(.to-right):not(.to-left) {
+  transition: none;
 }
 
 @keyframes blobRight {
   0% {
     transform: translateX(0);
-    border-radius: 50%;
     width: 48px;
+    height: 48px;
+    border-radius: 50%;
   }
-  30% {
-    border-radius: 24px 35% 35% 24px;
-    width: 72px;
+  15% {
+    transform: translateX(0);
+    width: 60px;
+    height: 44px;
+    border-radius: 22px 40% 40% 22px;
   }
-  60% {
-    border-radius: 35% 24px 24px 35%;
-    width: 64px;
-    transform: translateX(28px);
+  35% {
+    transform: translateX(10px);
+    width: 80px;
+    height: 40px;
+    border-radius: 20px 44% 44% 20px;
+  }
+  55% {
+    transform: translateX(26px);
+    width: 70px;
+    height: 42px;
+    border-radius: 40% 22px 22px 40%;
+  }
+  75% {
+    transform: translateX(42px);
+    width: 56px;
+    height: 46px;
+    border-radius: 44% 24px 24px 44%;
+  }
+  90% {
+    transform: translateX(50px);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
   }
   100% {
     transform: translateX(52px);
-    border-radius: 50%;
     width: 48px;
+    height: 48px;
+    border-radius: 50%;
   }
 }
 
 @keyframes blobLeft {
   0% {
     transform: translateX(52px);
-    border-radius: 50%;
     width: 48px;
+    height: 48px;
+    border-radius: 50%;
   }
-  30% {
-    border-radius: 35% 24px 24px 35%;
-    width: 72px;
-    transform: translateX(32px);
+  15% {
+    transform: translateX(52px);
+    width: 60px;
+    height: 44px;
+    border-radius: 40% 22px 22px 40%;
   }
-  60% {
-    border-radius: 24px 35% 35% 24px;
-    width: 64px;
+  35% {
+    transform: translateX(30px);
+    width: 80px;
+    height: 40px;
+    border-radius: 44% 20px 20px 44%;
+  }
+  55% {
     transform: translateX(12px);
+    width: 70px;
+    height: 42px;
+    border-radius: 22px 40% 40% 22px;
+  }
+  75% {
+    transform: translateX(2px);
+    width: 56px;
+    height: 46px;
+    border-radius: 24px 44% 44% 24px;
+  }
+  90% {
+    transform: translateX(-1px);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
   }
   100% {
     transform: translateX(0);
-    border-radius: 50%;
     width: 48px;
+    height: 48px;
+    border-radius: 50%;
   }
 }
 

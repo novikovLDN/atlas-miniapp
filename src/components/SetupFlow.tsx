@@ -66,7 +66,6 @@ export default function SetupFlow({
     deviceTypeProp ?? "unknown"
   );
   const [step, setStep] = useState(1);
-  const [plusKeyChoice, setPlusKeyChoice] = useState<"de" | "plus">("de");
   const [copied, setCopied] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -83,10 +82,7 @@ export default function SetupFlow({
     else setDeviceType(detectDevice());
   }, [deviceTypeProp]);
 
-  const activeKey =
-    tariff === "plus" && plusKeyChoice === "plus"
-      ? (vpnKeyPlus ?? vpnKey)
-      : vpnKey;
+  const activeKey = vpnKey;
   const appInfo = APP_LINKS[deviceType];
   const isWindows = deviceType === "windows";
 
@@ -261,30 +257,6 @@ export default function SetupFlow({
                   <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
                     Добавьте подписку в приложение {appInfo.name} с помощью кнопки ниже
                   </p>
-                  {tariff === "plus" && (
-                    <div className="mt-4 flex w-full gap-2">
-                      {(["de", "plus"] as const).map((choice) => (
-                        <button
-                          key={choice}
-                          type="button"
-                          onClick={() => setPlusKeyChoice(choice)}
-                          className="flex-1 rounded-[14px] py-3 text-sm font-semibold transition-all"
-                          style={{
-                            background:
-                              plusKeyChoice === choice
-                                ? "var(--bg-card-active)"
-                                : "var(--bg-card)",
-                            color:
-                              plusKeyChoice === choice
-                                ? "var(--text-on-dark)"
-                                : "var(--text-primary)",
-                          }}
-                        >
-                          {choice === "de" ? "Atlas DE" : "White List"}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                   <button
                     type="button"
                     onClick={handleAddConfig}

@@ -4,7 +4,7 @@ export default function ShieldHero() {
   return (
     <div
       className="relative flex w-full flex-shrink-0 items-center justify-center"
-      style={{ height: "200px", overflow: "hidden" }}
+      style={{ height: "140px", overflow: "hidden" }}
       aria-hidden
     >
       {/* Soft glow behind shield */}
@@ -41,8 +41,8 @@ export default function ShieldHero() {
       {/* Shield icon */}
       <div
         style={{
-          width: "80px",
-          height: "96px",
+          width: "60px",
+          height: "72px",
           position: "relative",
           animation: "shieldFloat 4s ease-in-out infinite",
         }}

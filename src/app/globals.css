@@ -16,12 +16,7 @@
   --radius-card: 22px;
   --radius-button: 16px;
   --radius-pill: 999px;
-  /* Legacy aliases */
   --accent: var(--accent-blue);
-  --bg-primary: var(--bg-dark);
-  --glass-bg: var(--bg-container);
-  --glass-border: transparent;
-  --border-light: transparent;
 }
 
 @theme inline {
@@ -34,6 +29,7 @@
 * {
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
+  touch-action: manipulation;
 }
 
 html {
@@ -75,10 +71,6 @@ button, a {
   overflow: hidden;
 }
 
-.glass-card::before {
-  display: none;
-}
-
 /* ─── Primary button (dark) ─── */
 .glass-button {
   background: var(--bg-card-active);
@@ -87,7 +79,7 @@ button, a {
   color: var(--text-on-dark);
   font-weight: 600;
   font-size: 15px;
-  padding: 16px 24px;
+  padding: 14px 24px;
   width: 100%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -108,7 +100,7 @@ button, a {
   color: var(--text-primary);
   font-weight: 500;
   font-size: 15px;
-  padding: 14px 24px;
+  padding: 12px 24px;
   width: 100%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -128,7 +120,7 @@ button, a {
   color: #ffffff;
   font-weight: 600;
   font-size: 15px;
-  padding: 16px 24px;
+  padding: 14px 24px;
   width: 100%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -137,6 +129,12 @@ button, a {
 .btn-green:active {
   transform: scale(0.97);
   opacity: 0.85;
+}
+
+/* ─── Tab fade animation ─── */
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ─── Page & step animations ─── */
@@ -209,54 +207,6 @@ button, a {
   animation: checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* ─── Status badges ─── */
-.badge-active {
-  background: rgba(52, 199, 89, 0.12);
-  color: #2da44e;
-  border-radius: var(--radius-pill);
-  padding: 5px 12px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-}
-
-.badge-active::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent-green);
-}
-
-.badge-inactive {
-  background: rgba(255, 59, 48, 0.1);
-  color: var(--accent-red);
-  border-radius: var(--radius-pill);
-  padding: 5px 12px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-}
-
-.badge-inactive::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent-red);
-}
-
 /* ─── Device cards (reference style) ─── */
 .device-card {
   background: var(--bg-card);
@@ -321,24 +271,99 @@ button, a {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  position: relative;
+}
+
+/* Liquid blob indicator — only uses transform for GPU acceleration */
+.bottom-pill-blob {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-card-active);
+  top: 6px;
+  left: 6px;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* ── Move right: home → profile ── */
+.bottom-pill-blob.to-right {
+  animation: dropRight 0.38s linear forwards;
+}
+
+/* ── Move left: profile → home ── */
+.bottom-pill-blob.to-left {
+  animation: dropLeft 0.38s linear forwards;
+}
+
+@keyframes dropRight {
+  0%   { transform: translateX(0)    scaleX(1)    scaleY(1);    }
+  5%   { transform: translateX(1px)  scaleX(1.06) scaleY(0.96); }
+  10%  { transform: translateX(2px)  scaleX(1.14) scaleY(0.91); }
+  15%  { transform: translateX(4px)  scaleX(1.24) scaleY(0.86); }
+  20%  { transform: translateX(7px)  scaleX(1.35) scaleY(0.82); }
+  25%  { transform: translateX(11px) scaleX(1.42) scaleY(0.80); }
+  30%  { transform: translateX(16px) scaleX(1.44) scaleY(0.79); }
+  35%  { transform: translateX(21px) scaleX(1.42) scaleY(0.80); }
+  40%  { transform: translateX(26px) scaleX(1.38) scaleY(0.82); }
+  45%  { transform: translateX(31px) scaleX(1.32) scaleY(0.84); }
+  50%  { transform: translateX(35px) scaleX(1.24) scaleY(0.87); }
+  55%  { transform: translateX(39px) scaleX(1.17) scaleY(0.90); }
+  60%  { transform: translateX(42px) scaleX(1.11) scaleY(0.93); }
+  65%  { transform: translateX(45px) scaleX(1.06) scaleY(0.96); }
+  70%  { transform: translateX(48px) scaleX(1.02) scaleY(0.98); }
+  75%  { transform: translateX(50px) scaleX(0.98) scaleY(1.01); }
+  80%  { transform: translateX(52px) scaleX(0.96) scaleY(1.03); }
+  85%  { transform: translateX(53px) scaleX(0.97) scaleY(1.02); }
+  90%  { transform: translateX(52.5px) scaleX(0.99) scaleY(1.01); }
+  95%  { transform: translateX(52px) scaleX(1.0) scaleY(1.0);  }
+  100% { transform: translateX(52px) scaleX(1)    scaleY(1);    }
+}
+
+@keyframes dropLeft {
+  0%   { transform: translateX(52px)   scaleX(1)    scaleY(1);    }
+  5%   { transform: translateX(51px)   scaleX(1.06) scaleY(0.96); }
+  10%  { transform: translateX(50px)   scaleX(1.14) scaleY(0.91); }
+  15%  { transform: translateX(48px)   scaleX(1.24) scaleY(0.86); }
+  20%  { transform: translateX(45px)   scaleX(1.35) scaleY(0.82); }
+  25%  { transform: translateX(41px)   scaleX(1.42) scaleY(0.80); }
+  30%  { transform: translateX(36px)   scaleX(1.44) scaleY(0.79); }
+  35%  { transform: translateX(31px)   scaleX(1.42) scaleY(0.80); }
+  40%  { transform: translateX(26px)   scaleX(1.38) scaleY(0.82); }
+  45%  { transform: translateX(21px)   scaleX(1.32) scaleY(0.84); }
+  50%  { transform: translateX(17px)   scaleX(1.24) scaleY(0.87); }
+  55%  { transform: translateX(13px)   scaleX(1.17) scaleY(0.90); }
+  60%  { transform: translateX(10px)   scaleX(1.11) scaleY(0.93); }
+  65%  { transform: translateX(7px)    scaleX(1.06) scaleY(0.96); }
+  70%  { transform: translateX(4px)    scaleX(1.02) scaleY(0.98); }
+  75%  { transform: translateX(2px)    scaleX(0.98) scaleY(1.01); }
+  80%  { transform: translateX(0)      scaleX(0.96) scaleY(1.03); }
+  85%  { transform: translateX(-1px)   scaleX(0.97) scaleY(1.02); }
+  90%  { transform: translateX(-0.5px) scaleX(0.99) scaleY(1.01); }
+  95%  { transform: translateX(0)      scaleX(1.0)  scaleY(1.0);  }
+  100% { transform: translateX(0)      scaleX(1)    scaleY(1);    }
 }
 
 .bottom-pill-item {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
   background: transparent;
   border: none;
   cursor: pointer;
   color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
 }
 
 .bottom-pill-item.active {
-  background: var(--bg-card-active);
   color: var(--text-on-dark);
 }
 
@@ -348,8 +373,3 @@ button, a {
   height: 0;
 }
 
-/* ─── Legacy confetti ─── */
-.confetti-wrap {
-  position: relative;
-  overflow: hidden;
-}

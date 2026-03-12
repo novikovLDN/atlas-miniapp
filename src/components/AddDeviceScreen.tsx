@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { openTelegramLink } from "@/lib/openTelegramLink";
 
 type AddDeviceScreenProps = {
-  telegramId: number;
   subUrl?: string;
   hasActiveSubscription: boolean;
   buySubscriptionUrl: string;
@@ -61,14 +61,13 @@ export default function AddDeviceScreen({
             <p className="mt-3 text-sm text-[var(--text-secondary)]">
               Для подключения устройства необходима активная подписка.
             </p>
-            <a
-              href={buySubscriptionUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-green mt-6 w-full text-center no-underline"
+            <button
+              type="button"
+              onClick={() => openTelegramLink(buySubscriptionUrl)}
+              className="btn-green mt-6 w-full"
             >
               Купить подписку
-            </a>
+            </button>
             <button
               type="button"
               onClick={onBack}
@@ -124,15 +123,14 @@ export default function AddDeviceScreen({
             {subscriptionUrl || "Ссылка появится после активации подписки"}
           </button>
 
-          <div className="mt-8 w-full space-y-2">
+          <div className="mt-6 w-full space-y-2">
             <button type="button" onClick={onBack} className="glass-button-secondary w-full">
               ← Назад
             </button>
             <button
               type="button"
               onClick={onOpenSupport}
-              className="mt-1 w-full border-0 bg-transparent text-sm font-semibold"
-              style={{ color: "var(--accent-blue)" }}
+              className="glass-button-secondary w-full text-center"
             >
               Поддержка
             </button>

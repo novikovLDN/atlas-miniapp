@@ -8,7 +8,9 @@ import SetupFlow from "@/components/SetupFlow";
 import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
 import AddDeviceScreen from "@/components/AddDeviceScreen";
+import ProfileScreen from "@/components/ProfileScreen";
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
+import { openTelegramLink } from "@/lib/openTelegramLink";
 import DeviceSelector from "@/components/DeviceSelector";
 
 type SubscriptionResponse =
@@ -19,11 +21,11 @@ type SubscriptionResponse =
       expires_at: string;
       expires_formatted: string;
       days_left: number;
-      vpn_key: string;
-      vpn_key_plus: string | null;
       sub_url?: string;
     }
   | { is_active: false; name: string };
+
+type Tab = "home" | "profile";
 
 export default function HomeClient() {
   const [data, setData] = useState<SubscriptionResponse | null>(null);
@@ -40,6 +42,15 @@ export default function HomeClient() {
     | "add_device";
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
+  const [activeTab, setActiveTab] = useState<Tab>("home");
+  const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
+
+  const switchTab = (tab: Tab) => {
+    if (tab === activeTab) return;
+    setBlobAnim(tab === "profile" ? "to-right" : "to-left");
+    setActiveTab(tab);
+    setTimeout(() => setBlobAnim(""), 400);
+  };
 
   useEffect(() => {
     setDeviceType(detectDevice());
@@ -61,9 +72,7 @@ export default function HomeClient() {
 
     setTelegramId(userId);
 
-    const base =
-      typeof window !== "undefined" ? window.location.origin : "";
-    fetch(`${base}/api/subscription?telegram_id=${userId}`, {
+    fetch(`/api/subscription?telegram_id=${userId}`, {
       headers: { "x-telegram-init-data": initData },
     })
       .then((res) => {
@@ -85,22 +94,9 @@ export default function HomeClient() {
   }, []);
 
   const buyUrl =
-    process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/your_bot";
+    process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/atlassecure_bot?start=buy";
 
-  const openSupport = () => {
-    if (typeof window === "undefined") return;
-    const w = window as unknown as {
-      Telegram?: {
-        WebApp?: { openTelegramLink?: (u: string) => void };
-      };
-    };
-    const tg = w.Telegram?.WebApp;
-    if (tg && typeof tg.openTelegramLink === "function") {
-      tg.openTelegramLink("https://t.me/asc_support");
-    } else {
-      window.open("https://t.me/asc_support", "_blank");
-    }
-  };
+  const openSupport = () => openTelegramLink("https://t.me/asc_support");
 
   /* ─── Loading ─── */
   if (loading) {
@@ -143,7 +139,6 @@ export default function HomeClient() {
     const hasActive = data?.is_active ?? false;
     return (
       <AddDeviceScreen
-        telegramId={telegramId}
         hasActiveSubscription={hasActive}
         subUrl={
           hasActive ? (data as { sub_url?: string }).sub_url : undefined
@@ -180,8 +175,6 @@ export default function HomeClient() {
       <SetupFlow
         telegramId={telegramId}
         onClose={() => setView("main")}
-        vpnKey={data?.is_active ? data.vpn_key : ""}
-        vpnKeyPlus={data?.is_active ? (data.vpn_key_plus ?? null) : null}
         tariff={data?.is_active ? data.tariff : "basic"}
         subUrl={
           data?.is_active
@@ -199,64 +192,117 @@ export default function HomeClient() {
     );
   }
 
-  /* ─── Main view ─── */
+  /* ─── Main view (with tabs) ─── */
   const name = data?.name ?? "Пользователь";
   const isActive = data?.is_active ?? false;
 
   return (
-    <main style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
-      <div className="app-container page-enter" style={{ minHeight: "100vh" }}>
-        <ShieldHero />
+    <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
+      <div
+        className="app-container"
+        style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}
+      >
+        {/* ─── Tab content (scrollable area) ─── */}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          {/* Home tab */}
+          <div
+            style={{
+              display: activeTab === "home" ? "block" : "none",
+              animation: activeTab === "home" ? "tabFadeIn 0.3s ease forwards" : "none",
+            }}
+          >
+            <ShieldHero />
+            <div className="px-5 pb-4">
+              {telegramId !== null && (
+                <SubscriptionCard
+                  name={name}
+                  isActive={isActive}
+                  tariff={data?.is_active ? data.tariff : undefined}
+                  expiresFormatted={
+                    data?.is_active ? data.expires_formatted : undefined
+                  }
+                  daysLeft={data?.is_active ? data.days_left : undefined}
+                  buySubscriptionUrl={buyUrl}
+                  subUrl={
+                    data?.is_active
+                      ? (data as { sub_url?: string }).sub_url
+                      : undefined
+                  }
+                  onOpenSetup={() => setView("setup")}
+                  onOpenSupport={openSupport}
+                  onOpenAddDevice={() => setView("add_device")}
+                />
+              )}
 
-        <div className="px-5 pb-8">
-          {telegramId !== null && (
-            <SubscriptionCard
-              telegramId={telegramId}
-              name={name}
-              isActive={isActive}
-              tariff={data?.is_active ? data.tariff : undefined}
-              expiresFormatted={
-                data?.is_active ? data.expires_formatted : undefined
-              }
-              daysLeft={data?.is_active ? data.days_left : undefined}
-              buySubscriptionUrl={buyUrl}
-              vpnKey={data?.is_active ? data.vpn_key : undefined}
-              vpnKeyPlus={data?.is_active ? data.vpn_key_plus : undefined}
-              subUrl={
-                data?.is_active
-                  ? (data as { sub_url?: string }).sub_url
-                  : undefined
-              }
-              onOpenSetup={() => setView("setup")}
-              onOpenSupport={openSupport}
-              onOpenAddDevice={() => setView("add_device")}
-            />
-          )}
+              <div className="mt-4 space-y-3">
+                <DownloadSection deviceType={deviceType} />
+                <SupportLinks />
+              </div>
+            </div>
+          </div>
 
-          <div className="mt-5 space-y-4">
-            <DownloadSection deviceType={deviceType} />
-            <SupportLinks />
+          {/* Profile tab */}
+          <div
+            style={{
+              display: activeTab === "profile" ? "block" : "none",
+              animation: activeTab === "profile" ? "tabFadeIn 0.3s ease forwards" : "none",
+            }}
+          >
+            {telegramId !== null && (
+              <ProfileScreen
+                name={name}
+                telegramId={telegramId}
+                isActive={isActive}
+                tariff={data?.is_active ? data.tariff : undefined}
+                expiresFormatted={
+                  data?.is_active ? data.expires_formatted : undefined
+                }
+                daysLeft={data?.is_active ? data.days_left : undefined}
+                subUrl={
+                  data?.is_active
+                    ? (data as { sub_url?: string }).sub_url
+                    : undefined
+                }
+                buyUrl={buyUrl}
+                onOpenSupport={openSupport}
+              />
+            )}
           </div>
         </div>
 
-        {/* Bottom pill navigation (decorative, like reference) */}
-        <div className="sticky bottom-0 flex justify-center pb-6 pt-2" style={{ background: "linear-gradient(transparent, var(--bg-container) 30%)" }}>
+        {/* ─── Bottom bar (fixed at bottom, no scroll needed) ─── */}
+        <div
+          className="flex-shrink-0 flex justify-center pb-4 pt-2"
+          style={{ background: "var(--bg-container)" }}
+        >
           <div className="bottom-pill">
-            <div className="bottom-pill-item active">
+            {/* Liquid blob indicator */}
+            <div
+              className={`bottom-pill-blob ${blobAnim}`}
+              style={{
+                transform: activeTab === "profile" ? "translateX(52px)" : "translateX(0)",
+              }}
+            />
+            <button
+              type="button"
+              className={`bottom-pill-item ${activeTab === "home" ? "active" : ""}`}
+              onClick={() => switchTab("home")}
+              aria-label="Главная"
+            >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 12.5L12 3.5L21 12.5H18V20.5H14V14.5H10V20.5H6V12.5H3Z"/>
+                <path d="M3 12.5L12 3.5L21 12.5H18V20.5H14V14.5H10V20.5H6V12.5H3Z" />
               </svg>
-            </div>
-            <div className="bottom-pill-item">
+            </button>
+            <button
+              type="button"
+              className={`bottom-pill-item ${activeTab === "profile" ? "active" : ""}`}
+              onClick={() => switchTab("profile")}
+              aria-label="Профиль"
+            >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 3H10V10H3V3ZM14 3H21V10H14V3ZM14 14H21V21H14V14ZM3 14H10V21H3V14Z" opacity="0.85"/>
+                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" />
               </svg>
-            </div>
-            <div className="bottom-pill-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
-              </svg>
-            </div>
+            </button>
           </div>
         </div>
       </div>

@@ -1,25 +1,11 @@
 "use client";
 
+import { openTelegramLink } from "@/lib/openTelegramLink";
+
 const LINKS = [
   { label: "Поддержка", url: "https://t.me/asc_support" },
   { label: "Канал", url: "https://t.me/atlas_secure" },
 ] as const;
-
-function openTelegramLink(url: string) {
-  if (typeof window === "undefined") return;
-  const tg = (
-    window as unknown as {
-      Telegram?: {
-        WebApp?: { openTelegramLink?: (u: string) => void };
-      };
-    }
-  ).Telegram?.WebApp;
-  if (tg?.openTelegramLink) {
-    tg.openTelegramLink(url);
-  } else {
-    window.open(url, "_blank");
-  }
-}
 
 export default function SupportLinks() {
   return (

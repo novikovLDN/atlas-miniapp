@@ -42,8 +42,6 @@ const STEP1_ICON: Record<DeviceType, string> = {
 type SetupFlowProps = {
   telegramId: number;
   onClose: () => void;
-  vpnKey: string;
-  vpnKeyPlus: string | null;
   tariff: "basic" | "plus";
   subUrl?: string;
   deviceType?: DeviceType;
@@ -54,8 +52,6 @@ type SetupFlowProps = {
 export default function SetupFlow({
   telegramId,
   onClose,
-  vpnKey,
-  vpnKeyPlus,
   tariff,
   subUrl,
   deviceType: deviceTypeProp,
@@ -66,7 +62,6 @@ export default function SetupFlow({
     deviceTypeProp ?? "unknown"
   );
   const [step, setStep] = useState(1);
-  const [plusKeyChoice, setPlusKeyChoice] = useState<"de" | "plus">("de");
   const [copied, setCopied] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -83,19 +78,8 @@ export default function SetupFlow({
     else setDeviceType(detectDevice());
   }, [deviceTypeProp]);
 
-  const activeKey =
-    tariff === "plus" && plusKeyChoice === "plus"
-      ? (vpnKeyPlus ?? vpnKey)
-      : vpnKey;
   const appInfo = APP_LINKS[deviceType];
   const isWindows = deviceType === "windows";
-
-  const copyKey = () => {
-    navigator.clipboard.writeText(activeKey).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   const copySubUrl = () => {
     if (!subUrl) return;
@@ -261,41 +245,18 @@ export default function SetupFlow({
                   <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
                     Добавьте подписку в приложение {appInfo.name} с помощью кнопки ниже
                   </p>
-                  {tariff === "plus" && (
-                    <div className="mt-4 flex w-full gap-2">
-                      {(["de", "plus"] as const).map((choice) => (
-                        <button
-                          key={choice}
-                          type="button"
-                          onClick={() => setPlusKeyChoice(choice)}
-                          className="flex-1 rounded-[14px] py-3 text-sm font-semibold transition-all"
-                          style={{
-                            background:
-                              plusKeyChoice === choice
-                                ? "var(--bg-card-active)"
-                                : "var(--bg-card)",
-                            color:
-                              plusKeyChoice === choice
-                                ? "var(--text-on-dark)"
-                                : "var(--text-primary)",
-                          }}
-                        >
-                          {choice === "de" ? "Atlas DE" : "White List"}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                   <button
                     type="button"
                     onClick={handleAddConfig}
-                    disabled={!subUrl && !activeKey}
+                    disabled={!subUrl}
                     className="glass-button mt-6 w-full disabled:opacity-50"
                   >
                     Добавить конфиг
                   </button>
                   <button
                     type="button"
-                    onClick={copyKey}
+                    onClick={copySubUrl}
+                    disabled={!subUrl}
                     className="mt-2 text-sm font-semibold"
                     style={{ color: "var(--accent-blue)", background: "transparent", border: "none" }}
                   >
@@ -313,28 +274,31 @@ export default function SetupFlow({
             </div>
           )}
 
+          {/* Fullscreen confetti (outside step container) */}
+          {step === 4 && showConfetti && (
+            <div className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none" style={{ top: 0, left: 0, width: "100vw", height: "100vh" }} aria-hidden>
+              {confettiPieces.map((p) => (
+                <div
+                  key={p.id}
+                  className="absolute -top-5"
+                  style={{
+                    left: `${p.x}%`,
+                    width: p.shape === "rect-wide" ? `${p.size * 2}px` : `${p.size}px`,
+                    height: `${p.size}px`,
+                    borderRadius: p.shape === "circle" ? "50%" : "2px",
+                    background: p.color,
+                    opacity: 0.9,
+                    animation: `confettiFall ${p.duration}s ${p.delay}s ease-in forwards`,
+                    transform: `rotate(${p.rotation}deg)`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
           {/* Step 4 */}
           {step === 4 && (
             <div className="step-enter flex w-full flex-col items-center">
-              {showConfetti && (
-                <div className="fixed inset-0 z-[999] overflow-hidden pointer-events-none" aria-hidden>
-                  {confettiPieces.map((p) => (
-                    <div
-                      key={p.id}
-                      className="absolute -top-5 opacity-90"
-                      style={{
-                        left: `${p.x}%`,
-                        width: p.shape === "rect-wide" ? `${p.size * 2}px` : `${p.size}px`,
-                        height: `${p.size}px`,
-                        borderRadius: p.shape === "circle" ? "50%" : "2px",
-                        background: p.color,
-                        animation: `confettiFall ${p.duration}s ${p.delay}s ease-in forwards`,
-                        transform: `rotate(${p.rotation}deg)`,
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
               <div
                 className="success-check-circle flex items-center justify-center"
                 style={{

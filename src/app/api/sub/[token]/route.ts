@@ -1,67 +1,63 @@
 import { NextRequest } from "next/server";
 import crypto from "crypto";
-import { Pool } from "pg";
+import { pool } from "@/lib/db";
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET",
-  "Content-Type": "text/plain; charset=utf-8",
+type ServerConfig = {
+  ip: string;
+  port: number;
+  sni: string;
+  fp: string;
+  pbk: string;
+  sid: string;
+  flow: boolean;
+  type: "tcp" | "xhttp";
+  name: string;
+  path?: string;
 };
+
+const BASIC_CONFIGS: ServerConfig[] = [
+  { ip: "159.195.20.201", port: 4443, sni: "myvpncloud.net", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇳🇱 Atlas Fast #1" },
+  { ip: "62.84.123.132",  port: 443,  sni: "ads.x5.ru",      fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇷🇺 White List #1 ⚡️" },
+  { ip: "62.84.123.132",  port: 8443, sni: "yandex.ru",      fp: "chrome", type: "tcp", flow: true, sid: "b2c3d4e5", pbk: "WHlvowEffIH0xWQC7hTbYAn1PqcLCHSHGkkW2fWI2Rk", name: "🇷🇺 White List #2 ⚡️" },
+];
+
+const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];
 
 function buildKeys(vpnKey: string, subscriptionType: string): string {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return vpnKey;
 
   const uuid = match[1];
-  const ip = match[2];
-
-  // Basic configs — у ВСЕХ юзеров (basic и plus)
-  const basicConfigs = [
-    { port: 4443, sni: "myvpncloud.net", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇳🇱 Atlas Fast #1", ip: "159.195.20.201" },
-    { port: 443,  sni: "ads.x5.ru",      fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "🇷🇺 White List #1 ⚡️", ip: "62.84.123.132" },
-    { port: 8443, sni: "yandex.ru",      fp: "chrome", type: "tcp", flow: true, sid: "b2c3d4e5", pbk: "WHlvowEffIH0xWQC7hTbYAn1PqcLCHSHGkkW2fWI2Rk", name: "🇷🇺 White List #2 ⚡️", ip: "62.84.123.132" },
-  ];
-
-  // Plus-extra configs — ТОЛЬКО для plus юзеров (в дополнение к basic)
-  const plusExtraConfigs: Array<(typeof basicConfigs)[number]> = [];
-
   const configs = subscriptionType === "plus"
-    ? [...basicConfigs, ...plusExtraConfigs]
-    : basicConfigs;
+    ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
+    : BASIC_CONFIGS;
 
   return configs
     .map((c) => {
-      const serverIp = (c as any).ip || ip;
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      if (c.type === "xhttp") {
-        params += `&type=xhttp&path=${encodeURIComponent((c as { path?: string }).path || "/xhttp")}`;
-      } else {
-        params += "&type=tcp";
-      }
-      return `vless://${uuid}@${serverIp}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
+      params += c.type === "xhttp"
+        ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
+        : "&type=tcp";
+      return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");
 }
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
+  { params }: { params: Promise<{ token: string }> },
 ) {
   const { token } = await params;
-  const telegramIdParam = request.nextUrl.searchParams.get("id");
-  const telegramId = telegramIdParam ? parseInt(telegramIdParam, 10) : null;
+  const telegramId = parseInt(request.nextUrl.searchParams.get("id") ?? "", 10);
 
-  console.log("SUB token:", token, "id:", telegramIdParam);
-
-  if (!token || !telegramIdParam || !telegramId || !Number.isInteger(telegramId)) {
-    return new Response("Unauthorized", { status: 401, headers: CORS_HEADERS });
+  if (!token || !telegramId || !Number.isInteger(telegramId)) {
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const botToken = process.env.BOT_TOKEN?.trim();
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!botToken || !databaseUrl) {
-    return new Response("Server error", { status: 500, headers: CORS_HEADERS });
+  if (!botToken || !process.env.DATABASE_URL) {
+    return new Response("Server error", { status: 500 });
   }
 
   const expected = crypto
@@ -71,58 +67,44 @@ export async function GET(
     .substring(0, 32);
 
   if (token !== expected) {
-    return new Response("Unauthorized", { status: 401, headers: CORS_HEADERS });
+    return new Response("Unauthorized", { status: 401 });
   }
 
-  const pool = new Pool({ connectionString: databaseUrl });
-
   try {
-    const result = await pool.query(
-      `SELECT expires_at, subscription_type, vpn_key, vpn_key_plus
+    const { rows } = await pool.query(
+      `SELECT expires_at, subscription_type, vpn_key
        FROM subscriptions
        WHERE telegram_id = $1 AND expires_at > NOW()
        ORDER BY expires_at DESC LIMIT 1`,
-      [telegramId]
+      [telegramId],
     );
 
-    const row = result.rows[0] ?? null;
-    console.log("Keys found:", !!row);
-
-    if (!row) {
-      return new Response("Not found", { status: 404, headers: CORS_HEADERS });
+    if (!rows.length) {
+      return new Response("Not found", { status: 404 });
     }
 
-    const key1 = (row.vpn_key ?? "").trim();
-    const keys = buildKeys(key1, row.subscription_type ?? "basic");
-
-    console.log("Returning keys:", keys?.substring(0, 50));
+    const row = rows[0];
+    const keys = buildKeys((row.vpn_key ?? "").trim(), row.subscription_type ?? "basic");
 
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
-    const expireTimestamp = Math.floor(expiresAt.getTime() / 1000);
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
-    const profileWebPageUrl = appUrl ? `${appUrl}/api/sub/${token}?id=${telegramId}` : "";
 
-    const responseHeaders: Record<string, string> = {
+    const headers: Record<string, string> = {
       "Content-Type": "text/plain; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
-      "subscription-userinfo": `upload=0; download=0; total=0; expire=${expireTimestamp}`,
+      "subscription-userinfo": `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`,
       "profile-update-interval": "12",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };
-    if (profileWebPageUrl) {
-      responseHeaders["profile-web-page-url"] = profileWebPageUrl;
+    if (appUrl) {
+      headers["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;
     }
 
-    return new Response(keys, {
-      status: 200,
-      headers: responseHeaders,
-    });
+    return new Response(keys, { status: 200, headers });
   } catch (err) {
     console.error("sub API error:", err);
-    return new Response("Server error", { status: 500, headers: CORS_HEADERS });
-  } finally {
-    await pool.end();
+    return new Response("Server error", { status: 500 });
   }
 }

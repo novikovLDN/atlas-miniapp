@@ -9,6 +9,7 @@ import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
 import AddDeviceScreen from "@/components/AddDeviceScreen";
 import ProfileScreen from "@/components/ProfileScreen";
+import SpeedTestScreen from "@/components/SpeedTestScreen";
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import { openTelegramLink } from "@/lib/openTelegramLink";
 import DeviceSelector from "@/components/DeviceSelector";
@@ -25,7 +26,10 @@ type SubscriptionResponse =
     }
   | { is_active: false; name: string };
 
-type Tab = "home" | "profile";
+type Tab = "home" | "speed" | "profile";
+
+const TAB_INDEX: Record<Tab, number> = { home: 0, speed: 1, profile: 2 };
+const BLOB_STEP = 52; // 48px item + 4px gap
 
 export default function HomeClient() {
   const [data, setData] = useState<SubscriptionResponse | null>(null);
@@ -47,7 +51,8 @@ export default function HomeClient() {
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
-    setBlobAnim(tab === "profile" ? "to-right" : "to-left");
+    const dir = TAB_INDEX[tab] > TAB_INDEX[activeTab] ? "to-right" : "to-left";
+    setBlobAnim(dir);
     setActiveTab(tab);
     setTimeout(() => setBlobAnim(""), 400);
   };
@@ -195,6 +200,7 @@ export default function HomeClient() {
   /* ─── Main view (with tabs) ─── */
   const name = data?.name ?? "Пользователь";
   const isActive = data?.is_active ?? false;
+  const blobX = TAB_INDEX[activeTab] * BLOB_STEP;
 
   return (
     <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
@@ -241,6 +247,16 @@ export default function HomeClient() {
             </div>
           </div>
 
+          {/* Speed test tab */}
+          <div
+            style={{
+              display: activeTab === "speed" ? "block" : "none",
+              animation: activeTab === "speed" ? "tabFadeIn 0.3s ease forwards" : "none",
+            }}
+          >
+            <SpeedTestScreen />
+          </div>
+
           {/* Profile tab */}
           <div
             style={{
@@ -270,7 +286,7 @@ export default function HomeClient() {
           </div>
         </div>
 
-        {/* ─── Bottom bar (fixed at bottom, no scroll needed) ─── */}
+        {/* ─── Bottom bar ─── */}
         <div
           className="flex-shrink-0 flex justify-center pb-4 pt-2"
           style={{ background: "var(--bg-container)" }}
@@ -279,9 +295,7 @@ export default function HomeClient() {
             {/* Liquid blob indicator */}
             <div
               className={`bottom-pill-blob ${blobAnim}`}
-              style={{
-                transform: activeTab === "profile" ? "translateX(52px)" : "translateX(0)",
-              }}
+              style={{ "--blob-target": `${blobX}px` } as React.CSSProperties}
             />
             <button
               type="button"
@@ -291,6 +305,16 @@ export default function HomeClient() {
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3 12.5L12 3.5L21 12.5H18V20.5H14V14.5H10V20.5H6V12.5H3Z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className={`bottom-pill-item ${activeTab === "speed" ? "active" : ""}`}
+              onClick={() => switchTab("speed")}
+              aria-label="Скорость"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-1-13h2v5.41l3.29 3.29-1.41 1.41L11 13.41V7z" />
               </svg>
             </button>
             <button

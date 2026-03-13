@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import InstallPrompt from "@/components/InstallPrompt";
 import { openDeepLink } from "@/lib/openDeepLink";
 import { detectDevice, APP_LINKS, type DeviceType } from "@/lib/detectDevice";
+import { useI18n } from "@/lib/i18n";
 
 const CONFETTI_COLORS = [
   "#1c1c1e", "#3478f6", "#34c759", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4",
@@ -22,14 +23,6 @@ const confettiPieces = Array.from({ length: 80 }, (_, i) => ({
     | "rect"
     | "rect-wide",
 }));
-
-const STEP1_TITLE: Record<DeviceType, string> = {
-  ios: "Настройка на iOS",
-  android: "Настройка на Android",
-  windows: "Настройка на Windows",
-  macos: "Настройка на macOS",
-  unknown: "Настройка",
-};
 
 const STEP1_ICON: Record<DeviceType, string> = {
   ios: "📱",
@@ -58,6 +51,7 @@ export default function SetupFlow({
   onSelectOtherDevice,
   onBackFromStep1,
 }: SetupFlowProps) {
+  const { t } = useI18n();
   const [deviceType, setDeviceType] = useState<DeviceType>(
     deviceTypeProp ?? "unknown"
   );
@@ -69,8 +63,8 @@ export default function SetupFlow({
   useEffect(() => {
     if (step !== 4) return;
     setShowConfetti(true);
-    const t = setTimeout(() => setShowConfetti(false), 3000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setShowConfetti(false), 3000);
+    return () => clearTimeout(timer);
   }, [step]);
 
   useEffect(() => {
@@ -80,6 +74,14 @@ export default function SetupFlow({
 
   const appInfo = APP_LINKS[deviceType];
   const isWindows = deviceType === "windows";
+
+  const step1TitleMap: Record<DeviceType, string> = {
+    ios: t.setupIOS,
+    android: t.setupAndroid,
+    windows: t.setupWindows,
+    macos: t.setupMacOS,
+    unknown: t.setupGeneric,
+  };
 
   const copySubUrl = () => {
     if (!subUrl) return;
@@ -104,7 +106,7 @@ export default function SetupFlow({
     setTimeout(() => setShowInstallPrompt(true), 3000);
   };
 
-  const step1Title = STEP1_TITLE[deviceType];
+  const step1Title = step1TitleMap[deviceType];
   const showBack = step >= 1 && step <= 4;
   const handleBack = () => {
     if (step === 1) {
@@ -152,21 +154,21 @@ export default function SetupFlow({
                 {step1Title}
               </h2>
               <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
-                Настройка VPN происходит в 3 шага и занимает пару минут
+                {t.setupDescription}
               </p>
               <button
                 type="button"
                 onClick={() => setStep(2)}
                 className="glass-button mt-8 w-full"
               >
-                Начать настройку на этом устройстве
+                {t.startSetupThisDevice}
               </button>
               <button
                 type="button"
                 onClick={onSelectOtherDevice ?? onClose}
                 className="glass-button-secondary mt-3 w-full"
               >
-                Установить на другом устройстве
+                {t.installOnOtherDevice}
               </button>
             </div>
           )}
@@ -175,13 +177,13 @@ export default function SetupFlow({
           {step === 2 && (
             <div className="step-enter flex w-full flex-col items-center">
               <div className={iconBox} style={{ background: "var(--bg-card)" }} aria-hidden>
-                ⬇️
+                {"⬇️"}
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
-                Приложение
+                {t.application}
               </h2>
               <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
-                Установите приложение {appInfo.name} и вернитесь к этому экрану
+                {t.installAppAndReturn(appInfo.name)}
               </p>
               <a
                 href={appInfo.url}
@@ -189,14 +191,14 @@ export default function SetupFlow({
                 rel="noopener noreferrer"
                 className="glass-button mt-8 block w-full text-center no-underline"
               >
-                {isWindows ? `Скачать ${appInfo.name}` : `Установить ${appInfo.name}`}
+                {isWindows ? t.downloadApp(appInfo.name) : t.installApp(appInfo.name)}
               </a>
               <button
                 type="button"
                 onClick={() => setStep(3)}
                 className="glass-button-secondary mt-3 w-full"
               >
-                Далее
+                {t.next}
               </button>
             </div>
           )}
@@ -205,24 +207,24 @@ export default function SetupFlow({
           {step === 3 && (
             <div className="step-enter flex w-full flex-col items-center">
               <div className={iconBox} style={{ background: "var(--bg-card)" }} aria-hidden>
-                ➕
+                {"➕"}
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
-                Подписка
+                {t.subscriptionStep}
               </h2>
 
               {isWindows ? (
                 <>
                   <p className="mt-2 max-w-[280px] text-left text-sm leading-relaxed text-[var(--text-secondary)]">
-                    <span className="block">1. Откройте v2RayN</span>
-                    <span className="block">2. Нажмите + → Add subscription</span>
-                    <span className="block">3. Вставьте ссылку ниже:</span>
+                    <span className="block">{t.openV2RayN}</span>
+                    <span className="block">{t.clickAddSubscription}</span>
+                    <span className="block">{t.pasteLinkBelow}</span>
                   </p>
                   <code
                     className="mt-4 block w-full break-all rounded-[14px] p-3 text-xs"
                     style={{ background: "var(--bg-card)", color: "var(--text-primary)" }}
                   >
-                    {subUrl || "—"}
+                    {subUrl || "\u2014"}
                   </code>
                   <button
                     type="button"
@@ -230,20 +232,20 @@ export default function SetupFlow({
                     disabled={!subUrl}
                     className="glass-button mt-6 w-full disabled:opacity-50"
                   >
-                    Скопировать ссылку
+                    {t.copyLink}
                   </button>
                   <button
                     type="button"
                     onClick={() => setStep(4)}
                     className="glass-button-secondary mt-3 w-full"
                   >
-                    Далее
+                    {t.next}
                   </button>
                 </>
               ) : (
                 <>
                   <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
-                    Добавьте подписку в приложение {appInfo.name} с помощью кнопки ниже
+                    {t.addSubscriptionViaButton(appInfo.name)}
                   </p>
                   <button
                     type="button"
@@ -251,7 +253,7 @@ export default function SetupFlow({
                     disabled={!subUrl}
                     className="glass-button mt-6 w-full disabled:opacity-50"
                   >
-                    Добавить конфиг
+                    {t.addConfig}
                   </button>
                   <button
                     type="button"
@@ -260,14 +262,14 @@ export default function SetupFlow({
                     className="mt-2 text-sm font-semibold"
                     style={{ color: "var(--accent-blue)", background: "transparent", border: "none" }}
                   >
-                    {copied ? "Скопировано ✓" : "Скопировать ключ"}
+                    {copied ? t.copied : t.copyKey}
                   </button>
                   <button
                     type="button"
                     onClick={() => setStep(4)}
                     className="glass-button-secondary mt-3 w-full"
                   >
-                    Далее
+                    {t.next}
                   </button>
                 </>
               )}
@@ -321,19 +323,19 @@ export default function SetupFlow({
                 </svg>
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
-                Готово!
+                {t.done}
               </h2>
               <p className="mt-2 max-w-[280px] text-center text-sm text-[var(--text-secondary)]">
                 {isWindows
-                  ? "Подключите подписку в v2RayN и включите VPN"
-                  : `Нажмите на круглую кнопку включения VPN в приложении ${appInfo.name}`}
+                  ? t.connectV2RayN
+                  : t.clickVpnButton(appInfo.name)}
               </p>
               <button
                 type="button"
                 onClick={onClose}
                 className="glass-button mt-8 w-full"
               >
-                Завершить настройку
+                {t.completeSetup}
               </button>
             </div>
           )}
@@ -345,9 +347,9 @@ export default function SetupFlow({
               onClick={handleBack}
               className="mt-6 border-0 bg-transparent p-2 px-4 text-sm font-medium"
               style={{ color: "var(--text-muted)" }}
-              aria-label="Назад"
+              aria-label={t.back}
             >
-              ← Назад
+              {t.backArrow}
             </button>
           )}
         </div>

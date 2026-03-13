@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { openTelegramLink } from "@/lib/openTelegramLink";
+import { useI18n, type Locale } from "@/lib/i18n";
 
 type ProfileScreenProps = {
   name: string;
@@ -26,6 +27,7 @@ export default function ProfileScreen({
   buyUrl,
   onOpenSupport,
 }: ProfileScreenProps) {
+  const { t, locale, setLocale } = useI18n();
   const [copied, setCopied] = useState(false);
 
   const handleCopySubUrl = async () => {
@@ -70,11 +72,11 @@ export default function ProfileScreen({
         style={{ background: "var(--bg-card)" }}
       >
         <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">
-          Подписка
+          {t.subscription}
         </h3>
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <dt className="text-[var(--text-secondary)]">Статус</dt>
+            <dt className="text-[var(--text-secondary)]">{t.status}</dt>
             <dd>
               <span
                 className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
@@ -87,33 +89,63 @@ export default function ProfileScreen({
                   className="inline-block h-[6px] w-[6px] rounded-full"
                   style={{ background: isActive ? "#34c759" : "#ff3b30" }}
                 />
-                {isActive ? "Активна" : "Неактивна"}
+                {isActive ? t.active : t.inactive}
               </span>
             </dd>
           </div>
           {isActive && (
             <>
               <div className="flex justify-between">
-                <dt className="text-[var(--text-secondary)]">Тариф</dt>
+                <dt className="text-[var(--text-secondary)]">{t.tariff}</dt>
                 <dd className="font-semibold text-[var(--text-primary)]">
                   {tariff === "plus" ? "Plus" : "Basic"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[var(--text-secondary)]">Активна до</dt>
+                <dt className="text-[var(--text-secondary)]">{t.activeUntil}</dt>
                 <dd className="font-semibold text-[var(--text-primary)]">
-                  {expiresFormatted ?? "—"}
+                  {expiresFormatted ?? "\u2014"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[var(--text-secondary)]">Осталось</dt>
+                <dt className="text-[var(--text-secondary)]">{t.remaining}</dt>
                 <dd className="font-semibold text-[var(--text-primary)]">
-                  {daysLeft ?? 0} дн.
+                  {daysLeft ?? 0} {t.days}
                 </dd>
               </div>
             </>
           )}
         </dl>
+      </div>
+
+      {/* Language selector */}
+      <div
+        className="mt-3 rounded-[var(--radius-card)] p-4"
+        style={{ background: "var(--bg-card)" }}
+      >
+        <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">
+          {t.language}
+        </h3>
+        <div className="flex gap-2">
+          {([
+            { key: "ru" as Locale, label: t.russian },
+            { key: "en" as Locale, label: t.english },
+          ]).map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setLocale(key)}
+              className="flex-1 rounded-[14px] py-2.5 text-center text-sm font-semibold transition-all"
+              style={{
+                background: locale === key ? "var(--bg-card-active)" : "rgba(0,0,0,0.04)",
+                color: locale === key ? "var(--text-on-dark)" : "var(--text-primary)",
+                border: "none",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Actions */}
@@ -123,7 +155,7 @@ export default function ProfileScreen({
           onClick={() => openTelegramLink(buyUrl)}
           className="glass-button w-full"
         >
-          {isActive ? "Продлить подписку" : "Купить подписку"}
+          {isActive ? t.renewSubscription : t.buySubscription}
         </button>
 
         {subUrl && (
@@ -132,7 +164,7 @@ export default function ProfileScreen({
             onClick={handleCopySubUrl}
             className="glass-button-secondary w-full"
           >
-            {copied ? "Скопировано ✓" : "Скопировать ключ"}
+            {copied ? t.copied : t.copyKey}
           </button>
         )}
 
@@ -142,13 +174,13 @@ export default function ProfileScreen({
           onClick={() => {
             const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || "atlassecure_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${telegramId}`;
-            const shareText = "Попробуй Atlas VPN — быстрый и надёжный VPN!";
+            const shareText = t.inviteShareText;
             const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`;
             openTelegramLink(shareUrl);
           }}
           className="glass-button-secondary w-full"
         >
-          Пригласить друга
+          {t.inviteFriend}
         </button>
 
         <button
@@ -157,7 +189,7 @@ export default function ProfileScreen({
           className="w-full rounded-[14px] py-3 text-center text-[14px] font-medium"
           style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "none" }}
         >
-          Поддержка
+          {t.support}
         </button>
       </div>
     </div>

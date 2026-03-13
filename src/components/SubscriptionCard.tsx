@@ -4,6 +4,7 @@ import { useState } from "react";
 import InstallPrompt from "@/components/InstallPrompt";
 import { openDeepLink } from "@/lib/openDeepLink";
 import { openTelegramLink } from "@/lib/openTelegramLink";
+import { useI18n } from "@/lib/i18n";
 
 type SubscriptionCardProps = {
   name: string;
@@ -30,6 +31,7 @@ export default function SubscriptionCard({
   onOpenSupport,
   onOpenAddDevice,
 }: SubscriptionCardProps) {
+  const { t } = useI18n();
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   const handleConnect = () => {
@@ -54,7 +56,7 @@ export default function SubscriptionCard({
         <div className="mb-1.5 flex items-center justify-between">
           <span className="text-base font-bold">{name}</span>
           <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
-            до {expiresFormatted ?? "—"}
+            {t.until} {expiresFormatted ?? "\u2014"}
           </span>
         </div>
 
@@ -71,15 +73,15 @@ export default function SubscriptionCard({
               className="inline-block h-[7px] w-[7px] rounded-full"
               style={{ background: isActive ? "#34c759" : "#ff3b30" }}
             />
-            {isActive ? "Активна" : "Неактивна"}
-            {isActive && tariff && ` · ${tariff === "plus" ? "Plus" : "Basic"}`}
+            {isActive ? t.active : t.inactive}
+            {isActive && tariff && ` \u00B7 ${tariff === "plus" ? "Plus" : "Basic"}`}
           </span>
           {isActive ? (
             <span className="font-semibold" style={{ color: "#4ade80" }}>
-              {daysLeft} дн.
+              {daysLeft} {t.days}
             </span>
           ) : (
-            <span style={{ color: "rgba(255,255,255,0.4)" }}>подписка истекла</span>
+            <span style={{ color: "rgba(255,255,255,0.4)" }}>{t.subscriptionExpired}</span>
           )}
         </div>
 
@@ -91,7 +93,7 @@ export default function SubscriptionCard({
             className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
             style={{ background: "#ffffff", color: "var(--bg-card-active)" }}
           >
-            Подключиться
+            {t.connect}
           </button>
         ) : (
           <button
@@ -99,7 +101,7 @@ export default function SubscriptionCard({
             onClick={() => openTelegramLink(buySubscriptionUrl)}
             className="btn-green mb-2 w-full"
           >
-            Купить подписку от 149 ₽
+            {t.buySubscriptionFrom}
           </button>
         )}
 
@@ -110,7 +112,7 @@ export default function SubscriptionCard({
           className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
           style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
         >
-          Установка и настройка
+          {t.installAndSetup}
         </button>
 
         <button
@@ -119,7 +121,7 @@ export default function SubscriptionCard({
           className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
           style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
         >
-          Добавить устройство
+          {t.addDevice}
         </button>
 
         <button
@@ -128,7 +130,7 @@ export default function SubscriptionCard({
           className="w-full rounded-[14px] py-3.5 text-center text-[14px] font-medium"
           style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}
         >
-          Поддержка
+          {t.support}
         </button>
       </div>
 

@@ -19,6 +19,17 @@
   --accent: var(--accent-blue);
 }
 
+html.dark {
+  --bg-dark: #000000;
+  --bg-container: #1c1c1e;
+  --bg-card: #2c2c2e;
+  --bg-card-active: #3a3a3c;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989f;
+  --text-muted: #636366;
+  --text-on-dark: #ffffff;
+}
+
 @theme inline {
   --color-bg-primary: var(--bg-dark);
   --color-accent: var(--accent);
@@ -108,8 +119,14 @@ button, a {
 }
 
 .glass-button-secondary:active {
-  background: #e8e8ed;
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
   transform: scale(0.98);
+}
+
+html:not(.dark) .glass-button-secondary:active {
+  background: #e8e8ed;
+  color: var(--text-primary);
 }
 
 /* ─── Green button ─── */
@@ -230,7 +247,7 @@ button, a {
   width: 40px;
   height: 24px;
   border-radius: 12px;
-  background: #e5e5ea;
+  background: var(--text-muted);
   position: relative;
   transition: background 0.3s ease;
   flex-shrink: 0;
@@ -324,6 +341,29 @@ button, a {
 
 .bottom-pill-item.active {
   color: var(--text-on-dark);
+}
+
+/* ─── Theme toggle ─── */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+}
+
+.theme-toggle:active {
+  transform: scale(0.9);
 }
 
 /* ─── Scrollbar hide ─── */

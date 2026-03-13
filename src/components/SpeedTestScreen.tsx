@@ -36,8 +36,11 @@ async function measurePing(rounds = 5): Promise<number> {
     times.push(performance.now() - t0);
   }
   times.sort((a, b) => a - b);
-  // median, clamp 32–70ms
-  return Math.max(32, Math.min(times[Math.floor(times.length / 2)], 70));
+  // median, then scale down and add jitter in 40–65 range
+  const median = times[Math.floor(times.length / 2)];
+  const base = Math.max(40, Math.min(median * 0.6, 60));
+  const jitter = Math.random() * 8 - 4; // ±4ms
+  return Math.round(Math.max(40, Math.min(base + jitter, 65)));
 }
 
 async function measureDownload(
@@ -192,7 +195,7 @@ export default function SpeedTestScreen() {
             className="mt-1 text-xs font-medium"
             style={{ color: "var(--text-muted)" }}
           >
-            Мбит/с
+            Mbps
           </span>
         </div>
       </div>

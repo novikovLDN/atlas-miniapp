@@ -15,11 +15,11 @@ const LABELS: Record<DeviceType, string> = {
 };
 
 const ICONS: Record<DeviceType, string> = {
-  ios: "\uD83D\uDCF1",
-  android: "\uD83E\uDD16",
-  windows: "\uD83D\uDDA5",
-  macos: "\uD83C\uDF4E",
-  unknown: "\uD83D\uDCF1",
+  ios: "📱",
+  android: "🤖",
+  windows: "🖥",
+  macos: "🍎",
+  unknown: "📱",
 };
 
 type DownloadSectionProps = {

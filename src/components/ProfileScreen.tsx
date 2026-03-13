@@ -43,7 +43,15 @@ export default function ProfileScreen({
 }: ProfileScreenProps) {
   const { t, locale, setLocale } = useI18n();
   const [copied, setCopied] = useState(false);
-  const [refStats, setRefStats] = useState<ReferralStats | null>(null);
+  const defaultStats: ReferralStats = {
+    total_invited: 0,
+    active_referrals: 0,
+    total_cashback: 0,
+    current_level: "Silver Access",
+    cashback_percent: 10,
+    next_level: { name: "Gold Access", min_referrals: 25, referrals_needed: 25 },
+  };
+  const [refStats, setRefStats] = useState<ReferralStats>(defaultStats);
 
   useEffect(() => {
     const initData = WebApp.initData;
@@ -78,8 +86,8 @@ export default function ProfileScreen({
     }
   };
 
-  const levelProgress = refStats?.next_level
-    ? ((refStats.total_invited) / refStats.next_level.min_referrals) * 100
+  const levelProgress = refStats.next_level
+    ? (refStats.total_invited / refStats.next_level.min_referrals) * 100
     : 100;
 
   return (
@@ -151,59 +159,57 @@ export default function ProfileScreen({
       </div>
 
       {/* Referral stats card */}
-      {refStats && (
-        <div
-          className="mt-3 rounded-[var(--radius-card)] p-4"
-          style={{ background: "var(--bg-card)" }}
-        >
-          <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">
-            {t.referralStats}
-          </h3>
+      <div
+        className="mt-3 rounded-[var(--radius-card)] p-4"
+        style={{ background: "var(--bg-card)" }}
+      >
+        <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">
+          {t.referralStats}
+        </h3>
 
-          {/* Stats grid */}
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            <div className="flex flex-col items-center rounded-[14px] py-2.5" style={{ background: "rgba(52,199,89,0.08)" }}>
-              <span className="text-lg font-bold text-[var(--text-primary)]">{refStats.total_invited}</span>
-              <span className="text-[10px] text-[var(--text-secondary)]">{t.totalInvited}</span>
-            </div>
-            <div className="flex flex-col items-center rounded-[14px] py-2.5" style={{ background: "rgba(52,120,246,0.08)" }}>
-              <span className="text-lg font-bold text-[var(--text-primary)]">{refStats.active_referrals}</span>
-              <span className="text-[10px] text-[var(--text-secondary)]">{t.activeReferrals}</span>
-            </div>
-            <div className="flex flex-col items-center rounded-[14px] py-2.5" style={{ background: "rgba(139,92,246,0.08)" }}>
-              <span className="text-lg font-bold text-[var(--text-primary)]">{refStats.total_cashback.toFixed(0)} \u20BD</span>
-              <span className="text-[10px] text-[var(--text-secondary)]">{t.totalCashback}</span>
-            </div>
+        {/* Stats grid */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="flex flex-col items-center rounded-[14px] py-2.5" style={{ background: "rgba(52,199,89,0.08)" }}>
+            <span className="text-lg font-bold text-[var(--text-primary)]">{refStats.total_invited}</span>
+            <span className="text-[10px] text-[var(--text-secondary)]">{t.totalInvited}</span>
           </div>
-
-          {/* Level + progress */}
-          <div className="flex items-center justify-between text-xs mb-1.5">
-            <span className="font-semibold text-[var(--text-primary)]">
-              {refStats.current_level}
-            </span>
-            <span className="text-[var(--text-secondary)]">
-              {refStats.cashback_percent}% {t.cashbackPercent}
-            </span>
+          <div className="flex flex-col items-center rounded-[14px] py-2.5" style={{ background: "rgba(52,120,246,0.08)" }}>
+            <span className="text-lg font-bold text-[var(--text-primary)]">{refStats.active_referrals}</span>
+            <span className="text-[10px] text-[var(--text-secondary)]">{t.activeReferrals}</span>
           </div>
-          <div
-            className="h-[6px] w-full rounded-full overflow-hidden"
-            style={{ background: "rgba(0,0,0,0.06)" }}
-          >
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${Math.min(levelProgress, 100)}%`,
-                background: levelProgress >= 100 ? "#34c759" : "#3478f6",
-              }}
-            />
+          <div className="flex flex-col items-center rounded-[14px] py-2.5" style={{ background: "rgba(139,92,246,0.08)" }}>
+            <span className="text-lg font-bold text-[var(--text-primary)]">{refStats.total_cashback.toFixed(0)} {"\u20BD"}</span>
+            <span className="text-[10px] text-[var(--text-secondary)]">{t.totalCashback}</span>
           </div>
-          {refStats.next_level && (
-            <p className="mt-1.5 text-[11px] text-[var(--text-secondary)]">
-              {refStats.next_level.referrals_needed} {t.referralsToNext} ({refStats.next_level.name})
-            </p>
-          )}
         </div>
-      )}
+
+        {/* Level + progress */}
+        <div className="flex items-center justify-between text-xs mb-1.5">
+          <span className="font-semibold text-[var(--text-primary)]">
+            {refStats.current_level}
+          </span>
+          <span className="text-[var(--text-secondary)]">
+            {refStats.cashback_percent}% {t.cashbackPercent}
+          </span>
+        </div>
+        <div
+          className="h-[6px] w-full rounded-full overflow-hidden"
+          style={{ background: "rgba(0,0,0,0.06)" }}
+        >
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${Math.min(levelProgress, 100)}%`,
+              background: levelProgress >= 100 ? "#34c759" : "#3478f6",
+            }}
+          />
+        </div>
+        {refStats.next_level && (
+          <p className="mt-1.5 text-[11px] text-[var(--text-secondary)]">
+            {refStats.next_level.referrals_needed} {t.referralsToNext} ({refStats.next_level.name})
+          </p>
+        )}
+      </div>
 
       {/* Language selector */}
       <div

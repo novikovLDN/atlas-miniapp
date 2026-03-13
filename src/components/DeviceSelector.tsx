@@ -17,10 +17,10 @@ export default function DeviceSelector({
   const { t } = useI18n();
 
   const DEVICES: { id: DeviceType; icon: string; name: string; subtitle: string }[] = [
-    { id: "ios", icon: "\uD83D\uDCF1", name: "iOS", subtitle: "iPhone / iPad" },
-    { id: "android", icon: "\uD83E\uDD16", name: "Android", subtitle: "Samsung, Xiaomi..." },
-    { id: "windows", icon: "\uD83D\uDDA5", name: "Windows", subtitle: t.pcLaptop },
-    { id: "macos", icon: "\uD83C\uDF4E", name: "macOS", subtitle: "MacBook / iMac" },
+    { id: "ios", icon: "📱", name: "iOS", subtitle: "iPhone / iPad" },
+    { id: "android", icon: "🤖", name: "Android", subtitle: "Samsung, Xiaomi..." },
+    { id: "windows", icon: "🖥", name: "Windows", subtitle: t.pcLaptop },
+    { id: "macos", icon: "🍎", name: "macOS", subtitle: "MacBook / iMac" },
   ];
 
   return (

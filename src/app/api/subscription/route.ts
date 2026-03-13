@@ -79,6 +79,138 @@ function validateInitData(
   }
 }
 
+/* ─── Name sanitization ─── */
+
+const MAX_NAME_LENGTH = 64;
+const MAX_NAME_BYTES = 256;
+
+// Таблица гомоглифов: латинские/спецсимволы → кириллица/латин для обхода фильтра
+const HOMOGLYPHS: Record<string, string> = {
+  "а": "а", "a": "а", "ɑ": "а", "α": "а", "А": "а", "A": "а", "Α": "а",
+  "е": "е", "e": "е", "ё": "е", "Е": "е", "E": "е", "Ё": "е", "ε": "е",
+  "о": "о", "o": "о", "О": "о", "O": "о", "0": "о", "Ο": "о", "ο": "о",
+  "р": "р", "p": "р", "Р": "р", "P": "р", "ρ": "р",
+  "с": "с", "c": "с", "С": "с", "C": "с",
+  "у": "у", "y": "у", "У": "у", "Y": "у",
+  "х": "х", "x": "х", "Х": "х", "X": "х",
+  "н": "н", "h": "н", "Н": "н", "H": "н",
+  "к": "к", "k": "к", "К": "к", "K": "к",
+  "м": "м", "m": "м", "М": "м", "M": "м",
+  "т": "т", "t": "т", "Т": "т", "T": "т",
+  "в": "в", "b": "в", "В": "в", "B": "в",
+  "и": "и", "u": "и",
+  "д": "д", "d": "д",
+  "л": "л", "l": "л",
+  "г": "г", "g": "г",
+  "ш": "ш", "w": "ш",
+  "з": "з", "3": "з",
+  "і": "и", "i": "и", "1": "и", "|": "и",
+};
+
+/** Нормализация строки: гомоглифы → базовые, удаление невидимых символов */
+function normalizeForFilter(s: string): string {
+  // 1) Удаляем zero-width и невидимые Unicode-символы
+  let out = s.replace(/[\u200B-\u200F\u2028-\u202F\u2060-\u206F\uFEFF\u00AD\u034F\u061C\u180E]/g, "");
+  // 2) Удаляем combining diacritical marks (Zalgo-текст)
+  out = out.replace(/[\u0300-\u036F\u0483-\u0489\u1AB0-\u1AFF\u1DC0-\u1DFF\u20D0-\u20FF\uFE20-\uFE2F]/g, "");
+  // 3) Заменяем гомоглифы
+  let normalized = "";
+  for (const ch of out) {
+    normalized += HOMOGLYPHS[ch] ?? ch.toLowerCase();
+  }
+  // 4) Схлопываем повторяющиеся символы (ннааррккоо → нарко)
+  normalized = normalized.replace(/(.)\1{2,}/g, "$1$1");
+  // 5) Удаляем спецсимволы-разделители между буквами (н.а.р.к.о → нарко)
+  normalized = normalized.replace(/([а-яa-z])[.\-_*•·\/\\|,;:!?@#$%^&(){}[\]<>~`'"]+(?=[а-яa-z])/gi, "$1");
+  return normalized;
+}
+
+const BANNED_PATTERNS = [
+  // наркотики
+  /мефедрон/i, /меф\b/i, /амфетамин/i, /кокаин/i, /кокс\b/i, /герои?н/i,
+  /гашиш/i, /марихуан/i, /каннабис/i, /косяк/i,
+  /экстази/i, /мдма/i, /лсд/i, /псилоцибин/i,
+  /спайс/i, /снюс/i, /насвай/i, /закладк/i, /кладмен/i, /барыг/i,
+  /наркот/i, /дурь\b/i, /шишк[иа]/i, /бошк/i,
+  /фен\b/i, /соль\b/i, /солей\b/i, /кристалл/i, /скорост[ьи]/i,
+  /метадон/i, /морфи[нй]/i, /опиат/i, /опиоид/i, /трамадол/i,
+  /буторфанол/i, /кодеин/i, /барбитурат/i,
+  /meth\b/i, /cocaine/i, /heroin/i, /weed\b/i, /drugs?\b/i, /mdma/i,
+  /amphetamine/i, /cannabis/i, /marijuana/i, /ecstasy/i,
+  /купить\s*меф/i, /продам\s*меф/i, /закладк/i,
+  // порно / секс-услуги
+  /порн/i, /porn/i, /xxx/i, /секс\s?услуг/i, /эскорт/i, /escort/i,
+  /проститу/i, /интим\s?услуг/i, /минет/i, /blowjob/i, /onlyfans/i,
+  /хентай/i, /hentai/i, /шлюх/i, /сучк/i, /nsfw/i,
+  /anal\b/i, /cum\b/i, /dick\b/i, /pussy/i, /fuck/i,
+  // скам / мошенничество
+  /скам/i, /scam/i, /обнал/i, /дроп\b/i, /дроппер/i,
+  /кардинг/i, /carding/i, /фишинг/i, /phishing/i,
+  /лохотрон/i, /отмыв/i,
+  // оружие / насилие
+  /оружи/i, /ствол\b/i, /пистолет/i, /взрыв/i,
+  /бомб[аы]/i, /убий/i, /убить/i, /террор/i,
+  /jihad/i, /джихад/i,
+  // экстремизм / ненависть
+  /нацизм/i, /нацист/i, /фашизм/i, /фашист/i, /свастик/i,
+  /зиг\s?хайл/i, /sieg\s?heil/i, /white\s?power/i,
+  /heil\s?hitler/i, /хайль/i, /14\s?88/i, /1488/i,
+  // казино / азартные
+  /казино/i, /casino/i, /букмекер/i,
+  /джекпот/i, /jackpot/i, /1xbet/i, /1хбет/i, /пинап/i, /pin-?up/i,
+  // ДП / педофилия
+  /педофил/i, /child\s?porn/i, /cp\b/i, /лолик/i,
+  // мат (грубый, используемый в рекламе)
+  /бля[дт]/i, /пизд/i, /хуй/i, /хуя/i, /хуё/i, /ебат/i, /ёбан/i, /сука\b/i,
+  /пидор/i, /пидар/i, /faggot/i, /nigger/i, /nigga/i,
+];
+
+// Unicode-категории, которые не должны быть в имени
+const SUSPICIOUS_UNICODE =
+  /[\u0600-\u06FF].*[\u0400-\u04FF]|[\u0400-\u04FF].*[\u0600-\u06FF]|[\u4E00-\u9FFF]{10,}|[\u{10000}-\u{1F9FF}]{5,}/u;
+
+// Контрольные символы и опасные Unicode (кроме обычных emoji)
+const CONTROL_CHARS = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\u2800-\u28FF]/;
+
+// RTL/LTR override атаки
+const BIDI_ATTACKS = /[\u202A-\u202E\u2066-\u2069]/;
+
+function sanitizeName(raw: string): string {
+  if (!raw || typeof raw !== "string") return "Пользователь";
+
+  // 1) Ограничение по байтам (защита от огромных строк / DoS)
+  const byteLength = Buffer.byteLength(raw, "utf8");
+  if (byteLength > MAX_NAME_BYTES) return "Пользователь";
+
+  // 2) Обрезаем по символам
+  let name = [...raw].slice(0, MAX_NAME_LENGTH).join("").trim();
+  if (!name) return "Пользователь";
+
+  // 3) Блокируем контрольные символы
+  if (CONTROL_CHARS.test(name)) return "Пользователь";
+
+  // 4) Блокируем BiDi-override атаки (подмена направления текста)
+  if (BIDI_ATTACKS.test(name)) return "Пользователь";
+
+  // 5) Блокируем подозрительные Unicode-комбинации (смешение скриптов для обхода)
+  if (SUSPICIOUS_UNICODE.test(name)) return "Пользователь";
+
+  // 6) Нормализуем для проверки (гомоглифы, залго, невидимые символы)
+  const normalized = normalizeForFilter(name);
+
+  // 7) Проверяем запрещённые паттерны по нормализованной строке
+  for (const re of BANNED_PATTERNS) {
+    if (re.test(normalized)) return "Пользователь";
+  }
+
+  // 8) Если после удаления невидимых символов имя пустое — подозрительно
+  const visible = name.replace(/[\u200B-\u200F\u2028-\u202F\u2060-\u206F\uFEFF\u00AD]/g, "").trim();
+  if (!visible) return "Пользователь";
+
+  // 9) Возвращаем оригинальное (обрезанное) имя — не нормализованное
+  return name;
+}
+
 function formatExpires(dateStr: string): string {
   const d = new Date(dateStr);
   const months = "янв фев мар апр май июн июл авг сен окт ноя дек".split(" ");
@@ -135,8 +267,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const name =
+  const rawName =
     telegramUser?.first_name || telegramUser?.username || "Пользователь";
+  const name = sanitizeName(rawName);
 
   const pool = new Pool({ connectionString: databaseUrl });
 

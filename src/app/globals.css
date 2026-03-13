@@ -67,9 +67,22 @@ body {
   overflow: hidden;
 }
 
-/* ─── Smooth transitions ─── */
-button, a {
-  transition: all 0.2s ease;
+/* ─── GPU-accelerated press for ALL interactive elements ─── */
+button, a, .device-card, .theme-toggle, .bottom-pill-item {
+  will-change: transform;
+  transform: scale3d(1, 1, 1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 1.5, 0.5, 1),
+    opacity 0.2s ease;
+}
+
+button:active, a:active, .device-card:active {
+  transform: scale3d(0.965, 0.965, 1);
+  transition:
+    transform 0.12s cubic-bezier(0.2, 0, 0.4, 1),
+    opacity 0.08s ease;
 }
 
 /* ─── Card (flat, no shadow, no border) ─── */
@@ -93,14 +106,12 @@ button, a {
   padding: 14px 24px;
   width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
   text-align: center;
   display: block;
 }
 
 .glass-button:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+  opacity: 0.88;
 }
 
 /* ─── Secondary button (light gray, flat) ─── */
@@ -114,19 +125,11 @@ button, a {
   padding: 12px 24px;
   width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
   text-align: center;
 }
 
 .glass-button-secondary:active {
-  background: var(--bg-card-active);
-  color: var(--text-on-dark);
-  transform: scale(0.98);
-}
-
-html:not(.dark) .glass-button-secondary:active {
-  background: #e8e8ed;
-  color: var(--text-primary);
+  opacity: 0.88;
 }
 
 /* ─── Green button ─── */
@@ -140,12 +143,10 @@ html:not(.dark) .glass-button-secondary:active {
   padding: 14px 24px;
   width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .btn-green:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+  opacity: 0.88;
 }
 
 /* ─── Tab fade animation ─── */
@@ -230,11 +231,6 @@ html:not(.dark) .glass-button-secondary:active {
   border: none;
   box-shadow: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.device-card:active {
-  transform: scale(0.96);
 }
 
 .device-card--detected {
@@ -266,7 +262,8 @@ html:not(.dark) .glass-button-secondary:active {
   top: 2px;
   left: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.25, 1.5, 0.5, 1);
 }
 
 .toggle-track.active .toggle-thumb {
@@ -336,7 +333,10 @@ html:not(.dark) .glass-button-secondary:active {
   color: var(--text-muted);
   position: relative;
   z-index: 1;
-  transition: color 0.3s ease;
+}
+
+.bottom-pill-item:active {
+  transform: scale3d(0.88, 0.88, 1);
 }
 
 .bottom-pill-item.active {
@@ -355,7 +355,6 @@ html:not(.dark) .glass-button-secondary:active {
   justify-content: center;
   background: var(--bg-card);
   color: var(--text-primary);
-  transition: all 0.3s ease;
   position: fixed;
   top: 16px;
   right: 16px;
@@ -363,7 +362,7 @@ html:not(.dark) .glass-button-secondary:active {
 }
 
 .theme-toggle:active {
-  transform: scale(0.9);
+  transform: scale3d(0.85, 0.85, 1);
 }
 
 /* ─── Scrollbar hide ─── */

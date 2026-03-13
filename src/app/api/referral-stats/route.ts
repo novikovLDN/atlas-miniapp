@@ -105,6 +105,24 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Ensure referral tables exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS referrals (
+        id SERIAL PRIMARY KEY,
+        referrer_id BIGINT NOT NULL,
+        referred_id BIGINT NOT NULL UNIQUE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        first_paid_at TIMESTAMPTZ
+      );
+      CREATE TABLE IF NOT EXISTS referral_rewards (
+        id SERIAL PRIMARY KEY,
+        referrer_id BIGINT NOT NULL,
+        referred_id BIGINT NOT NULL,
+        reward_amount NUMERIC(10,2) NOT NULL DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+    `);
+
     // Total invited
     const { rows: totalRows } = await pool.query(
       `SELECT COUNT(*) AS count FROM referrals WHERE referrer_id = $1`,
@@ -145,6 +163,21 @@ export async function GET(request: NextRequest) {
     });
   } catch (err) {
     console.error("Referral stats API error:", err);
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
+
+    // If DB is unavailable or any error, return default stats
+    const defaultLevel = LEVELS[0];
+    const defaultNext = LEVELS[1];
+    return NextResponse.json({
+      total_invited: 0,
+      active_referrals: 0,
+      total_cashback: 0,
+      current_level: defaultLevel.name,
+      cashback_percent: defaultLevel.cashbackPercent,
+      next_level: {
+        name: defaultNext.name,
+        min_referrals: defaultNext.minReferrals,
+        referrals_needed: defaultNext.minReferrals,
+      },
+    });
   }
 }

@@ -105,44 +105,102 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Ensure referral tables exist
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS referrals (
-        id SERIAL PRIMARY KEY,
-        referrer_id BIGINT NOT NULL,
-        referred_id BIGINT NOT NULL UNIQUE,
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        first_paid_at TIMESTAMPTZ
+    // Discover actual column names in the referrals table
+    const { rows: colRows } = await pool.query(
+      `SELECT column_name FROM information_schema.columns WHERE table_name = 'referrals'`,
+    );
+    const columns = colRows.map((r: { column_name: string }) => r.column_name);
+
+    let totalInvited = 0;
+    let activeReferrals = 0;
+    let totalCashback = 0;
+
+    if (columns.length > 0) {
+      // Map to actual column names — support both referrer_id and inviter_id conventions
+      const referrerCol = columns.includes("referrer_id")
+        ? "referrer_id"
+        : columns.includes("inviter_id")
+          ? "inviter_id"
+          : columns.includes("from_user_id")
+            ? "from_user_id"
+            : null;
+
+      const paidCol = columns.includes("first_paid_at")
+        ? "first_paid_at"
+        : columns.includes("paid_at")
+          ? "paid_at"
+          : columns.includes("activated_at")
+            ? "activated_at"
+            : null;
+
+      if (referrerCol) {
+        // Total invited
+        const { rows: totalRows } = await pool.query(
+          `SELECT COUNT(*) AS count FROM referrals WHERE ${referrerCol} = $1`,
+          [telegramId],
+        );
+        totalInvited = parseInt(totalRows[0]?.count ?? "0", 10);
+
+        // Active referrals (those who have paid)
+        if (paidCol) {
+          const { rows: activeRows } = await pool.query(
+            `SELECT COUNT(*) AS count FROM referrals WHERE ${referrerCol} = $1 AND ${paidCol} IS NOT NULL`,
+            [telegramId],
+          );
+          activeReferrals = parseInt(activeRows[0]?.count ?? "0", 10);
+        } else {
+          activeReferrals = totalInvited;
+        }
+      }
+
+      // Check referral_rewards table
+      const { rows: rewardColRows } = await pool.query(
+        `SELECT column_name FROM information_schema.columns WHERE table_name = 'referral_rewards'`,
       );
-      CREATE TABLE IF NOT EXISTS referral_rewards (
-        id SERIAL PRIMARY KEY,
-        referrer_id BIGINT NOT NULL,
-        referred_id BIGINT NOT NULL,
-        reward_amount NUMERIC(10,2) NOT NULL DEFAULT 0,
-        created_at TIMESTAMPTZ DEFAULT NOW()
-      );
-    `);
+      const rewardCols = rewardColRows.map((r: { column_name: string }) => r.column_name);
 
-    // Total invited
-    const { rows: totalRows } = await pool.query(
-      `SELECT COUNT(*) AS count FROM referrals WHERE referrer_id = $1`,
-      [telegramId],
-    );
-    const totalInvited = parseInt(totalRows[0]?.count ?? "0", 10);
+      if (rewardCols.length > 0) {
+        const rewardReferrerCol = rewardCols.includes("referrer_id")
+          ? "referrer_id"
+          : rewardCols.includes("inviter_id")
+            ? "inviter_id"
+            : rewardCols.includes("user_id")
+              ? "user_id"
+              : null;
 
-    // Active referrals (those who have paid)
-    const { rows: activeRows } = await pool.query(
-      `SELECT COUNT(*) AS count FROM referrals WHERE referrer_id = $1 AND first_paid_at IS NOT NULL`,
-      [telegramId],
-    );
-    const activeReferrals = parseInt(activeRows[0]?.count ?? "0", 10);
+        const amountCol = rewardCols.includes("reward_amount")
+          ? "reward_amount"
+          : rewardCols.includes("amount")
+            ? "amount"
+            : null;
 
-    // Total cashback earned
-    const { rows: cashbackRows } = await pool.query(
-      `SELECT COALESCE(SUM(reward_amount), 0) AS total FROM referral_rewards WHERE referrer_id = $1`,
-      [telegramId],
-    );
-    const totalCashback = parseFloat(cashbackRows[0]?.total ?? "0");
+        if (rewardReferrerCol && amountCol) {
+          const { rows: cashbackRows } = await pool.query(
+            `SELECT COALESCE(SUM(${amountCol}), 0) AS total FROM referral_rewards WHERE ${rewardReferrerCol} = $1`,
+            [telegramId],
+          );
+          totalCashback = parseFloat(cashbackRows[0]?.total ?? "0");
+        }
+      }
+    } else {
+      // Table doesn't exist — create it
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS referrals (
+          id SERIAL PRIMARY KEY,
+          referrer_id BIGINT NOT NULL,
+          referred_id BIGINT NOT NULL UNIQUE,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          first_paid_at TIMESTAMPTZ
+        );
+        CREATE TABLE IF NOT EXISTS referral_rewards (
+          id SERIAL PRIMARY KEY,
+          referrer_id BIGINT NOT NULL,
+          referred_id BIGINT NOT NULL,
+          reward_amount NUMERIC(10,2) NOT NULL DEFAULT 0,
+          created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+      `);
+    }
 
     const currentLevel = getLevel(totalInvited);
     const nextLevel = getNextLevel(totalInvited);

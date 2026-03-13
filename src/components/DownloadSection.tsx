@@ -2,6 +2,7 @@
 
 import type { DeviceType } from "@/lib/detectDevice";
 import { APP_LINKS } from "@/lib/detectDevice";
+import { useI18n } from "@/lib/i18n";
 
 const DEVICE_ORDER: DeviceType[] = ["ios", "android", "windows", "macos"];
 
@@ -10,15 +11,15 @@ const LABELS: Record<DeviceType, string> = {
   android: "Android",
   windows: "Windows",
   macos: "macOS",
-  unknown: "Установить",
+  unknown: "",
 };
 
 const ICONS: Record<DeviceType, string> = {
-  ios: "📱",
-  android: "🤖",
-  windows: "🖥",
-  macos: "🍎",
-  unknown: "📱",
+  ios: "\uD83D\uDCF1",
+  android: "\uD83E\uDD16",
+  windows: "\uD83D\uDDA5",
+  macos: "\uD83C\uDF4E",
+  unknown: "\uD83D\uDCF1",
 };
 
 type DownloadSectionProps = {
@@ -28,6 +29,8 @@ type DownloadSectionProps = {
 export default function DownloadSection({
   deviceType = "unknown",
 }: DownloadSectionProps) {
+  const { t } = useI18n();
+
   const ordered =
     deviceType !== "unknown" && DEVICE_ORDER.includes(deviceType)
       ? [deviceType, ...DEVICE_ORDER.filter((d) => d !== deviceType)]
@@ -36,7 +39,7 @@ export default function DownloadSection({
   return (
     <section>
       <h3 className="mb-3 text-lg font-bold text-[var(--text-primary)]">
-        Скачать приложение
+        {t.downloadApplication}
       </h3>
       <div className="grid grid-cols-2 gap-3">
         {ordered.map((d) => {

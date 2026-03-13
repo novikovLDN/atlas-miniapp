@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n";
+
 const V2RAYTUN_IOS = "https://apps.apple.com/app/v2raytun/id6476628951";
 const V2RAYTUN_ANDROID =
   "https://play.google.com/store/apps/details?id=com.v2raytun.android";
@@ -9,6 +11,8 @@ type InstallPromptProps = {
 };
 
 export default function InstallPrompt({ onClose }: InstallPromptProps) {
+  const { t } = useI18n();
+
   return (
     <>
       <div
@@ -32,10 +36,10 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
         />
 
         <p className="mb-1 text-base font-bold text-[var(--text-primary)]">
-          Установите v2RayTun
+          {t.installV2RayTun}
         </p>
         <p className="mb-5 text-sm" style={{ color: "var(--text-secondary)" }}>
-          Для подключения необходимо приложение v2RayTun
+          {t.v2RayTunRequired}
         </p>
 
         <a
@@ -44,7 +48,7 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
           rel="noopener noreferrer"
           className="glass-button block w-full text-center no-underline"
         >
-          Установить для iOS
+          {t.installForIOS}
         </a>
         <a
           href={V2RAYTUN_ANDROID}
@@ -52,7 +56,7 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
           rel="noopener noreferrer"
           className="glass-button-secondary mt-2 block w-full text-center no-underline"
         >
-          Установить для Android
+          {t.installForAndroid}
         </a>
         <button
           type="button"
@@ -60,7 +64,7 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
           className="mt-4 w-full cursor-pointer border-0 bg-transparent text-sm font-medium"
           style={{ color: "var(--text-muted)" }}
         >
-          Закрыть
+          {t.close}
         </button>
       </div>
     </>

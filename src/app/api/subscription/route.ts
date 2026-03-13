@@ -79,6 +79,49 @@ function validateInitData(
   }
 }
 
+const BANNED_PATTERNS = [
+  // наркотики
+  /мефедрон/i, /меф/i, /амфетамин/i, /кокаин/i, /кокс/i, /герои?н/i,
+  /гашиш/i, /марихуан/i, /каннабис/i, /трав[ак]/i, /косяк/i,
+  /экстази/i, /мдма/i, /лсд/i, /кислот[аы]/i, /грибы/i, /псилоцибин/i,
+  /спайс/i, /снюс/i, /насвай/i, /закладк/i, /кладмен/i, /барыг/i,
+  /наркот/i, /дурь/i, /шишк[иа]/i, /бошк/i, /план/i,
+  /фен/i, /соль\b/i, /солей/i, /кристалл/i, /скорост[ьи]/i,
+  /метадон/i, /морфи[нй]/i, /опиат/i, /опиоид/i, /трамадол/i,
+  /буторфанол/i, /кодеин/i, /барбитурат/i,
+  /meth\b/i, /cocaine/i, /heroin/i, /weed/i, /drug/i, /mdma/i,
+  /amphetamine/i, /cannabis/i, /marijuana/i, /ecstasy/i,
+  // порно / секс-услуги
+  /порн/i, /porn/i, /xxx/i, /секс\s?услуг/i, /эскорт/i, /escort/i,
+  /проститу/i, /интим/i, /минет/i, /blowjob/i, /onlyfans/i,
+  /хентай/i, /hentai/i, /шлюх/i, /сучк/i,
+  // скам / мошенничество
+  /скам/i, /scam/i, /обнал/i, /дроп/i, /кардинг/i, /carding/i,
+  /фишинг/i, /phishing/i, /развод/i, /лохотрон/i,
+  /отмыв/i, /обман/i,
+  // оружие / насилие
+  /оружи/i, /ствол/i, /пистолет/i, /автомат/i, /взрыв/i,
+  /бомб[аы]/i, /убий/i, /убить/i, /террор/i,
+  // экстремизм
+  /нацизм/i, /нацист/i, /фашизм/i, /фашист/i, /свастик/i,
+  /зиг\s?хайл/i, /sieg\s?heil/i, /white\s?power/i,
+  // казино / азартные
+  /казино/i, /casino/i, /ставк[иа]/i, /букмекер/i, /слот[ыа]/i,
+  /джекпот/i, /jackpot/i, /1xbet/i, /1хбет/i, /пинап/i, /pin-?up/i,
+  // спам / реклама
+  /купи/i, /продаж/i, /оптом/i, /дёшево/i, /дешево/i, /халяв/i,
+  /бесплатн/i, /розыгрыш/i, /giveaway/i,
+];
+
+function sanitizeName(raw: string): string {
+  const name = raw.trim();
+  if (!name) return "Пользователь";
+  for (const re of BANNED_PATTERNS) {
+    if (re.test(name)) return "Пользователь";
+  }
+  return name;
+}
+
 function formatExpires(dateStr: string): string {
   const d = new Date(dateStr);
   const months = "янв фев мар апр май июн июл авг сен окт ноя дек".split(" ");
@@ -135,8 +178,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const name =
+  const rawName =
     telegramUser?.first_name || telegramUser?.username || "Пользователь";
+  const name = sanitizeName(rawName);
 
   const pool = new Pool({ connectionString: databaseUrl });
 

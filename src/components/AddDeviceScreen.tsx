@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { openTelegramLink } from "@/lib/openTelegramLink";
+import { useI18n } from "@/lib/i18n";
 
 type AddDeviceScreenProps = {
   subUrl?: string;
@@ -18,6 +19,7 @@ export default function AddDeviceScreen({
   onBack,
   onOpenSupport,
 }: AddDeviceScreenProps) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   const subscriptionUrl = hasActiveSubscription && subUrl ? subUrl : "";
@@ -53,20 +55,20 @@ export default function AddDeviceScreen({
               className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px] text-[34px]"
               style={{ background: "var(--bg-card)" }}
             >
-              📲
+              \uD83D\uDCF2
             </div>
             <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
-              Добавить устройство
+              {t.addDeviceTitle}
             </h2>
             <p className="mt-3 text-sm text-[var(--text-secondary)]">
-              Для подключения устройства необходима активная подписка.
+              {t.activeSubscriptionRequired}
             </p>
             <button
               type="button"
               onClick={() => openTelegramLink(buySubscriptionUrl)}
               className="btn-green mt-6 w-full"
             >
-              Купить подписку
+              {t.buySubscription}
             </button>
             <button
               type="button"
@@ -74,7 +76,7 @@ export default function AddDeviceScreen({
               className="mt-6 border-0 bg-transparent p-2 px-4 text-sm font-medium"
               style={{ color: "var(--text-muted)" }}
             >
-              ← Назад
+              {t.backArrow}
             </button>
           </div>
         </div>
@@ -90,13 +92,13 @@ export default function AddDeviceScreen({
             className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px] text-[34px]"
             style={{ background: "var(--bg-card)" }}
           >
-            📲
+            \uD83D\uDCF2
           </div>
           <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
-            Добавить устройство
+            {t.addDeviceTitle}
           </h2>
           <p className="mt-3 text-sm text-[var(--text-secondary)]">
-            Скопируйте ссылку и вставьте её в V2RayTun или Hiddify на другом устройстве.
+            {t.copyAndPasteLink}
           </p>
 
           <button
@@ -105,7 +107,7 @@ export default function AddDeviceScreen({
             onClick={handleCopy}
             disabled={!subscriptionUrl}
           >
-            {copied ? "Скопировано ✓" : "Скопировать ссылку"}
+            {copied ? t.copiedCheck : t.copyLink}
           </button>
 
           <button
@@ -120,19 +122,19 @@ export default function AddDeviceScreen({
               wordBreak: "break-word",
             }}
           >
-            {subscriptionUrl || "Ссылка появится после активации подписки"}
+            {subscriptionUrl || t.linkAfterActivation}
           </button>
 
           <div className="mt-6 w-full space-y-2">
             <button type="button" onClick={onBack} className="glass-button-secondary w-full">
-              ← Назад
+              {t.backArrow}
             </button>
             <button
               type="button"
               onClick={onOpenSupport}
               className="glass-button-secondary w-full text-center"
             >
-              Поддержка
+              {t.support}
             </button>
           </div>
         </div>
@@ -142,7 +144,7 @@ export default function AddDeviceScreen({
             className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-5 py-2.5 text-sm font-medium slide-up"
             style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}
           >
-            Ссылка скопирована ✓
+            {t.linkCopied}
           </div>
         )}
       </div>

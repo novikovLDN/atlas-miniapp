@@ -1,13 +1,7 @@
 "use client";
 
 import type { DeviceType } from "@/lib/detectDevice";
-
-const DEVICES = [
-  { id: "ios" as DeviceType, icon: "📱", name: "iOS", subtitle: "iPhone / iPad" },
-  { id: "android" as DeviceType, icon: "🤖", name: "Android", subtitle: "Samsung, Xiaomi..." },
-  { id: "windows" as DeviceType, icon: "🖥", name: "Windows", subtitle: "ПК / Ноутбук" },
-  { id: "macos" as DeviceType, icon: "🍎", name: "macOS", subtitle: "MacBook / iMac" },
-];
+import { useI18n } from "@/lib/i18n";
 
 type DeviceSelectorProps = {
   onSelectDevice: (device: DeviceType) => void;
@@ -20,12 +14,21 @@ export default function DeviceSelector({
   onBack,
   detectedDevice,
 }: DeviceSelectorProps) {
+  const { t } = useI18n();
+
+  const DEVICES: { id: DeviceType; icon: string; name: string; subtitle: string }[] = [
+    { id: "ios", icon: "\uD83D\uDCF1", name: "iOS", subtitle: "iPhone / iPad" },
+    { id: "android", icon: "\uD83E\uDD16", name: "Android", subtitle: "Samsung, Xiaomi..." },
+    { id: "windows", icon: "\uD83D\uDDA5", name: "Windows", subtitle: t.pcLaptop },
+    { id: "macos", icon: "\uD83C\uDF4E", name: "macOS", subtitle: "MacBook / iMac" },
+  ];
+
   return (
     <div style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
       <div className="app-container fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center px-6 page-fade">
         <div className="flex w-full max-w-[320px] flex-col items-center">
           <h2 className="text-center text-2xl font-bold text-[var(--text-primary)]">
-            Выберите устройство
+            {t.selectDevice}
           </h2>
 
           <div className="mt-8 grid w-full grid-cols-2 gap-3">
@@ -41,7 +44,7 @@ export default function DeviceSelector({
                         color: "#2da44e",
                       }}
                     >
-                      Ваше устройство
+                      {t.yourDevice}
                     </span>
                   )}
                   <button
@@ -86,9 +89,9 @@ export default function DeviceSelector({
             onClick={onBack}
             className="mt-8 border-0 bg-transparent p-2 px-4 text-sm font-medium"
             style={{ color: "var(--text-muted)" }}
-            aria-label="Назад"
+            aria-label={t.back}
           >
-            ← Назад
+            {t.backArrow}
           </button>
         </div>
       </div>

@@ -25,11 +25,11 @@ const confettiPieces = Array.from({ length: 80 }, (_, i) => ({
 }));
 
 const STEP1_ICON: Record<DeviceType, string> = {
-  ios: "\uD83D\uDCF1",
-  android: "\uD83E\uDD16",
-  windows: "\uD83D\uDDA5",
-  macos: "\uD83C\uDF4E",
-  unknown: "\uD83D\uDCF1",
+  ios: "📱",
+  android: "🤖",
+  windows: "🖥",
+  macos: "🍎",
+  unknown: "📱",
 };
 
 type SetupFlowProps = {
@@ -177,7 +177,7 @@ export default function SetupFlow({
           {step === 2 && (
             <div className="step-enter flex w-full flex-col items-center">
               <div className={iconBox} style={{ background: "var(--bg-card)" }} aria-hidden>
-                \u2B07\uFE0F
+                {"⬇️"}
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
                 {t.application}
@@ -207,7 +207,7 @@ export default function SetupFlow({
           {step === 3 && (
             <div className="step-enter flex w-full flex-col items-center">
               <div className={iconBox} style={{ background: "var(--bg-card)" }} aria-hidden>
-                \u2795
+                {"➕"}
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
                 {t.subscriptionStep}

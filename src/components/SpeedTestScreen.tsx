@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 type Phase = "idle" | "ping" | "download" | "upload" | "done";
 
@@ -14,6 +14,9 @@ const GAUGE_RADIUS = 100;
 const GAUGE_STROKE = 10;
 const GAUGE_CIRCUMFERENCE = Math.PI * GAUGE_RADIUS; // semicircle
 
+const MAX_TESTS_PER_DAY = 3;
+const STORAGE_KEY = "speedtest_usage";
+
 /** Map Mbps to 0..1 arc fill (log scale, max ~200 Mbps) */
 function speedToArc(mbps: number): number {
   if (mbps <= 0) return 0;
@@ -24,6 +27,53 @@ function formatSpeed(mbps: number): string {
   if (mbps >= 100) return mbps.toFixed(0);
   if (mbps >= 10) return mbps.toFixed(1);
   return mbps.toFixed(2);
+}
+
+/* ── Daily limit helpers ── */
+
+type UsageData = {
+  date: string; // YYYY-MM-DD
+  count: number;
+  lastTestTime: number; // timestamp of last test
+};
+
+function getTodayStr(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getUsage(): UsageData {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw) as UsageData;
+      if (data.date === getTodayStr()) return data;
+    }
+  } catch {}
+  return { date: getTodayStr(), count: 0, lastTestTime: 0 };
+}
+
+function recordTest(): void {
+  const usage = getUsage();
+  usage.count += 1;
+  usage.lastTestTime = Date.now();
+  usage.date = getTodayStr();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(usage));
+}
+
+function getNextResetTime(): Date {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  return tomorrow;
+}
+
+function formatCountdown(ms: number): string {
+  if (ms <= 0) return "0:00:00";
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
 /* ── Speed measurement logic ── */
@@ -45,34 +95,42 @@ async function measurePing(rounds = 5): Promise<number> {
 
 async function measureDownload(
   onProgress: (mbps: number) => void,
-  durationMs = 6000,
 ): Promise<number> {
-  const chunkSize = 2 * 1024 * 1024; // 2MB chunks
+  // Single large request ~500MB, stream-read and measure throughput
+  const totalSize = 500 * 1024 * 1024; // 500MB
+  const res = await fetch(`/api/speedtest?size=${totalSize}&_=${Date.now()}`, { cache: "no-store" });
+
+  const reader = res.body?.getReader();
+  if (!reader) return 0;
+
   let totalBytes = 0;
   const start = performance.now();
-  const samples: number[] = [];
+  let lastReport = start;
 
-  while (performance.now() - start < durationMs) {
-    const t0 = performance.now();
-    const res = await fetch(`/api/speedtest?size=${chunkSize}&_=${Date.now()}`, { cache: "no-store" });
-    const buf = await res.arrayBuffer();
-    const elapsed = (performance.now() - t0) / 1000;
-    totalBytes += buf.byteLength;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    totalBytes += value.byteLength;
 
-    const mbps = (buf.byteLength * 8) / elapsed / 1_000_000 * 1.3;
-    samples.push(mbps);
-    onProgress(mbps);
+    const now = performance.now();
+    // Report progress every ~300ms
+    if (now - lastReport > 300) {
+      const elapsed = (now - start) / 1000;
+      const mbps = (totalBytes * 8) / elapsed / 1_000_000;
+      onProgress(mbps);
+      lastReport = now;
+    }
   }
 
   const totalElapsed = (performance.now() - start) / 1000;
-  return (totalBytes * 8) / totalElapsed / 1_000_000 * 1.3;
+  return (totalBytes * 8) / totalElapsed / 1_000_000;
 }
 
 async function measureUpload(
   onProgress: (mbps: number) => void,
   durationMs = 6000,
 ): Promise<number> {
-  const chunkSize = 1 * 1024 * 1024; // 1MB chunks
+  const chunkSize = 2 * 1024 * 1024; // 2MB chunks
   const payload = new Uint8Array(chunkSize);
   let totalBytes = 0;
   const start = performance.now();
@@ -87,12 +145,12 @@ async function measureUpload(
     const elapsed = (performance.now() - t0) / 1000;
     totalBytes += chunkSize;
 
-    const mbps = (chunkSize * 8) / elapsed / 1_000_000 * 1.3;
+    const mbps = (chunkSize * 8) / elapsed / 1_000_000;
     onProgress(mbps);
   }
 
   const totalElapsed = (performance.now() - start) / 1000;
-  return (totalBytes * 8) / totalElapsed / 1_000_000 * 1.3;
+  return (totalBytes * 8) / totalElapsed / 1_000_000;
 }
 
 /* ── Component ── */
@@ -103,8 +161,39 @@ export default function SpeedTestScreen() {
   const [results, setResults] = useState<Results>({ ping: 0, download: 0, upload: 0 });
   const running = useRef(false);
 
+  const [testsUsed, setTestsUsed] = useState(0);
+  const [countdown, setCountdown] = useState("");
+
+  // Load usage on mount
+  useEffect(() => {
+    setTestsUsed(getUsage().count);
+  }, []);
+
+  // Countdown timer when tests exhausted
+  useEffect(() => {
+    if (testsUsed < MAX_TESTS_PER_DAY) {
+      setCountdown("");
+      return;
+    }
+
+    const tick = () => {
+      const ms = getNextResetTime().getTime() - Date.now();
+      setCountdown(formatCountdown(ms));
+      if (ms <= 0) {
+        setTestsUsed(0);
+      }
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [testsUsed]);
+
+  const canTest = testsUsed < MAX_TESTS_PER_DAY;
+
   const runTest = useCallback(async () => {
     if (running.current) return;
+    if (!canTest) return;
     running.current = true;
 
     setResults({ ping: 0, download: 0, upload: 0 });
@@ -130,7 +219,11 @@ export default function SpeedTestScreen() {
     setPhase("done");
     setCurrentSpeed(0);
     running.current = false;
-  }, []);
+
+    // Record usage
+    recordTest();
+    setTestsUsed(getUsage().count);
+  }, [canTest]);
 
   const isRunning = phase !== "idle" && phase !== "done";
   const showGaugeSpeed = phase === "download" || phase === "upload" ? currentSpeed : 0;
@@ -144,6 +237,19 @@ export default function SpeedTestScreen() {
     upload: "Скорость отдачи…",
     done: "Тест завершён",
   };
+
+  // Button state
+  const buttonDisabled = isRunning || !canTest;
+  let buttonText: string;
+  if (isRunning) {
+    buttonText = "Тестируем…";
+  } else if (!canTest) {
+    buttonText = `Доступно через ${countdown}`;
+  } else if (phase === "done") {
+    buttonText = `Повторить тест (${MAX_TESTS_PER_DAY - testsUsed}/${MAX_TESTS_PER_DAY})`;
+  } else {
+    buttonText = "Начать тест";
+  }
 
   return (
     <div className="flex flex-col items-center px-5 pb-4 page-enter" style={{ paddingTop: "32px" }}>
@@ -285,18 +391,27 @@ export default function SpeedTestScreen() {
         </div>
       </div>
 
-      {/* Start / Restart button */}
+      {/* Start / Restart / Cooldown button */}
       <button
         type="button"
         onClick={runTest}
-        disabled={isRunning}
-        className="mt-8 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold disabled:opacity-50"
+        disabled={buttonDisabled}
+        className="mt-8 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
         style={{
-          background: isRunning ? "var(--bg-card)" : "var(--bg-card-active)",
-          color: isRunning ? "var(--text-secondary)" : "var(--text-on-dark)",
+          background: !canTest
+            ? "var(--bg-card)"
+            : isRunning
+              ? "var(--bg-card)"
+              : "var(--bg-card-active)",
+          color: !canTest
+            ? "var(--text-muted)"
+            : isRunning
+              ? "var(--text-secondary)"
+              : "var(--text-on-dark)",
+          opacity: !canTest ? 0.6 : 1,
         }}
       >
-        {isRunning ? "Тестируем…" : phase === "done" ? "Повторить тест" : "Начать тест"}
+        {buttonText}
       </button>
     </div>
   );

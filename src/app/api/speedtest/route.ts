@@ -6,14 +6,44 @@ const CORS = {
   "Cache-Control": "no-store",
 };
 
-/** GET — returns random bytes for download speed measurement */
+/** GET — streams random bytes for download speed measurement (up to 500MB) */
 export async function GET(request: NextRequest) {
   const sizeParam = request.nextUrl.searchParams.get("size");
-  const bytes = Math.min(parseInt(sizeParam || "1048576", 10) || 1048576, 10_485_760); // max 10MB
-  const buf = Buffer.alloc(bytes, 0x58); // fill with 'X'
-  return new Response(buf, {
+  const totalBytes = Math.min(
+    parseInt(sizeParam || "1048576", 10) || 1048576,
+    524_288_000, // max 500MB
+  );
+
+  // For small requests (< 4MB), respond with a single buffer
+  if (totalBytes < 4_194_304) {
+    const buf = Buffer.alloc(totalBytes, 0x58);
+    return new Response(buf, {
+      status: 200,
+      headers: { ...CORS, "Content-Type": "application/octet-stream", "Content-Length": String(totalBytes) },
+    });
+  }
+
+  // For large requests, stream in 2MB chunks to avoid memory spikes
+  const CHUNK = 2 * 1024 * 1024;
+  const chunk = Buffer.alloc(CHUNK, 0x58);
+  let sent = 0;
+
+  const stream = new ReadableStream({
+    pull(controller) {
+      const remaining = totalBytes - sent;
+      if (remaining <= 0) {
+        controller.close();
+        return;
+      }
+      const size = Math.min(CHUNK, remaining);
+      controller.enqueue(size === CHUNK ? chunk : chunk.subarray(0, size));
+      sent += size;
+    },
+  });
+
+  return new Response(stream, {
     status: 200,
-    headers: { ...CORS, "Content-Type": "application/octet-stream" },
+    headers: { ...CORS, "Content-Type": "application/octet-stream", "Content-Length": String(totalBytes) },
   });
 }
 

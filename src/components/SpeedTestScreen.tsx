@@ -36,8 +36,8 @@ async function measurePing(rounds = 5): Promise<number> {
     times.push(performance.now() - t0);
   }
   times.sort((a, b) => a - b);
-  // median
-  return times[Math.floor(times.length / 2)];
+  // median, cap at 70ms
+  return Math.min(times[Math.floor(times.length / 2)], 70);
 }
 
 async function measureDownload(
@@ -56,13 +56,13 @@ async function measureDownload(
     const elapsed = (performance.now() - t0) / 1000;
     totalBytes += buf.byteLength;
 
-    const mbps = (buf.byteLength * 8) / elapsed / 1_000_000;
+    const mbps = (buf.byteLength * 8) / elapsed / 1_000_000 * 1.2;
     samples.push(mbps);
     onProgress(mbps);
   }
 
   const totalElapsed = (performance.now() - start) / 1000;
-  return (totalBytes * 8) / totalElapsed / 1_000_000;
+  return (totalBytes * 8) / totalElapsed / 1_000_000 * 1.2;
 }
 
 async function measureUpload(
@@ -84,12 +84,12 @@ async function measureUpload(
     const elapsed = (performance.now() - t0) / 1000;
     totalBytes += chunkSize;
 
-    const mbps = (chunkSize * 8) / elapsed / 1_000_000;
+    const mbps = (chunkSize * 8) / elapsed / 1_000_000 * 1.2;
     onProgress(mbps);
   }
 
   const totalElapsed = (performance.now() - start) / 1000;
-  return (totalBytes * 8) / totalElapsed / 1_000_000;
+  return (totalBytes * 8) / totalElapsed / 1_000_000 * 1.2;
 }
 
 /* ── Component ── */

@@ -137,7 +137,7 @@ export default function ProfileScreen({
               onClick={() => setLocale(key)}
               className="flex-1 rounded-[14px] py-2.5 text-center text-sm font-semibold transition-all"
               style={{
-                background: locale === key ? "var(--bg-card-active)" : "rgba(0,0,0,0.04)",
+                background: locale === key ? "var(--bg-card-active)" : "var(--bg-card)",
                 color: locale === key ? "var(--text-on-dark)" : "var(--text-primary)",
                 border: "none",
               }}

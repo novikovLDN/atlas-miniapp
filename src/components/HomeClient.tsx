@@ -60,9 +60,24 @@ export default function HomeClient() {
   const [locale, setLocaleState] = useState<Locale>("ru");
   const t = getTranslations(locale);
 
+  // Theme state
+  const [dark, setDark] = useState(false);
+
   useEffect(() => {
     setLocaleState(getSavedLocale());
+    const saved = localStorage.getItem("atlas_theme");
+    if (saved === "dark") {
+      setDark(true);
+      document.documentElement.classList.add("dark");
+    }
   }, []);
+
+  const toggleTheme = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("atlas_theme", next ? "dark" : "light");
+  };
 
   const handleSetLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
@@ -142,10 +157,25 @@ export default function HomeClient() {
 
   const i18nValue = { locale, t, setLocale: handleSetLocale };
 
+  const themeToggle = (
+    <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+      {dark ? (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06z" />
+        </svg>
+      ) : (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z" />
+        </svg>
+      )}
+    </button>
+  );
+
   /* ─── Loading ─── */
   if (loading) {
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg-dark)" }}>
           <div className="app-container flex min-h-screen w-full flex-col items-center justify-center gap-4">
             <div
@@ -163,6 +193,7 @@ export default function HomeClient() {
   if (error) {
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <main style={{ background: "var(--bg-dark)" }}>
           <div className="app-container flex min-h-screen flex-col items-center justify-center gap-5 px-8 page-enter">
             <p className="text-center text-lg font-bold text-[var(--text-primary)]">
@@ -187,6 +218,7 @@ export default function HomeClient() {
     const hasActive = data?.is_active ?? false;
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <AddDeviceScreen
           hasActiveSubscription={hasActive}
           subUrl={
@@ -204,6 +236,7 @@ export default function HomeClient() {
   if (view === "device_select") {
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <DeviceSelector
           onSelectDevice={(device) => {
             setSelectedDevice(device);
@@ -225,6 +258,7 @@ export default function HomeClient() {
       view === "setup_manual" ? selectedDevice : deviceType;
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <SetupFlow
           telegramId={telegramId}
           onClose={() => setView("main")}
@@ -253,6 +287,7 @@ export default function HomeClient() {
 
   return (
     <I18nContext.Provider value={i18nValue}>
+      {themeToggle}
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
           className="app-container"

@@ -92,7 +92,7 @@ export default function AddDeviceScreen({
             className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px] text-[34px]"
             style={{ background: "var(--bg-card)" }}
           >
-            \uD83D\uDCF2
+            {"📲"}
           </div>
           <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
             {t.addDeviceTitle}

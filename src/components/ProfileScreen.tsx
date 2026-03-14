@@ -126,7 +126,7 @@ export default function ProfileScreen({
         <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">
           {t.language}
         </h3>
-        <div className="flex gap-2">
+        <div className="lang-switcher">
           {([
             { key: "ru" as Locale, label: t.russian },
             { key: "en" as Locale, label: t.english },
@@ -135,12 +135,7 @@ export default function ProfileScreen({
               key={key}
               type="button"
               onClick={() => setLocale(key)}
-              className="flex-1 rounded-[14px] py-2.5 text-center text-sm font-semibold transition-all"
-              style={{
-                background: locale === key ? "var(--bg-card-active)" : "var(--bg-card)",
-                color: locale === key ? "var(--text-on-dark)" : "var(--text-primary)",
-                border: "none",
-              }}
+              className={`lang-btn${locale === key ? " lang-btn--active" : ""}`}
             >
               {label}
             </button>

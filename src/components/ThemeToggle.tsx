@@ -34,7 +34,7 @@ export default function ThemeToggle({ dark, onToggle }: ThemeToggleProps) {
         position:fixed;inset:0;z-index:99;pointer-events:none;
         background:${dark ? "var(--bg-container)" : "#1c1c1e"};
         clip-path:circle(0px at ${x}px ${y}px);
-        transition:clip-path 0.55s cubic-bezier(0.4,0,0.2,1);
+        transition:clip-path 0.28s cubic-bezier(0.4,0,0.2,1);
       `;
       document.body.appendChild(overlay);
 
@@ -42,15 +42,15 @@ export default function ThemeToggle({ dark, onToggle }: ThemeToggleProps) {
       overlay.offsetHeight;
       overlay.style.clipPath = `circle(${radius}px at ${x}px ${y}px)`;
 
-      // Apply theme mid-animation
+      // Apply theme quickly
       setTimeout(() => {
         onToggle();
-      }, 120);
+      }, 60);
 
       // Remove overlay after animation
       setTimeout(() => {
         overlay.remove();
-      }, 580);
+      }, 300);
     } else {
       onToggle();
     }

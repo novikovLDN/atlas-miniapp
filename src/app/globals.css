@@ -377,6 +377,49 @@ button:active, a:active, .device-card:active {
   transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ─── Language switcher ─── */
+
+.lang-switcher {
+  display: flex;
+  gap: 6px;
+  position: relative;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 3px;
+}
+
+.lang-btn {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-primary);
+  transition:
+    color 0.3s ease,
+    transform 0.35s cubic-bezier(0.25, 1.4, 0.5, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lang-btn:active {
+  transform: scale(0.94);
+}
+
+.lang-btn--active {
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
+  transition:
+    background 0.35s ease,
+    color 0.3s ease,
+    transform 0.35s cubic-bezier(0.25, 1.4, 0.5, 1);
+}
+
 /* ─── Scrollbar hide ─── */
 ::-webkit-scrollbar {
   width: 0;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import WebApp from "@twa-dev/sdk";
 import ShieldHero from "@/components/ShieldHero";
 import SubscriptionCard from "@/components/SubscriptionCard";
@@ -21,6 +21,7 @@ import {
   type Locale,
 } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
+import TouchRipple from "@/components/TouchRipple";
 
 type SubscriptionResponse =
   | {
@@ -80,11 +81,28 @@ export default function HomeClient() {
     localStorage.setItem("atlas_theme", next ? "dark" : "light");
   };
 
-  const handleSetLocale = (newLocale: Locale) => {
-    setLocaleState(newLocale);
-    saveLocale(newLocale);
-    document.documentElement.lang = newLocale;
-  };
+  const localeWrapRef = useRef<HTMLDivElement>(null);
+
+  const handleSetLocale = useCallback((newLocale: Locale) => {
+    const el = localeWrapRef.current;
+    if (el) {
+      el.style.transition = "opacity 0.18s ease-out";
+      el.style.opacity = "0";
+      setTimeout(() => {
+        setLocaleState(newLocale);
+        saveLocale(newLocale);
+        document.documentElement.lang = newLocale;
+        requestAnimationFrame(() => {
+          el.style.transition = "opacity 0.22s ease-in";
+          el.style.opacity = "1";
+        });
+      }, 180);
+    } else {
+      setLocaleState(newLocale);
+      saveLocale(newLocale);
+      document.documentElement.lang = newLocale;
+    }
+  }, []);
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
@@ -277,8 +295,10 @@ export default function HomeClient() {
   return (
     <I18nContext.Provider value={i18nValue}>
       {themeToggle}
+      <TouchRipple />
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
+          ref={localeWrapRef}
           className="app-container"
           style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}
         >

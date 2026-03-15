@@ -91,7 +91,7 @@ export default function SubscriptionCard({
             type="button"
             onClick={handleConnect}
             className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
-            style={{ background: "#ffffff", color: "var(--bg-card-active)" }}
+            style={{ background: "var(--text-on-dark)", color: "#1c1c1e" }}
           >
             {t.connect}
           </button>

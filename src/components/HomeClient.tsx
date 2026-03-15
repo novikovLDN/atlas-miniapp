@@ -20,6 +20,7 @@ import {
   getTranslations,
   type Locale,
 } from "@/lib/i18n";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type SubscriptionResponse =
   | {
@@ -60,9 +61,24 @@ export default function HomeClient() {
   const [locale, setLocaleState] = useState<Locale>("ru");
   const t = getTranslations(locale);
 
+  // Theme state
+  const [dark, setDark] = useState(false);
+
   useEffect(() => {
     setLocaleState(getSavedLocale());
+    const saved = localStorage.getItem("atlas_theme");
+    if (saved === "dark") {
+      setDark(true);
+      document.documentElement.classList.add("dark");
+    }
   }, []);
+
+  const toggleTheme = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("atlas_theme", next ? "dark" : "light");
+  };
 
   const handleSetLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
@@ -142,10 +158,13 @@ export default function HomeClient() {
 
   const i18nValue = { locale, t, setLocale: handleSetLocale };
 
+  const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
+
   /* ─── Loading ─── */
   if (loading) {
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg-dark)" }}>
           <div className="app-container flex min-h-screen w-full flex-col items-center justify-center gap-4">
             <div
@@ -163,6 +182,7 @@ export default function HomeClient() {
   if (error) {
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <main style={{ background: "var(--bg-dark)" }}>
           <div className="app-container flex min-h-screen flex-col items-center justify-center gap-5 px-8 page-enter">
             <p className="text-center text-lg font-bold text-[var(--text-primary)]">
@@ -187,6 +207,7 @@ export default function HomeClient() {
     const hasActive = data?.is_active ?? false;
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <AddDeviceScreen
           hasActiveSubscription={hasActive}
           subUrl={
@@ -204,6 +225,7 @@ export default function HomeClient() {
   if (view === "device_select") {
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <DeviceSelector
           onSelectDevice={(device) => {
             setSelectedDevice(device);
@@ -225,6 +247,7 @@ export default function HomeClient() {
       view === "setup_manual" ? selectedDevice : deviceType;
     return (
       <I18nContext.Provider value={i18nValue}>
+        {themeToggle}
         <SetupFlow
           telegramId={telegramId}
           onClose={() => setView("main")}
@@ -253,6 +276,7 @@ export default function HomeClient() {
 
   return (
     <I18nContext.Provider value={i18nValue}>
+      {themeToggle}
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
           className="app-container"

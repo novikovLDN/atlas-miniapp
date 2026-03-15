@@ -19,6 +19,17 @@
   --accent: var(--accent-blue);
 }
 
+html.dark {
+  --bg-dark: #000000;
+  --bg-container: #1c1c1e;
+  --bg-card: #2c2c2e;
+  --bg-card-active: #3a3a3c;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989f;
+  --text-muted: #636366;
+  --text-on-dark: #ffffff;
+}
+
 @theme inline {
   --color-bg-primary: var(--bg-dark);
   --color-accent: var(--accent);
@@ -56,9 +67,22 @@ body {
   overflow: hidden;
 }
 
-/* ─── Smooth transitions ─── */
-button, a {
-  transition: all 0.2s ease;
+/* ─── GPU-accelerated press for ALL interactive elements ─── */
+button, a, .device-card, .theme-toggle, .bottom-pill-item {
+  will-change: transform;
+  transform: scale3d(1, 1, 1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 1.5, 0.5, 1),
+    opacity 0.2s ease;
+}
+
+button:active, a:active, .device-card:active {
+  transform: scale3d(0.965, 0.965, 1);
+  transition:
+    transform 0.12s cubic-bezier(0.2, 0, 0.4, 1),
+    opacity 0.08s ease;
 }
 
 /* ─── Card (flat, no shadow, no border) ─── */
@@ -82,14 +106,12 @@ button, a {
   padding: 14px 24px;
   width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
   text-align: center;
   display: block;
 }
 
 .glass-button:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+  opacity: 0.88;
 }
 
 /* ─── Secondary button (light gray, flat) ─── */
@@ -103,13 +125,11 @@ button, a {
   padding: 12px 24px;
   width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
   text-align: center;
 }
 
 .glass-button-secondary:active {
-  background: #e8e8ed;
-  transform: scale(0.98);
+  opacity: 0.88;
 }
 
 /* ─── Green button ─── */
@@ -123,12 +143,10 @@ button, a {
   padding: 14px 24px;
   width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .btn-green:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+  opacity: 0.88;
 }
 
 /* ─── Tab fade animation ─── */
@@ -213,11 +231,6 @@ button, a {
   border: none;
   box-shadow: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.device-card:active {
-  transform: scale(0.96);
 }
 
 .device-card--detected {
@@ -230,7 +243,7 @@ button, a {
   width: 40px;
   height: 24px;
   border-radius: 12px;
-  background: #e5e5ea;
+  background: var(--text-muted);
   position: relative;
   transition: background 0.3s ease;
   flex-shrink: 0;
@@ -249,7 +262,8 @@ button, a {
   top: 2px;
   left: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.25, 1.5, 0.5, 1);
 }
 
 .toggle-track.active .toggle-thumb {
@@ -319,11 +333,91 @@ button, a {
   color: var(--text-muted);
   position: relative;
   z-index: 1;
-  transition: color 0.3s ease;
+}
+
+.bottom-pill-item:active {
+  transform: scale3d(0.88, 0.88, 1);
 }
 
 .bottom-pill-item.active {
   color: var(--text-on-dark);
+}
+
+/* ─── Theme toggle ─── */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 1.5, 0.5, 1),
+    background 0.5s ease,
+    color 0.5s ease !important;
+}
+
+.theme-toggle:active {
+  transform: scale3d(0.85, 0.85, 1);
+}
+
+.theme-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Language switcher ─── */
+
+.lang-switcher {
+  display: flex;
+  gap: 6px;
+  position: relative;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 3px;
+}
+
+.lang-btn {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-primary);
+  transition:
+    color 0.3s ease,
+    transform 0.35s cubic-bezier(0.25, 1.4, 0.5, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lang-btn:active {
+  transform: scale(0.94);
+}
+
+.lang-btn--active {
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
+  transition:
+    background 0.35s ease,
+    color 0.3s ease,
+    transform 0.35s cubic-bezier(0.25, 1.4, 0.5, 1);
 }
 
 /* ─── Scrollbar hide ─── */

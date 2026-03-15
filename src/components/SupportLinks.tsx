@@ -7,7 +7,7 @@ export default function SupportLinks() {
   const { t } = useI18n();
 
   const LINKS = [
-    { label: t.support, url: "https://t.me/asc_support" },
+    { label: t.support, url: "https://t.me/Atlas_SupportSecurity" },
     { label: t.channel, url: "https://t.me/atlas_secure" },
   ] as const;
 

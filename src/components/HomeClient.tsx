@@ -138,7 +138,7 @@ export default function HomeClient() {
   const buyUrl =
     process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/atlassecure_bot?start=buy";
 
-  const openSupport = () => openTelegramLink("https://t.me/asc_support");
+  const openSupport = () => openTelegramLink("https://t.me/Atlas_SupportSecurity");
 
   const getErrorMessage = (err: string) => {
     switch (err) {

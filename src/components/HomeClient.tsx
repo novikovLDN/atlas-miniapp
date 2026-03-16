@@ -122,6 +122,12 @@ export default function HomeClient() {
     WebApp.ready();
     WebApp.expand();
 
+    // Handle startapp parameter — open specific tab on launch
+    const startParam = WebApp.initDataUnsafe?.start_param;
+    if (startParam === "guide") {
+      setActiveTab("guide");
+    }
+
     const user = WebApp.initDataUnsafe?.user;
     const userId = user?.id;
     const initData = WebApp.initData;

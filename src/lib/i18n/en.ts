@@ -118,4 +118,9 @@ export const en: Translations = {
   v2RayTunRequired: "The v2RayTun app is required to connect",
   installForIOS: "Install for iOS",
   installForAndroid: "Install for Android",
+
+  // Setup banner
+  bannerTitle: "First time here?",
+  bannerDescription: "Let\u2019s set up VPN on this device — it only takes a couple of minutes",
+  bannerAction: "Set up",
 };

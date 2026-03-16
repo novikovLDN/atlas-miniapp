@@ -22,6 +22,7 @@ import {
 } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
 import TouchRipple from "@/components/TouchRipple";
+import SetupBanner from "@/components/SetupBanner";
 
 type SubscriptionResponse =
   | {
@@ -369,6 +370,9 @@ export default function HomeClient() {
               )}
             </div>
           </div>
+
+          {/* ─── Setup banner ─── */}
+          <SetupBanner onSetup={() => setView("setup")} />
 
           {/* ─── Bottom bar ─── */}
           <div

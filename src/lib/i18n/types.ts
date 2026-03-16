@@ -115,4 +115,9 @@ export type Translations = {
   v2RayTunRequired: string;
   installForIOS: string;
   installForAndroid: string;
+
+  // Setup banner
+  bannerTitle: string;
+  bannerDescription: string;
+  bannerAction: string;
 };

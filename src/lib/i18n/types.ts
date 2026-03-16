@@ -120,4 +120,36 @@ export type Translations = {
   bannerTitle: string;
   bannerDescription: string;
   bannerAction: string;
+
+  // Guide tab
+  tabGuide: string;
+  guideTitle: string;
+  guideSubtitle: string;
+
+  // Guide — TV
+  guideTvTitle: string;
+  guideTvStep1: string;
+  guideTvStep2: string;
+  guideTvStep3: string;
+  guideTvStep4: string;
+  guideTvStep5: string;
+
+  // Guide — PC
+  guidePcTitle: string;
+  guidePcOption1Title: string;
+  guidePcOption1Step1: string;
+  guidePcOption1Step2: string;
+  guidePcOption1Step3: string;
+  guidePcOption2Title: string;
+  guidePcOption2Step1: string;
+  guidePcOption2Step2: string;
+  guidePcOption2Step3: string;
+
+  // Guide — Second phone
+  guidePhoneTitle: string;
+  guidePhoneStep1: string;
+  guidePhoneStep2: string;
+  guidePhoneStep3: string;
+  guidePhoneStep4: string;
+  guidePhoneStep5: string;
 };

@@ -9,6 +9,7 @@ import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
 import AddDeviceScreen from "@/components/AddDeviceScreen";
 import ProfileScreen from "@/components/ProfileScreen";
+import GuideScreen from "@/components/GuideScreen";
 
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import { openTelegramLink } from "@/lib/openTelegramLink";
@@ -36,9 +37,9 @@ type SubscriptionResponse =
     }
   | { is_active: false; name: string };
 
-type Tab = "home" | "profile";
+type Tab = "home" | "guide" | "profile";
 
-const TAB_INDEX: Record<Tab, number> = { home: 0, profile: 1 };
+const TAB_INDEX: Record<Tab, number> = { home: 0, guide: 1, profile: 2 };
 const BLOB_STEP = 52; // 48px item + 4px gap
 
 export default function HomeClient() {
@@ -342,6 +343,16 @@ export default function HomeClient() {
               </div>
             </div>
 
+            {/* Guide tab */}
+            <div
+              style={{
+                display: activeTab === "guide" ? "block" : "none",
+                animation: activeTab === "guide" ? "tabFadeIn 0.3s ease forwards" : "none",
+              }}
+            >
+              <GuideScreen />
+            </div>
+
             {/* Profile tab */}
             <div
               style={{
@@ -393,6 +404,16 @@ export default function HomeClient() {
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M3 12.5L12 3.5L21 12.5H18V20.5H14V14.5H10V20.5H6V12.5H3Z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className={`bottom-pill-item ${activeTab === "guide" ? "active" : ""}`}
+                onClick={() => switchTab("guide")}
+                aria-label={t.tabGuide}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2ZM6 20V4H13V9H18V20H6ZM8 15.01V17H16V15.01H8ZM8 11.01V13H16V11.01H8Z" />
                 </svg>
               </button>
 <button

@@ -362,7 +362,7 @@ export default function HomeClient() {
                 animation: activeTab === "guide" ? "tabFadeIn 0.3s ease forwards" : "none",
               }}
             >
-              <GuideScreen />
+              <GuideScreen onSetup={() => setView("setup")} />
             </div>
 
             {/* Profile tab */}

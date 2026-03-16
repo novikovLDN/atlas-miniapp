@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { APP_LINKS } from "@/lib/detectDevice";
-import { openTelegramLink } from "@/lib/openTelegramLink";
+
 
 type Section = "tv" | "pc" | "phone";
 
@@ -14,7 +14,7 @@ const DOWNLOAD_ITEMS = [
   { key: "macos", label: "macOS", icon: "🍎" },
 ] as const;
 
-export default function GuideScreen() {
+export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
   const { t } = useI18n();
   const [open, setOpen] = useState<Section | null>(null);
 
@@ -147,23 +147,19 @@ export default function GuideScreen() {
         </div>
       </div>
 
-      {/* Support */}
-      <div className="guide-support">
-        <button
-          type="button"
-          className="guide-support__btn"
-          onClick={() => openTelegramLink("https://t.me/Atlas_SupportSecurity")}
-        >
-          {t.support}
-        </button>
-        <button
-          type="button"
-          className="guide-support__btn"
-          onClick={() => openTelegramLink("https://t.me/atlas_secure")}
-        >
-          {t.channel}
-        </button>
-      </div>
+      {/* Setup button */}
+      {onSetup && (
+        <div className="guide-support">
+          <button
+            type="button"
+            className="glass-button"
+            style={{ width: "100%" }}
+            onClick={onSetup}
+          >
+            {t.startSetupThisDevice}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

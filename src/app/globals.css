@@ -790,6 +790,80 @@ html.dark .guide-steps li:not(:last-child)::after {
   margin-top: 18px;
 }
 
+/* Download grid on guide screen */
+.guide-download {
+  margin-top: 28px;
+}
+
+.guide-download__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.guide-download__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.guide-download__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 0;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1.5px solid var(--bg-card);
+  transition: border-color 0.2s ease;
+}
+
+html.dark .guide-download__item {
+  background: #1a1a1c;
+  border-color: #2a2a2c;
+}
+
+.guide-download__item:active {
+  opacity: 0.7;
+}
+
+/* Support buttons on guide screen */
+.guide-support {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  padding-bottom: 8px;
+}
+
+.guide-support__btn {
+  flex: 1;
+  padding: 14px 0;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  border: 1.5px solid var(--bg-card);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+html.dark .guide-support__btn {
+  background: #1a1a1c;
+  border-color: #2a2a2c;
+}
+
+.guide-support__btn:active {
+  opacity: 0.7;
+}
+
 /* ─── Scrollbar hide ─── */
 ::-webkit-scrollbar {
   width: 0;

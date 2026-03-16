@@ -58,9 +58,13 @@ export default function HomeClient() {
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
   // Resolve initial tab from Telegram startapp param (before first render)
+  // WebApp.initDataUnsafe.start_param works for deep links (t.me/bot/app?startapp=guide)
+  // URL query param works for WebAppInfo(url="...?startapp=guide")
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     try {
-      const startParam = WebApp.initDataUnsafe?.start_param;
+      const startParam =
+        WebApp.initDataUnsafe?.start_param ||
+        new URLSearchParams(window.location.search).get("startapp");
       if (startParam === "guide") return "guide";
       if (startParam === "profile") return "profile";
     } catch { /* SSR safety */ }

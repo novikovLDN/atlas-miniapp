@@ -57,7 +57,15 @@ export default function HomeClient() {
     | "add_device";
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
-  const [activeTab, setActiveTab] = useState<Tab>("home");
+  // Resolve initial tab from Telegram startapp param (before first render)
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    try {
+      const startParam = WebApp.initDataUnsafe?.start_param;
+      if (startParam === "guide") return "guide";
+      if (startParam === "profile") return "profile";
+    } catch { /* SSR safety */ }
+    return "home";
+  });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
 
   // i18n state

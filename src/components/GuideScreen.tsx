@@ -26,9 +26,10 @@ export default function GuideScreen() {
       <div className="guide-header">
         <p className="guide-header__label">
           <span className="guide-header__accent" />
-          {t.guideSubtitle}
+          {t.guideLabel}
         </p>
         <h1 className="guide-header__title">{t.guideTitle}</h1>
+        <p className="guide-header__subtitle">{t.guideSubtitle}</p>
       </div>
 
       <div className="guide-sections">

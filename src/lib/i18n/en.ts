@@ -126,8 +126,9 @@ export const en: Translations = {
 
   // Guide tab
   tabGuide: "Guide",
-  guideTitle: "Guides",
-  guideSubtitle: "How to set up VPN on different devices",
+  guideTitle: "How to set up VPN",
+  guideSubtitle: "Step-by-step guides for all devices",
+  guideLabel: "Guides",
 
   // Guide — TV
   guideTvTitle: "Setup on TV",

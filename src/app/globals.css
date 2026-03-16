@@ -590,19 +590,17 @@ html.dark .guide-screen {
   font-size: 12px;
   font-weight: 700;
   color: var(--guide-accent);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   display: flex;
   align-items: center;
   gap: 8px;
-  line-height: 1.4;
 }
 
 .guide-header__accent {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--guide-accent);
   flex-shrink: 0;
@@ -610,6 +608,13 @@ html.dark .guide-screen {
 
 html.dark .guide-header__accent {
   box-shadow: 0 0 10px rgba(48, 209, 88, 0.5);
+}
+
+.guide-header__subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 6px 0 0;
+  line-height: 1.4;
 }
 
 .guide-sections {

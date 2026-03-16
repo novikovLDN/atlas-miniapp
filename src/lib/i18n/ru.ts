@@ -126,8 +126,9 @@ export const ru: Translations = {
 
   // Guide tab
   tabGuide: "Инструкция",
-  guideTitle: "Инструкции",
-  guideSubtitle: "Как подключить VPN на разных устройствах",
+  guideTitle: "Как подключить VPN",
+  guideSubtitle: "Пошаговые инструкции для всех устройств",
+  guideLabel: "Инструкции",
 
   // Guide — TV
   guideTvTitle: "Установка на телевизор",

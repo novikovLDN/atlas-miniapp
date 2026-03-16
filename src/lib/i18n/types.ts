@@ -125,6 +125,7 @@ export type Translations = {
   tabGuide: string;
   guideTitle: string;
   guideSubtitle: string;
+  guideLabel: string;
 
   // Guide — TV
   guideTvTitle: string;

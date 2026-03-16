@@ -123,4 +123,36 @@ export const en: Translations = {
   bannerTitle: "First time here?",
   bannerDescription: "Let\u2019s set up VPN on this device — it only takes a couple of minutes",
   bannerAction: "Set up",
+
+  // Guide tab
+  tabGuide: "Guide",
+  guideTitle: "Guides",
+  guideSubtitle: "How to set up VPN on different devices",
+
+  // Guide — TV
+  guideTvTitle: "Setup on TV",
+  guideTvStep1: "Install V2RayTun on your phone from the App Store or Google Play",
+  guideTvStep2: "On your TV, open the app store and install V2RayTun",
+  guideTvStep3: "Open V2RayTun on the TV and tap \"Add via QR\"",
+  guideTvStep4: "On your phone in V2RayTun, tap + in the top-right corner → \"Scan QR\"",
+  guideTvStep5: "Scan the QR code from the TV screen — the subscription will be added automatically",
+
+  // Guide — PC
+  guidePcTitle: "Setup on PC",
+  guidePcOption1Title: "Via Telegram (quick method)",
+  guidePcOption1Step1: "Open Telegram on your computer",
+  guidePcOption1Step2: "Go to the Atlas bot and tap \"Connect\"",
+  guidePcOption1Step3: "Tap \"Connect\" again — the config will be added to V2RayTun automatically",
+  guidePcOption2Title: "Via app installation",
+  guidePcOption2Step1: "Go to the Atlas bot → \"Instructions\" section",
+  guidePcOption2Step2: "Download and install V2RayTun for your OS",
+  guidePcOption2Step3: "Follow the bot instructions to add your subscription",
+
+  // Guide — Second phone
+  guidePhoneTitle: "Setup on another phone",
+  guidePhoneStep1: "Install V2RayTun on the second phone from the App Store or Google Play",
+  guidePhoneStep2: "On this device, open the Atlas mini app",
+  guidePhoneStep3: "Tap \"Set up another device\" and copy the key",
+  guidePhoneStep4: "Send the key to the second phone (messenger, notes, etc.)",
+  guidePhoneStep5: "On the second phone, open V2RayTun, tap + → \"Paste from clipboard\" and allow pasting",
 };

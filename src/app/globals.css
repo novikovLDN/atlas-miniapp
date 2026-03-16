@@ -467,15 +467,21 @@ button:active, a:active, .device-card:active {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: var(--bg-card);
+  background: var(--bg-container);
+  border: 1.5px solid color-mix(in srgb, var(--accent-blue) 30%, transparent);
   border-radius: 22px;
-  padding: 18px 18px 16px;
+  padding: 20px 18px 16px;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 12px 40px rgba(52, 120, 246, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 html.dark .setup-banner__content {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: var(--bg-card);
+  box-shadow:
+    0 12px 40px rgba(52, 120, 246, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .setup-banner__close {
@@ -511,7 +517,7 @@ html.dark .setup-banner__content {
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: color-mix(in srgb, var(--accent-blue) 10%, transparent);
+  background: color-mix(in srgb, var(--accent-blue) 14%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -523,7 +529,7 @@ html.dark .setup-banner__content {
 }
 
 .setup-banner__title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;

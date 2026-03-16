@@ -563,7 +563,14 @@ html.dark .setup-banner__content {
 /* ─── Guide screen ─── */
 
 .guide-screen {
+  --guide-accent: var(--accent-blue);
+  --guide-accent-rgb: 52, 120, 246;
   padding: 0 20px 24px;
+}
+
+html.dark .guide-screen {
+  --guide-accent: #30d158;
+  --guide-accent-rgb: 48, 209, 88;
 }
 
 .guide-header {
@@ -582,13 +589,14 @@ html.dark .setup-banner__content {
 .guide-header__label {
   font-size: 12px;
   font-weight: 700;
-  color: var(--accent-green);
+  color: var(--guide-accent);
   margin: 0 0 8px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   display: flex;
   align-items: center;
   gap: 8px;
+  line-height: 1.4;
 }
 
 .guide-header__accent {
@@ -596,9 +604,12 @@ html.dark .setup-banner__content {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent-green);
-  box-shadow: 0 0 10px rgba(52, 199, 89, 0.5);
+  background: var(--guide-accent);
   flex-shrink: 0;
+}
+
+html.dark .guide-header__accent {
+  box-shadow: 0 0 10px rgba(48, 209, 88, 0.5);
 }
 
 .guide-sections {
@@ -613,22 +624,22 @@ html.dark .setup-banner__content {
   border-radius: var(--radius-card);
   overflow: hidden;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  border: 1px solid transparent;
+  border: 1.5px solid var(--bg-card);
 }
 
 .guide-card--open {
-  box-shadow: 0 4px 24px rgba(52, 199, 89, 0.06);
-  border-color: color-mix(in srgb, var(--accent-green) 20%, transparent);
+  box-shadow: 0 4px 20px rgba(var(--guide-accent-rgb), 0.06);
+  border-color: rgba(var(--guide-accent-rgb), 0.25);
 }
 
 html.dark .guide-card {
   background: #1a1a1c;
-  border: 1px solid #2a2a2c;
+  border-color: #2a2a2c;
 }
 
 html.dark .guide-card--open {
-  border-color: color-mix(in srgb, var(--accent-green) 30%, transparent);
-  box-shadow: 0 4px 24px rgba(52, 199, 89, 0.08);
+  border-color: rgba(var(--guide-accent-rgb), 0.35);
+  box-shadow: 0 4px 24px rgba(var(--guide-accent-rgb), 0.08);
 }
 
 .guide-card__trigger {
@@ -654,15 +665,15 @@ html.dark .guide-card--open {
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: color-mix(in srgb, var(--accent-green) 10%, transparent);
-  color: var(--accent-green);
+  background: rgba(var(--guide-accent-rgb), 0.10);
+  color: var(--guide-accent);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 html.dark .guide-card__icon {
-  background: color-mix(in srgb, var(--accent-green) 12%, transparent);
+  background: rgba(var(--guide-accent-rgb), 0.12);
 }
 
 .guide-card__label {
@@ -675,13 +686,14 @@ html.dark .guide-card__icon {
 .guide-card__chevron {
   flex-shrink: 0;
   color: var(--text-muted);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.3s ease;
   display: flex;
 }
 
 .guide-card--open .guide-card__chevron {
   transform: rotate(180deg);
-  color: var(--accent-green);
+  color: var(--guide-accent);
 }
 
 /* Collapsible body */
@@ -736,8 +748,8 @@ html.dark .guide-steps li {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--accent-green) 12%, transparent);
-  color: var(--accent-green);
+  background: rgba(var(--guide-accent-rgb), 0.12);
+  color: var(--guide-accent);
   font-size: 12px;
   font-weight: 700;
   text-align: center;
@@ -745,7 +757,7 @@ html.dark .guide-steps li {
 }
 
 html.dark .guide-steps li::before {
-  background: color-mix(in srgb, var(--accent-green) 15%, transparent);
+  background: rgba(var(--guide-accent-rgb), 0.15);
 }
 
 /* Connecting line between steps */
@@ -756,19 +768,19 @@ html.dark .guide-steps li::before {
   top: 26px;
   bottom: 0;
   width: 2px;
-  background: color-mix(in srgb, var(--accent-green) 10%, transparent);
+  background: rgba(var(--guide-accent-rgb), 0.10);
   border-radius: 1px;
 }
 
 html.dark .guide-steps li:not(:last-child)::after {
-  background: color-mix(in srgb, var(--accent-green) 14%, transparent);
+  background: rgba(var(--guide-accent-rgb), 0.14);
 }
 
 /* Sub-option title inside PC section */
 .guide-option-title {
   font-size: 13px;
   font-weight: 700;
-  color: var(--accent-green);
+  color: var(--guide-accent);
   margin: 0 0 10px;
   text-transform: uppercase;
   letter-spacing: 0.3px;

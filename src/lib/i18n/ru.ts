@@ -118,4 +118,42 @@ export const ru: Translations = {
   v2RayTunRequired: "Для подключения необходимо приложение v2RayTun",
   installForIOS: "Установить для iOS",
   installForAndroid: "Установить для Android",
+
+  // Setup banner
+  bannerTitle: "Впервые здесь?",
+  bannerDescription: "Давайте настроим VPN на этом устройстве — это займёт пару минут",
+  bannerAction: "Настроить",
+
+  // Guide tab
+  tabGuide: "Инструкция",
+  guideTitle: "Как подключить VPN",
+  guideSubtitle: "Пошаговые инструкции для всех устройств",
+  guideLabel: "Инструкции",
+
+  // Guide — TV
+  guideTvTitle: "Установка на телевизор",
+  guideTvStep1: "Установите приложение V2RayTun на телефон из App Store или Google Play",
+  guideTvStep2: "На телевизоре откройте магазин приложений и установите V2RayTun",
+  guideTvStep3: "Откройте V2RayTun на телевизоре и нажмите «Добавить по QR»",
+  guideTvStep4: "На телефоне в приложении V2RayTun нажмите + в правом верхнем углу → «Сканировать QR»",
+  guideTvStep5: "Отсканируйте QR-код с экрана телевизора — подписка добавится автоматически",
+
+  // Guide — PC
+  guidePcTitle: "Установка на компьютер",
+  guidePcOption1Title: "Через Telegram (быстрый способ)",
+  guidePcOption1Step1: "Откройте Telegram на компьютере",
+  guidePcOption1Step2: "Перейдите в бот Atlas и нажмите «Подключиться»",
+  guidePcOption1Step3: "Нажмите «Подключиться» ещё раз — конфигурация автоматически добавится в V2RayTun",
+  guidePcOption2Title: "Через установку приложения",
+  guidePcOption2Step1: "Перейдите в бот Atlas → раздел «Инструкция»",
+  guidePcOption2Step2: "Скачайте и установите V2RayTun для вашей ОС",
+  guidePcOption2Step3: "Следуйте инструкции в боте для добавления подписки",
+
+  // Guide — Second phone
+  guidePhoneTitle: "Установка на другой телефон",
+  guidePhoneStep1: "Установите V2RayTun на втором телефоне из App Store или Google Play",
+  guidePhoneStep2: "На этом устройстве откройте мини-приложение Atlas",
+  guidePhoneStep3: "Нажмите «Настроить другое устройство» и скопируйте ключ",
+  guidePhoneStep4: "Передайте ключ на второй телефон (мессенджер, заметки и т.д.)",
+  guidePhoneStep5: "На втором телефоне откройте V2RayTun, нажмите + → «Вставить из буфера обмена» и разрешите вставку",
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import WebApp from "@twa-dev/sdk";
 import ShieldHero from "@/components/ShieldHero";
 import SubscriptionCard from "@/components/SubscriptionCard";
@@ -9,6 +9,7 @@ import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
 import AddDeviceScreen from "@/components/AddDeviceScreen";
 import ProfileScreen from "@/components/ProfileScreen";
+import GuideScreen from "@/components/GuideScreen";
 
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import { openTelegramLink } from "@/lib/openTelegramLink";
@@ -21,6 +22,8 @@ import {
   type Locale,
 } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
+import TouchRipple from "@/components/TouchRipple";
+import SetupBanner from "@/components/SetupBanner";
 
 type SubscriptionResponse =
   | {
@@ -34,9 +37,9 @@ type SubscriptionResponse =
     }
   | { is_active: false; name: string };
 
-type Tab = "home" | "profile";
+type Tab = "home" | "guide" | "profile";
 
-const TAB_INDEX: Record<Tab, number> = { home: 0, profile: 1 };
+const TAB_INDEX: Record<Tab, number> = { home: 0, guide: 1, profile: 2 };
 const BLOB_STEP = 52; // 48px item + 4px gap
 
 export default function HomeClient() {
@@ -54,7 +57,19 @@ export default function HomeClient() {
     | "add_device";
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
-  const [activeTab, setActiveTab] = useState<Tab>("home");
+  // Resolve initial tab from Telegram startapp param (before first render)
+  // WebApp.initDataUnsafe.start_param works for deep links (t.me/bot/app?startapp=guide)
+  // URL query param works for WebAppInfo(url="...?startapp=guide")
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    try {
+      const startParam =
+        WebApp.initDataUnsafe?.start_param ||
+        new URLSearchParams(window.location.search).get("startapp");
+      if (startParam === "guide") return "guide";
+      if (startParam === "profile") return "profile";
+    } catch { /* SSR safety */ }
+    return "home";
+  });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
 
   // i18n state
@@ -80,11 +95,28 @@ export default function HomeClient() {
     localStorage.setItem("atlas_theme", next ? "dark" : "light");
   };
 
-  const handleSetLocale = (newLocale: Locale) => {
-    setLocaleState(newLocale);
-    saveLocale(newLocale);
-    document.documentElement.lang = newLocale;
-  };
+  const localeWrapRef = useRef<HTMLDivElement>(null);
+
+  const handleSetLocale = useCallback((newLocale: Locale) => {
+    const el = localeWrapRef.current;
+    if (el) {
+      el.style.transition = "opacity 0.18s ease-out";
+      el.style.opacity = "0";
+      setTimeout(() => {
+        setLocaleState(newLocale);
+        saveLocale(newLocale);
+        document.documentElement.lang = newLocale;
+        requestAnimationFrame(() => {
+          el.style.transition = "opacity 0.22s ease-in";
+          el.style.opacity = "1";
+        });
+      }, 180);
+    } else {
+      setLocaleState(newLocale);
+      saveLocale(newLocale);
+      document.documentElement.lang = newLocale;
+    }
+  }, []);
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
@@ -277,8 +309,10 @@ export default function HomeClient() {
   return (
     <I18nContext.Provider value={i18nValue}>
       {themeToggle}
+      <TouchRipple />
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
+          ref={localeWrapRef}
           className="app-container"
           style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}
         >
@@ -321,6 +355,16 @@ export default function HomeClient() {
               </div>
             </div>
 
+            {/* Guide tab */}
+            <div
+              style={{
+                display: activeTab === "guide" ? "block" : "none",
+                animation: activeTab === "guide" ? "tabFadeIn 0.3s ease forwards" : "none",
+              }}
+            >
+              <GuideScreen />
+            </div>
+
             {/* Profile tab */}
             <div
               style={{
@@ -350,6 +394,9 @@ export default function HomeClient() {
             </div>
           </div>
 
+          {/* ─── Setup banner ─── */}
+          <SetupBanner onSetup={() => setView("setup")} />
+
           {/* ─── Bottom bar ─── */}
           <div
             className="flex-shrink-0 flex justify-center pb-4 pt-2"
@@ -369,6 +416,16 @@ export default function HomeClient() {
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M3 12.5L12 3.5L21 12.5H18V20.5H14V14.5H10V20.5H6V12.5H3Z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className={`bottom-pill-item ${activeTab === "guide" ? "active" : ""}`}
+                onClick={() => switchTab("guide")}
+                aria-label={t.tabGuide}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2ZM6 20V4H13V9H18V20H6ZM8 15.01V17H16V15.01H8ZM8 11.01V13H16V11.01H8Z" />
                 </svg>
               </button>
 <button

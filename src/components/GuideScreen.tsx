@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { APP_LINKS } from "@/lib/detectDevice";
+import { openTelegramLink } from "@/lib/openTelegramLink";
 
 type Section = "tv" | "pc" | "phone";
+
+const DOWNLOAD_ITEMS = [
+  { key: "ios", label: "iOS", icon: "📱" },
+  { key: "android", label: "Android", icon: "🤖" },
+  { key: "windows", label: "Windows", icon: "🖥" },
+  { key: "macos", label: "macOS", icon: "🍎" },
+] as const;
 
 export default function GuideScreen() {
   const { t } = useI18n();
@@ -116,6 +125,43 @@ export default function GuideScreen() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Download section */}
+      <div className="guide-download">
+        <h2 className="guide-download__title">{t.downloadApplication}</h2>
+        <div className="guide-download__grid">
+          {DOWNLOAD_ITEMS.map(({ key, label, icon }) => (
+            <a
+              key={key}
+              href={APP_LINKS[key].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="guide-download__item"
+            >
+              <span>{icon}</span>
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Support */}
+      <div className="guide-support">
+        <button
+          type="button"
+          className="guide-support__btn"
+          onClick={() => openTelegramLink("https://t.me/Atlas_SupportSecurity")}
+        >
+          {t.support}
+        </button>
+        <button
+          type="button"
+          className="guide-support__btn"
+          onClick={() => openTelegramLink("https://t.me/atlas_secure")}
+        >
+          {t.channel}
+        </button>
       </div>
     </div>
   );

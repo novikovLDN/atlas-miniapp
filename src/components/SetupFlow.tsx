@@ -35,7 +35,7 @@ const STEP1_ICON: Record<DeviceType, string> = {
 type SetupFlowProps = {
   telegramId: number;
   onClose: () => void;
-  tariff: "basic" | "plus";
+  tariff: "basic" | "plus" | "business";
   subUrl?: string;
   deviceType?: DeviceType;
   onSelectOtherDevice?: () => void;

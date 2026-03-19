@@ -1095,6 +1095,67 @@ html.dark .payment-method {
   animation: paymentSpin 0.7s linear infinite;
 }
 
+.payment-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+.payment-back:active { opacity: 0.6; }
+
+.payment-method__icon--basic {
+  background: rgba(52, 199, 89, 0.14);
+  color: #34c759;
+}
+
+.payment-method__icon--plus {
+  background: rgba(175, 82, 222, 0.14);
+  color: #af52de;
+}
+
+.payment-method__icon--business {
+  background: rgba(255, 159, 10, 0.14);
+  color: #ff9f0a;
+}
+
+.payment-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+html.dark .payment-summary {
+  background: rgba(255, 255, 255, 0.06);
+}
+.payment-summary__tariff {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.payment-summary__sep {
+  opacity: 0.35;
+}
+.payment-summary__detail {
+  color: var(--text-secondary);
+}
+.payment-summary__price {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
 .payment-toast {
   position: fixed;
   bottom: 100px;

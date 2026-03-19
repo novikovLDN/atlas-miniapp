@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/i18n";
 type SubscriptionCardProps = {
   name: string;
   isActive: boolean;
-  tariff?: "basic" | "plus";
+  tariff?: "basic" | "plus" | "business";
   expiresFormatted?: string;
   daysLeft?: number;
   buySubscriptionUrl: string;
@@ -75,7 +75,7 @@ export default function SubscriptionCard({
               style={{ background: isActive ? "#34c759" : "#ff3b30" }}
             />
             {isActive ? t.active : t.inactive}
-            {isActive && tariff && ` \u00B7 ${tariff === "plus" ? "Plus" : "Basic"}`}
+            {isActive && tariff && ` \u00B7 ${tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic"}`}
           </span>
           {isActive ? (
             <span className="font-semibold" style={{ color: "#4ade80" }}>

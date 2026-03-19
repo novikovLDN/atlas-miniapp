@@ -8,7 +8,7 @@ type ProfileScreenProps = {
   name: string;
   telegramId: number;
   isActive: boolean;
-  tariff?: "basic" | "plus";
+  tariff?: "basic" | "plus" | "business";
   expiresFormatted?: string;
   daysLeft?: number;
   subUrl?: string;
@@ -100,7 +100,7 @@ export default function ProfileScreen({
               <div className="flex justify-between">
                 <dt className="text-[var(--text-secondary)]">{t.tariff}</dt>
                 <dd className="font-semibold text-[var(--text-primary)]">
-                  {tariff === "plus" ? "Plus" : "Basic"}
+                  {tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic"}
                 </dd>
               </div>
               <div className="flex justify-between">

@@ -55,9 +55,21 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const plan = body.plan === "plus" ? "plus" : "basic";
-    const amount = plan === "plus" ? 130 : 65; // Stars amount (+30% markup)
-    const title = plan === "plus" ? "Atlas VPN Plus" : "Atlas VPN Basic";
+    const tariff = body.tariff || "basic";
+    const months = body.months || 1;
+    const clients = body.clients || 0;
+    const starsAmount = body.amount_stars;
+    const rubAmount = body.amount_rub;
+
+    if (!starsAmount || starsAmount < 1) {
+      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+    }
+
+    const tariffLabel = tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic";
+    const title = `Atlas VPN ${tariffLabel}`;
+    const description = tariff === "business"
+      ? `${title} — ${clients} clients/day`
+      : `${title} — ${months} mo`;
 
     // Create invoice via Telegram Bot API
     const res = await fetch(`https://api.telegram.org/bot${botToken}/createInvoiceLink`, {
@@ -65,10 +77,10 @@ export async function POST(request: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         title,
-        description: `${title} — 30 days`,
-        payload: JSON.stringify({ user_id: userId, plan }),
+        description,
+        payload: JSON.stringify({ user_id: userId, tariff, months, clients, amount_rub: rubAmount }),
         currency: "XTR",
-        prices: [{ label: title, amount }],
+        prices: [{ label: title, amount: starsAmount }],
       }),
     });
 

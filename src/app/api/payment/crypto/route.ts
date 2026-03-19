@@ -56,8 +56,20 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const plan = body.plan === "plus" ? "plus" : "basic";
-    const amount = plan === "plus" ? "5" : "3"; // USDT amount
+    const tariff = body.tariff || "basic";
+    const months = body.months || 1;
+    const clients = body.clients || 0;
+    const rubAmount = body.amount_rub;
+
+    if (!rubAmount || rubAmount < 1) {
+      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+    }
+
+    const tariffLabel = tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic";
+    const title = `Atlas VPN ${tariffLabel}`;
+    const description = tariff === "business"
+      ? `${title} — ${clients} clients/day`
+      : `${title} — ${months} mo`;
 
     const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
 
@@ -71,9 +83,9 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         currency_type: "fiat",
         fiat: "RUB",
-        amount: plan === "plus" ? "299" : "149",
-        description: `Atlas VPN ${plan === "plus" ? "Plus" : "Basic"} — 30 days`,
-        payload: JSON.stringify({ user_id: userId, plan }),
+        amount: String(rubAmount),
+        description,
+        payload: JSON.stringify({ user_id: userId, tariff, months, clients }),
         accepted_assets: "USDT,TON,BTC,ETH",
         allow_comments: false,
         allow_anonymous: true,

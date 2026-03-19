@@ -41,23 +41,25 @@ export async function POST(request: NextRequest) {
 
     const invoicePayload = JSON.parse(invoice.payload || "{}");
     const userId = invoicePayload.user_id;
-    const plan = invoicePayload.plan === "plus" ? "plus" : "basic";
+    const tariff = invoicePayload.tariff === "business" ? "business" : invoicePayload.tariff === "plus" ? "plus" : "basic";
+    const months = invoicePayload.months || 1;
 
     if (!userId) {
       console.error("CryptoBot webhook: missing user_id in payload");
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    // Extend or create subscription (30 days)
+    // Extend or create subscription
+    const safeMonths = Math.min(Math.max(1, Number(months) || 1), 12);
     await pool.query(
       `UPDATE subscriptions
-       SET expires_at = GREATEST(expires_at, NOW()) + INTERVAL '30 days',
+       SET expires_at = GREATEST(expires_at, NOW()) + make_interval(months => $3),
            subscription_type = $2
        WHERE telegram_id = $1`,
-      [userId, plan],
+      [userId, tariff, safeMonths],
     );
 
-    console.log(`CryptoBot payment: user ${userId} → ${plan} subscription extended`);
+    console.log(`CryptoBot payment: user ${userId} → ${tariff} ${safeMonths}mo subscription extended`);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("CryptoBot webhook error:", err);

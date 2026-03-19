@@ -1,46 +1,40 @@
 @import "tailwindcss";
 
-/* ─── Light theme (default) ─── */
 :root {
-  --bg-dark: #f0f0f0;
+  --bg-dark: #0a0a0a;
   --bg-container: #ffffff;
   --bg-card: #f2f2f7;
   --bg-card-active: #1c1c1e;
-  --accent-green: #d8ff00;
-  --accent-blue: #d8ff00;
+  --accent-green: #34c759;
+  --accent-blue: #3478f6;
   --accent-red: #ff3b30;
-  --accent: #d8ff00;
-  --accent-rgb: 216, 255, 0;
   --text-primary: #1c1c1e;
   --text-secondary: #8e8e93;
   --text-muted: #c7c7cc;
   --text-on-dark: #ffffff;
-  --text-on-accent: #0a0a0a;
-  --accent-text: #7a9400;
   --radius-container: 32px;
   --radius-card: 22px;
   --radius-button: 16px;
   --radius-pill: 999px;
+  --accent: var(--accent-blue);
 }
 
-/* ─── Dark theme ─── */
 html.dark {
   --bg-dark: #000000;
-  --bg-container: #0a0a0a;
-  --bg-card: #1d1d1d;
-  --bg-card-active: #2a2a2a;
-  --text-primary: #fafafa;
+  --bg-container: #1c1c1e;
+  --bg-card: #2c2c2e;
+  --bg-card-active: #3a3a3c;
+  --text-primary: #f5f5f7;
   --text-secondary: #98989f;
   --text-muted: #636366;
   --text-on-dark: #ffffff;
-  --accent-text: #d8ff00;
 }
 
 @theme inline {
   --color-bg-primary: var(--bg-dark);
   --color-accent: var(--accent);
   --color-accent-green: var(--accent-green);
-  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -51,13 +45,12 @@ html.dark {
 
 html {
   background: var(--bg-dark);
-  transition: background 0.5s ease;
 }
 
 body {
   background: var(--bg-dark);
   color: var(--text-primary);
-  font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -65,14 +58,13 @@ body {
   padding: 0;
 }
 
-/* ─── Container ─── */
+/* ─── White container (like reference) ─── */
 .app-container {
   background: var(--bg-container);
   border-radius: var(--radius-container) var(--radius-container) 0 0;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  transition: background 0.5s ease;
 }
 
 /* ─── GPU-accelerated press for ALL interactive elements ─── */
@@ -103,12 +95,12 @@ button:active, a:active, .device-card:active {
   overflow: hidden;
 }
 
-/* ─── Primary button (lime accent) ─── */
+/* ─── Primary button (dark) ─── */
 .glass-button {
-  background: var(--accent);
+  background: var(--bg-card-active);
   border: none;
   border-radius: 14px;
-  color: var(--text-on-accent);
+  color: var(--text-on-dark);
   font-weight: 600;
   font-size: 15px;
   padding: 14px 24px;
@@ -122,7 +114,7 @@ button:active, a:active, .device-card:active {
   opacity: 0.88;
 }
 
-/* ─── Secondary button (dark card) ─── */
+/* ─── Secondary button (light gray, flat) ─── */
 .glass-button-secondary {
   background: var(--bg-card);
   border: none;
@@ -140,12 +132,12 @@ button:active, a:active, .device-card:active {
   opacity: 0.88;
 }
 
-/* ─── Green/Accent button ─── */
+/* ─── Green button ─── */
 .btn-green {
-  background: var(--accent);
+  background: var(--accent-green);
   border: none;
   border-radius: 14px;
-  color: var(--text-on-accent);
+  color: #ffffff;
   font-weight: 600;
   font-size: 15px;
   padding: 14px 24px;
@@ -233,7 +225,7 @@ button:active, a:active, .device-card:active {
   animation: checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* ─── Device cards ─── */
+/* ─── Device cards (reference style) ─── */
 .device-card {
   background: var(--bg-card);
   border: none;
@@ -242,11 +234,11 @@ button:active, a:active, .device-card:active {
 }
 
 .device-card--detected {
-  background: var(--accent);
-  color: var(--text-on-accent);
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
 }
 
-/* ─── Toggle switch ─── */
+/* ─── Toggle switch (iOS style, like reference) ─── */
 .toggle-track {
   width: 40px;
   height: 24px;
@@ -258,7 +250,7 @@ button:active, a:active, .device-card:active {
 }
 
 .toggle-track.active {
-  background: var(--accent);
+  background: var(--accent-green);
 }
 
 .toggle-thumb {
@@ -280,7 +272,7 @@ button:active, a:active, .device-card:active {
 
 /* ─── Overlay ─── */
 .overlay-backdrop {
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -296,13 +288,13 @@ button:active, a:active, .device-card:active {
   position: relative;
 }
 
-/* Liquid blob indicator */
+/* Liquid blob indicator — driven by --blob-target custom property */
 .bottom-pill-blob {
   position: absolute;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--bg-card-active);
   top: 6px;
   left: 6px;
   z-index: 0;
@@ -348,7 +340,7 @@ button:active, a:active, .device-card:active {
 }
 
 .bottom-pill-item.active {
-  color: var(--text-on-accent);
+  color: var(--text-on-dark);
 }
 
 /* ─── Theme toggle ─── */
@@ -391,7 +383,7 @@ button:active, a:active, .device-card:active {
   display: flex;
   gap: 6px;
   position: relative;
-  background: var(--bg-card-active);
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 3px;
 }
@@ -408,7 +400,7 @@ button:active, a:active, .device-card:active {
   font-weight: 600;
   cursor: pointer;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   transition:
     color 0.3s ease,
     transform 0.35s cubic-bezier(0.25, 1.4, 0.5, 1);
@@ -420,8 +412,8 @@ button:active, a:active, .device-card:active {
 }
 
 .lang-btn--active {
-  background: var(--accent);
-  color: var(--text-on-accent);
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
   transition:
     background 0.35s ease,
     color 0.3s ease,
@@ -475,20 +467,20 @@ button:active, a:active, .device-card:active {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: var(--bg-card);
-  border: 1.5px solid rgba(216, 255, 0, 0.25);
+  background: var(--bg-container);
+  border: 1.5px solid color-mix(in srgb, var(--accent-blue) 30%, transparent);
   border-radius: 22px;
   padding: 20px 18px 16px;
   position: relative;
   box-shadow:
-    0 12px 40px rgba(216, 255, 0, 0.08),
-    0 4px 12px rgba(0, 0, 0, 0.2);
+    0 12px 40px rgba(52, 120, 246, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 html.dark .setup-banner__content {
   background: var(--bg-card);
   box-shadow:
-    0 12px 40px rgba(216, 255, 0, 0.1),
+    0 12px 40px rgba(52, 120, 246, 0.15),
     0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -500,7 +492,7 @@ html.dark .setup-banner__content {
   height: 32px;
   border-radius: 50%;
   border: none;
-  background: var(--bg-card-active);
+  background: var(--bg-container);
   color: var(--text-muted);
   display: flex;
   align-items: center;
@@ -525,7 +517,7 @@ html.dark .setup-banner__content {
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: rgba(216, 255, 0, 0.12);
+  background: color-mix(in srgb, var(--accent-blue) 14%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -553,8 +545,8 @@ html.dark .setup-banner__content {
 
 .setup-banner__action {
   width: 100%;
-  background: var(--accent);
-  color: var(--text-on-accent);
+  background: var(--accent-blue);
+  color: #ffffff;
   border: none;
   border-radius: 14px;
   padding: 14px 0;
@@ -571,14 +563,14 @@ html.dark .setup-banner__content {
 /* ─── Guide screen ─── */
 
 .guide-screen {
-  --guide-accent: var(--accent);
-  --guide-accent-rgb: 216, 255, 0;
+  --guide-accent: var(--accent-blue);
+  --guide-accent-rgb: 52, 120, 246;
   padding: 0 20px 24px;
 }
 
 html.dark .guide-screen {
-  --guide-accent: var(--accent);
-  --guide-accent-rgb: 216, 255, 0;
+  --guide-accent: #30d158;
+  --guide-accent-rgb: 48, 209, 88;
 }
 
 .guide-header {
@@ -612,11 +604,10 @@ html.dark .guide-screen {
   border-radius: 50%;
   background: var(--guide-accent);
   flex-shrink: 0;
-  box-shadow: 0 0 10px rgba(216, 255, 0, 0.5);
 }
 
 html.dark .guide-header__accent {
-  box-shadow: 0 0 10px rgba(216, 255, 0, 0.5);
+  box-shadow: 0 0 10px rgba(48, 209, 88, 0.5);
 }
 
 .guide-header__subtitle {
@@ -647,7 +638,7 @@ html.dark .guide-header__accent {
 }
 
 html.dark .guide-card {
-  background: var(--bg-card);
+  background: #1a1a1c;
   border-color: #2a2a2c;
 }
 
@@ -834,12 +825,12 @@ html.dark .guide-steps li:not(:last-child)::after {
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  border: 1.5px solid var(--bg-card-active);
+  border: 1.5px solid var(--bg-card);
   transition: border-color 0.2s ease;
 }
 
 html.dark .guide-download__item {
-  background: var(--bg-card);
+  background: #1a1a1c;
   border-color: #2a2a2c;
 }
 
@@ -863,14 +854,14 @@ html.dark .guide-download__item {
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
-  border: 1.5px solid var(--bg-card-active);
+  border: 1.5px solid var(--bg-card);
   cursor: pointer;
   text-align: center;
   transition: border-color 0.2s ease;
 }
 
 html.dark .guide-support__btn {
-  background: var(--bg-card);
+  background: #1a1a1c;
   border-color: #2a2a2c;
 }
 
@@ -883,3 +874,4 @@ html.dark .guide-support__btn {
   width: 0;
   height: 0;
 }
+

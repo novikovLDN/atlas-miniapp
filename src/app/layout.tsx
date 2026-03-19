@@ -4,14 +4,14 @@ import Script from "next/script";
 import { TelegramViewport } from "@/components/TelegramViewport";
 import "./globals.css";
 
-const geist = localFont({
+const inter = localFont({
   src: [
     {
       path: "../../node_modules/next/dist/next-devtools/server/font/geist-latin.woff2",
       style: "normal",
     },
   ],
-  variable: "--font-outfit",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -37,7 +37,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body className={`${geist.variable} antialiased min-h-screen`}>
+      <body className={`${inter.variable} antialiased min-h-screen`}>
         <TelegramViewport />
         {children}
       </body>

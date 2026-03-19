@@ -23,16 +23,16 @@ export default function InstallPrompt({ onClose }: InstallPromptProps) {
       <div
         className="fixed bottom-0 left-0 right-0 z-[1000] slide-up"
         style={{
-          background: "var(--bg-card)",
+          background: "var(--bg-container, #ffffff)",
           borderRadius: "24px 24px 0 0",
           padding: "20px 20px 36px",
-          boxShadow: "0 -4px 24px rgba(0,0,0,0.2)",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.08)",
         }}
       >
         {/* Handle bar */}
         <div
           className="mx-auto mb-5 rounded-full"
-          style={{ width: "36px", height: "4px", background: "var(--text-muted)" }}
+          style={{ width: "36px", height: "4px", background: "#d1d1d6" }}
         />
 
         <p className="mb-1 text-base font-bold text-[var(--text-primary)]">

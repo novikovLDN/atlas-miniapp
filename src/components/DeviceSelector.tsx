@@ -40,8 +40,8 @@ export default function DeviceSelector({
                     <span
                       className="mb-2 inline-block rounded-full px-3 py-1 text-xs font-semibold"
                       style={{
-                        background: "rgba(216, 255, 0, 0.12)",
-                        color: "var(--accent-text)",
+                        background: "rgba(52, 199, 89, 0.12)",
+                        color: "#2da44e",
                       }}
                     >
                       {t.yourDevice}
@@ -60,7 +60,7 @@ export default function DeviceSelector({
                     <span
                       className="mt-3 text-base font-bold"
                       style={{
-                        color: isDetected ? "var(--text-on-accent)" : "var(--text-primary)",
+                        color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)",
                       }}
                     >
                       {name}
@@ -68,13 +68,13 @@ export default function DeviceSelector({
                     <span
                       className="mt-1 text-xs"
                       style={{
-                        color: isDetected ? "rgba(10,10,10,0.6)" : "var(--text-secondary)",
+                        color: isDetected ? "rgba(255,255,255,0.5)" : "var(--text-secondary)",
                       }}
                     >
                       {subtitle}
                     </span>
 
-                    {/* Toggle */}
+                    {/* Toggle (like reference) */}
                     <div className={`toggle-track mt-3 ${isDetected ? "active" : ""}`}>
                       <div className="toggle-thumb" />
                     </div>

@@ -65,19 +65,19 @@ export default function SubscriptionCard({
           <span
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
             style={{
-              background: isActive ? "rgba(216,255,0,0.2)" : "rgba(255,59,48,0.2)",
-              color: isActive ? "#d8ff00" : "#ff6b6b",
+              background: isActive ? "rgba(52,199,89,0.2)" : "rgba(255,59,48,0.2)",
+              color: isActive ? "#4ade80" : "#ff6b6b",
             }}
           >
             <span
               className="inline-block h-[7px] w-[7px] rounded-full"
-              style={{ background: isActive ? "#d8ff00" : "#ff3b30" }}
+              style={{ background: isActive ? "#34c759" : "#ff3b30" }}
             />
             {isActive ? t.active : t.inactive}
             {isActive && tariff && ` \u00B7 ${tariff === "plus" ? "Plus" : "Basic"}`}
           </span>
           {isActive ? (
-            <span className="font-semibold" style={{ color: "#d8ff00" }}>
+            <span className="font-semibold" style={{ color: "#4ade80" }}>
               {daysLeft} {t.days}
             </span>
           ) : (
@@ -91,7 +91,7 @@ export default function SubscriptionCard({
             type="button"
             onClick={handleConnect}
             className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
-            style={{ background: "#d8ff00", color: "#0a0a0a" }}
+            style={{ background: "var(--text-on-dark)", color: "#1c1c1e" }}
           >
             {t.connect}
           </button>
@@ -99,8 +99,7 @@ export default function SubscriptionCard({
           <button
             type="button"
             onClick={() => openTelegramLink(buySubscriptionUrl)}
-            className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
-            style={{ background: "#d8ff00", color: "#0a0a0a" }}
+            className="btn-green mb-2 w-full"
           >
             {t.buySubscriptionFrom}
           </button>

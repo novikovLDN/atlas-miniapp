@@ -148,13 +148,25 @@ export type Translations = {
 
   // Payment
   paymentTitle: string;
+  paymentChooseTariff: string;
+  paymentChoosePeriod: string;
   paymentChooseMethod: string;
+  paymentTariffBasic: string;
+  paymentTariffBasicDesc: string;
+  paymentTariffPlus: string;
+  paymentTariffPlusDesc: string;
+  paymentTariffBusiness: string;
+  paymentTariffBusinessDesc: string;
+  paymentMonths1: string;
+  paymentMonths3: string;
+  paymentMonths6: string;
+  paymentMonths12: string;
+  paymentClientsPerDay: (n: number) => string;
+  paymentPerMonth: string;
   paymentStars: string;
   paymentStarsDesc: string;
-  paymentStarsPrice: string;
   paymentCrypto: string;
   paymentCryptoDesc: string;
-  paymentCryptoPrice: string;
   paymentSBP: string;
   paymentSBPDesc: string;
   paymentCard: string;
@@ -163,7 +175,6 @@ export type Translations = {
   paymentComingSoonToast: string;
   paymentProcessing: string;
   paymentError: string;
-  paymentPerMonth: string;
 
   // Guide — Second phone
   guidePhoneTitle: string;

@@ -46,23 +46,25 @@ export async function POST(request: NextRequest) {
 
     const payload = JSON.parse(payment.invoice_payload);
     const userId = payload.user_id;
-    const plan = payload.plan === "plus" ? "plus" : "basic";
+    const tariff = payload.tariff === "business" ? "business" : payload.tariff === "plus" ? "plus" : "basic";
+    const months = payload.months || 1;
 
     if (!userId) {
       console.error("Stars webhook: missing user_id in payload");
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    // Extend or create subscription (30 days)
+    // Extend or create subscription
+    const safeMonths = Math.min(Math.max(1, Number(months) || 1), 12);
     await pool.query(
       `UPDATE subscriptions
-       SET expires_at = GREATEST(expires_at, NOW()) + INTERVAL '30 days',
+       SET expires_at = GREATEST(expires_at, NOW()) + make_interval(months => $3),
            subscription_type = $2
        WHERE telegram_id = $1`,
-      [userId, plan],
+      [userId, tariff, safeMonths],
     );
 
-    console.log(`Stars payment: user ${userId} → ${plan} subscription extended`);
+    console.log(`Stars payment: user ${userId} → ${tariff} ${months}mo subscription extended`);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Stars webhook error:", err);

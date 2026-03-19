@@ -30,7 +30,7 @@ type SubscriptionResponse =
   | {
       is_active: true;
       name: string;
-      tariff: "basic" | "plus";
+      tariff: "basic" | "plus" | "business";
       expires_at: string;
       expires_formatted: string;
       days_left: number;

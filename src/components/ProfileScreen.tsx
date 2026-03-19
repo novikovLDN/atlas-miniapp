@@ -81,13 +81,13 @@ export default function ProfileScreen({
               <span
                 className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 style={{
-                  background: isActive ? "rgba(216,255,0,0.12)" : "rgba(255,59,48,0.1)",
-                  color: isActive ? "var(--accent-text)" : "#ff3b30",
+                  background: isActive ? "rgba(52,199,89,0.15)" : "rgba(255,59,48,0.1)",
+                  color: isActive ? "#34c759" : "#ff3b30",
                 }}
               >
                 <span
                   className="inline-block h-[6px] w-[6px] rounded-full"
-                  style={{ background: isActive ? "#d8ff00" : "#ff3b30" }}
+                  style={{ background: isActive ? "#34c759" : "#ff3b30" }}
                 />
                 {isActive ? t.active : t.inactive}
               </span>

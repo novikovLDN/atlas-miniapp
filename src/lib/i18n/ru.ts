@@ -152,7 +152,7 @@ export const ru: Translations = {
   paymentCrypto: "CryptoBot",
   paymentCryptoDesc: "Оплата криптовалютой",
   paymentSBP: "СБП",
-  paymentSBPDesc: "Через приложение банка",
+  paymentSBPDesc: "Система быстрых платежей",
   paymentCard: "Банковская карта",
   paymentCardDesc: "Visa, Mastercard, МИР",
   paymentComingSoon: "Скоро",

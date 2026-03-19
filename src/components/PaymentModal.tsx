@@ -168,36 +168,6 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
     showToast(t.paymentComingSoonToast);
   };
 
-  const handleYookassa = async (paymentType: "sbp" | "bank_card") => {
-    if (loading) return;
-    setLoading(true);
-    try {
-      const initData = WebApp.initData;
-      const res = await fetch("/api/payment/yookassa", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-telegram-init-data": initData,
-        },
-        body: JSON.stringify({
-          tariff: selectedTariff,
-          months: selectedMonths,
-          clients: selectedClients,
-          amount_rub: selectedPrice,
-          payment_type: paymentType,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed");
-
-      WebApp.openLink(data.confirmation_url);
-    } catch {
-      showToast(t.paymentError);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   /* ─── Month label helper ─── */
   const monthLabel = (m: number) => {
     if (m === 1) return t.paymentMonths1;
@@ -405,12 +375,13 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
               <span className="payment-method__price-value">{selectedPrice} ₽</span>
             </button>
 
-            {/* СБП via YooKassa */}
+            <div className="payment-divider" />
+
+            {/* СБП — coming soon */}
             <button
               type="button"
-              className="payment-method"
-              onClick={() => handleYookassa("sbp")}
-              disabled={loading}
+              className="payment-method payment-method--disabled"
+              onClick={handleComingSoon}
             >
               <div className="payment-method__icon payment-method__icon--sbp">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -421,15 +392,14 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
                 <span className="payment-method__name">{t.paymentSBP}</span>
                 <span className="payment-method__desc">{t.paymentSBPDesc}</span>
               </div>
-              <span className="payment-method__price-value">{selectedPrice} ₽</span>
+              <span className="payment-method__badge">{t.paymentComingSoon}</span>
             </button>
 
-            {/* Card via YooKassa */}
+            {/* Card — coming soon */}
             <button
               type="button"
-              className="payment-method"
-              onClick={() => handleYookassa("bank_card")}
-              disabled={loading}
+              className="payment-method payment-method--disabled"
+              onClick={handleComingSoon}
             >
               <div className="payment-method__icon payment-method__icon--card">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -440,7 +410,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
                 <span className="payment-method__name">{t.paymentCard}</span>
                 <span className="payment-method__desc">{t.paymentCardDesc}</span>
               </div>
-              <span className="payment-method__price-value">{selectedPrice} ₽</span>
+              <span className="payment-method__badge">{t.paymentComingSoon}</span>
             </button>
           </div>
         )}

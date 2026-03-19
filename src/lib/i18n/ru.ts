@@ -130,6 +130,22 @@ export const ru: Translations = {
   guideSubtitle: "Пошаговые инструкции для всех устройств",
   guideLabel: "Инструкции",
 
+  // Payment
+  paymentTitle: "Оплата подписки",
+  paymentChooseMethod: "Выберите способ оплаты",
+  paymentStars: "Telegram Stars",
+  paymentStarsDesc: "Оплата звёздами Telegram",
+  paymentCrypto: "CryptoBot",
+  paymentCryptoDesc: "Оплата криптовалютой",
+  paymentSBP: "СБП",
+  paymentSBPDesc: "Система быстрых платежей",
+  paymentCard: "Банковская карта",
+  paymentCardDesc: "Visa, Mastercard, МИР",
+  paymentComingSoon: "Скоро",
+  paymentComingSoonToast: "Скоро добавим этот способ оплаты",
+  paymentProcessing: "Обработка платежа\u2026",
+  paymentError: "Ошибка оплаты. Попробуйте ещё раз",
+
   // Guide — TV
   guideTvTitle: "Установка на телевизор",
   guideTvStep1: "Установите приложение V2RayTun на телефон из App Store или Google Play",

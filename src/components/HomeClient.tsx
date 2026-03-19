@@ -24,6 +24,7 @@ import {
 import ThemeToggle from "@/components/ThemeToggle";
 import TouchRipple from "@/components/TouchRipple";
 import SetupBanner from "@/components/SetupBanner";
+import PaymentModal from "@/components/PaymentModal";
 
 type SubscriptionResponse =
   | {
@@ -71,6 +72,7 @@ export default function HomeClient() {
     return "home";
   });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
+  const [showPayment, setShowPayment] = useState(false);
 
   // i18n state
   const [locale, setLocaleState] = useState<Locale>("ru");
@@ -345,6 +347,7 @@ export default function HomeClient() {
                     onOpenSetup={() => setView("setup")}
                     onOpenSupport={openSupport}
                     onOpenAddDevice={() => setView("add_device")}
+                    onOpenPayment={() => setShowPayment(true)}
                   />
                 )}
 
@@ -389,6 +392,7 @@ export default function HomeClient() {
                   }
                   buyUrl={buyUrl}
                   onOpenSupport={openSupport}
+                  onOpenPayment={() => setShowPayment(true)}
                 />
               )}
             </div>
@@ -441,6 +445,10 @@ export default function HomeClient() {
             </div>
           </div>
         </div>
+
+        {showPayment && (
+          <PaymentModal onClose={() => setShowPayment(false)} />
+        )}
       </main>
     </I18nContext.Provider>
   );

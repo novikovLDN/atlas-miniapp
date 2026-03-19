@@ -261,7 +261,7 @@ export default function SetupFlow({
                     onClick={copySubUrl}
                     disabled={!subUrl}
                     className="mt-2 text-sm font-semibold"
-                    style={{ color: "#d8ff00", background: "transparent", border: "none" }}
+                    style={{ color: "var(--accent-text)", background: "transparent", border: "none" }}
                   >
                     {copied ? t.copied : t.copyKey}
                   </button>

@@ -32,7 +32,7 @@ export default function ThemeToggle({ dark, onToggle }: ThemeToggleProps) {
       const overlay = document.createElement("div");
       overlay.style.cssText = `
         position:fixed;inset:0;z-index:99;pointer-events:none;
-        background:${dark ? "#111111" : "#0a0a0a"};
+        background:${dark ? "#ffffff" : "#0a0a0a"};
         clip-path:circle(0px at ${x}px ${y}px);
         transition:clip-path 0.28s cubic-bezier(0.4,0,0.2,1);
       `;

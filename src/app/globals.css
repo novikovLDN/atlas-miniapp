@@ -1,26 +1,29 @@
 @import "tailwindcss";
 
+/* ─── Light theme (default) ─── */
 :root {
-  --bg-dark: #000000;
-  --bg-container: #111111;
-  --bg-card: #1d1d1d;
-  --bg-card-active: #2a2a2a;
+  --bg-dark: #f0f0f0;
+  --bg-container: #ffffff;
+  --bg-card: #f2f2f7;
+  --bg-card-active: #1c1c1e;
   --accent-green: #d8ff00;
   --accent-blue: #d8ff00;
   --accent-red: #ff3b30;
   --accent: #d8ff00;
   --accent-rgb: 216, 255, 0;
-  --text-primary: #fafafa;
-  --text-secondary: #98989f;
-  --text-muted: #636366;
-  --text-on-dark: #fafafa;
+  --text-primary: #1c1c1e;
+  --text-secondary: #8e8e93;
+  --text-muted: #c7c7cc;
+  --text-on-dark: #ffffff;
   --text-on-accent: #0a0a0a;
+  --accent-text: #7a9400;
   --radius-container: 32px;
   --radius-card: 22px;
   --radius-button: 16px;
   --radius-pill: 999px;
 }
 
+/* ─── Dark theme ─── */
 html.dark {
   --bg-dark: #000000;
   --bg-container: #0a0a0a;
@@ -29,7 +32,8 @@ html.dark {
   --text-primary: #fafafa;
   --text-secondary: #98989f;
   --text-muted: #636366;
-  --text-on-dark: #fafafa;
+  --text-on-dark: #ffffff;
+  --accent-text: #d8ff00;
 }
 
 @theme inline {
@@ -47,6 +51,7 @@ html.dark {
 
 html {
   background: var(--bg-dark);
+  transition: background 0.5s ease;
 }
 
 body {
@@ -60,13 +65,14 @@ body {
   padding: 0;
 }
 
-/* ─── Dark container ─── */
+/* ─── Container ─── */
 .app-container {
   background: var(--bg-container);
   border-radius: var(--radius-container) var(--radius-container) 0 0;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
+  transition: background 0.5s ease;
 }
 
 /* ─── GPU-accelerated press for ALL interactive elements ─── */

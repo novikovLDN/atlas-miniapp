@@ -3,7 +3,6 @@
 import { useState } from "react";
 import InstallPrompt from "@/components/InstallPrompt";
 import { openDeepLink } from "@/lib/openDeepLink";
-import { openTelegramLink } from "@/lib/openTelegramLink";
 import { useI18n } from "@/lib/i18n";
 
 type SubscriptionCardProps = {
@@ -17,6 +16,7 @@ type SubscriptionCardProps = {
   onOpenSetup: () => void;
   onOpenSupport: () => void;
   onOpenAddDevice: () => void;
+  onOpenPayment: () => void;
 };
 
 export default function SubscriptionCard({
@@ -30,6 +30,7 @@ export default function SubscriptionCard({
   onOpenSetup,
   onOpenSupport,
   onOpenAddDevice,
+  onOpenPayment,
 }: SubscriptionCardProps) {
   const { t } = useI18n();
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
@@ -98,7 +99,7 @@ export default function SubscriptionCard({
         ) : (
           <button
             type="button"
-            onClick={() => openTelegramLink(buySubscriptionUrl)}
+            onClick={onOpenPayment}
             className="btn-green mb-2 w-full"
           >
             {t.buySubscriptionFrom}

@@ -14,6 +14,7 @@ type ProfileScreenProps = {
   subUrl?: string;
   buyUrl: string;
   onOpenSupport: () => void;
+  onOpenPayment: () => void;
 };
 
 export default function ProfileScreen({
@@ -26,6 +27,7 @@ export default function ProfileScreen({
   subUrl,
   buyUrl,
   onOpenSupport,
+  onOpenPayment,
 }: ProfileScreenProps) {
   const { t, locale, setLocale } = useI18n();
   const [copied, setCopied] = useState(false);
@@ -147,7 +149,7 @@ export default function ProfileScreen({
       <div className="mt-3 space-y-2">
         <button
           type="button"
-          onClick={() => openTelegramLink(buyUrl)}
+          onClick={onOpenPayment}
           className="glass-button w-full"
         >
           {isActive ? t.renewSubscription : t.buySubscription}

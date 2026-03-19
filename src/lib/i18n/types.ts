@@ -146,6 +146,22 @@ export type Translations = {
   guidePcOption2Step2: string;
   guidePcOption2Step3: string;
 
+  // Payment
+  paymentTitle: string;
+  paymentChooseMethod: string;
+  paymentStars: string;
+  paymentStarsDesc: string;
+  paymentCrypto: string;
+  paymentCryptoDesc: string;
+  paymentSBP: string;
+  paymentSBPDesc: string;
+  paymentCard: string;
+  paymentCardDesc: string;
+  paymentComingSoon: string;
+  paymentComingSoonToast: string;
+  paymentProcessing: string;
+  paymentError: string;
+
   // Guide — Second phone
   guidePhoneTitle: string;
   guidePhoneStep1: string;

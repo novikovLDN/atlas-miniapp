@@ -41,7 +41,7 @@ export default function DeviceSelector({
                       className="mb-2 inline-block rounded-full px-3 py-1 text-xs font-semibold"
                       style={{
                         background: "rgba(216, 255, 0, 0.12)",
-                        color: "#d8ff00",
+                        color: "var(--accent-text)",
                       }}
                     >
                       {t.yourDevice}

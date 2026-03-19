@@ -32,9 +32,10 @@ export default function ShieldHero() {
           cy="90"
           r="85"
           fill="none"
-          stroke="rgba(216,255,0,0.08)"
+          stroke="var(--text-muted)"
           strokeWidth="1"
           strokeDasharray="6 8"
+          opacity="0.2"
         />
       </svg>
 

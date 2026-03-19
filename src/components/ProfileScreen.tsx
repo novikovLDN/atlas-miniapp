@@ -82,7 +82,7 @@ export default function ProfileScreen({
                 className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 style={{
                   background: isActive ? "rgba(216,255,0,0.12)" : "rgba(255,59,48,0.1)",
-                  color: isActive ? "#d8ff00" : "#ff3b30",
+                  color: isActive ? "var(--accent-text)" : "#ff3b30",
                 }}
               >
                 <span

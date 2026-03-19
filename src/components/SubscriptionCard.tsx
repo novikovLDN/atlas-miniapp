@@ -50,12 +50,12 @@ export default function SubscriptionCard({
     <>
       <div
         className="rounded-[var(--radius-card)] p-4"
-        style={{ background: "var(--bg-card)", color: "var(--text-primary)" }}
+        style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}
       >
         {/* Header */}
         <div className="mb-1.5 flex items-center justify-between">
           <span className="text-base font-bold">{name}</span>
-          <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+          <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
             {t.until} {expiresFormatted ?? "\u2014"}
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function SubscriptionCard({
           <span
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
             style={{
-              background: isActive ? "rgba(216,255,0,0.15)" : "rgba(255,59,48,0.15)",
+              background: isActive ? "rgba(216,255,0,0.2)" : "rgba(255,59,48,0.2)",
               color: isActive ? "#d8ff00" : "#ff6b6b",
             }}
           >
@@ -81,7 +81,7 @@ export default function SubscriptionCard({
               {daysLeft} {t.days}
             </span>
           ) : (
-            <span style={{ color: "var(--text-muted)" }}>{t.subscriptionExpired}</span>
+            <span style={{ color: "rgba(255,255,255,0.4)" }}>{t.subscriptionExpired}</span>
           )}
         </div>
 
@@ -99,7 +99,8 @@ export default function SubscriptionCard({
           <button
             type="button"
             onClick={() => openTelegramLink(buySubscriptionUrl)}
-            className="btn-green mb-2 w-full"
+            className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
+            style={{ background: "#d8ff00", color: "#0a0a0a" }}
           >
             {t.buySubscriptionFrom}
           </button>
@@ -110,7 +111,7 @@ export default function SubscriptionCard({
           type="button"
           onClick={onOpenSetup}
           className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
-          style={{ background: "var(--bg-card-active)", color: "var(--text-primary)" }}
+          style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
         >
           {t.installAndSetup}
         </button>
@@ -119,7 +120,7 @@ export default function SubscriptionCard({
           type="button"
           onClick={onOpenAddDevice}
           className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
-          style={{ background: "var(--bg-card-active)", color: "var(--text-primary)" }}
+          style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
         >
           {t.addDevice}
         </button>
@@ -128,7 +129,7 @@ export default function SubscriptionCard({
           type="button"
           onClick={onOpenSupport}
           className="w-full rounded-[14px] py-3.5 text-center text-[14px] font-medium"
-          style={{ background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)" }}
+          style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}
         >
           {t.support}
         </button>

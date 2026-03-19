@@ -151,8 +151,10 @@ export type Translations = {
   paymentChooseMethod: string;
   paymentStars: string;
   paymentStarsDesc: string;
+  paymentStarsPrice: string;
   paymentCrypto: string;
   paymentCryptoDesc: string;
+  paymentCryptoPrice: string;
   paymentSBP: string;
   paymentSBPDesc: string;
   paymentCard: string;
@@ -161,6 +163,7 @@ export type Translations = {
   paymentComingSoonToast: string;
   paymentProcessing: string;
   paymentError: string;
+  paymentPerMonth: string;
 
   // Guide — Second phone
   guidePhoneTitle: string;

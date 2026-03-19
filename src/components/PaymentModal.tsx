@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import WebApp from "@twa-dev/sdk";
 import { useI18n } from "@/lib/i18n";
 
@@ -12,17 +12,26 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
   const { t } = useI18n();
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [closing, setClosing] = useState(false);
 
-  // Close on back button
-  useEffect(() => {
-    WebApp.BackButton.show();
-    const handler = () => onClose();
-    WebApp.BackButton.onClick(handler);
-    return () => {
-      WebApp.BackButton.offClick(handler);
-      WebApp.BackButton.hide();
-    };
+  const close = useCallback(() => {
+    setClosing(true);
+    setTimeout(onClose, 220);
   }, [onClose]);
+
+  useEffect(() => {
+    try {
+      WebApp.BackButton.show();
+      const handler = () => close();
+      WebApp.BackButton.onClick(handler);
+      return () => {
+        WebApp.BackButton.offClick(handler);
+        WebApp.BackButton.hide();
+      };
+    } catch {
+      return;
+    }
+  }, [close]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -30,6 +39,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
   };
 
   const handleStars = async () => {
+    if (loading) return;
     setLoading(true);
     try {
       const initData = WebApp.initData;
@@ -58,6 +68,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
   };
 
   const handleCrypto = async () => {
+    if (loading) return;
     setLoading(true);
     try {
       const initData = WebApp.initData;
@@ -85,9 +96,12 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
   };
 
   return (
-    <div className="payment-overlay" onClick={onClose}>
+    <div
+      className={`payment-overlay ${closing ? "payment-overlay--closing" : ""}`}
+      onClick={close}
+    >
       <div
-        className="payment-sheet slide-up"
+        className={`payment-sheet ${closing ? "payment-sheet--closing" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}
@@ -116,15 +130,10 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
               <span className="payment-method__name">{t.paymentStars}</span>
               <span className="payment-method__desc">{t.paymentStarsDesc}</span>
             </div>
-            <svg
-              className="payment-method__arrow"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" />
-            </svg>
+            <div className="payment-method__price">
+              <span className="payment-method__price-value">{t.paymentStarsPrice}</span>
+              <span className="payment-method__price-period">{t.paymentPerMonth}</span>
+            </div>
           </button>
 
           {/* CryptoBot */}
@@ -144,20 +153,16 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
             </div>
             <div className="payment-method__info">
               <span className="payment-method__name">{t.paymentCrypto}</span>
-              <span className="payment-method__desc">
-                {t.paymentCryptoDesc}
-              </span>
+              <span className="payment-method__desc">{t.paymentCryptoDesc}</span>
             </div>
-            <svg
-              className="payment-method__arrow"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" />
-            </svg>
+            <div className="payment-method__price">
+              <span className="payment-method__price-value">{t.paymentCryptoPrice}</span>
+              <span className="payment-method__price-period">{t.paymentPerMonth}</span>
+            </div>
           </button>
+
+          {/* Divider */}
+          <div className="payment-divider" />
 
           {/* СБП — coming soon */}
           <button
@@ -204,7 +209,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
 
         {loading && (
           <div className="payment-loading">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--text-muted)] border-t-[var(--text-primary)]" />
+            <div className="payment-spinner" />
             <span>{t.paymentProcessing}</span>
           </div>
         )}
@@ -212,9 +217,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
 
       {/* Toast */}
       {toast && (
-        <div className="payment-toast">
-          {toast}
-        </div>
+        <div className="payment-toast">{toast}</div>
       )}
     </div>
   );

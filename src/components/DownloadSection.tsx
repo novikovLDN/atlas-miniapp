@@ -55,8 +55,8 @@ export default function DownloadSection({
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 rounded-[var(--radius-card)] px-3 py-4 text-sm font-semibold no-underline transition-all"
               style={{
-                background: isCurrent ? "var(--bg-card-active)" : "var(--bg-card)",
-                color: isCurrent ? "var(--text-on-dark)" : "var(--text-primary)",
+                background: isCurrent ? "#d8ff00" : "var(--bg-card)",
+                color: isCurrent ? "#0a0a0a" : "var(--text-primary)",
               }}
             >
               <span>{icon}</span>

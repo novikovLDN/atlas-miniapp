@@ -76,13 +76,16 @@ export default function HomeClient() {
   const [locale, setLocaleState] = useState<Locale>("ru");
   const t = getTranslations(locale);
 
-  // Theme state
-  const [dark, setDark] = useState(false);
+  // Theme state — default dark
+  const [dark, setDark] = useState(true);
 
   useEffect(() => {
     setLocaleState(getSavedLocale());
     const saved = localStorage.getItem("atlas_theme");
-    if (saved === "dark") {
+    if (saved === "light") {
+      setDark(false);
+      document.documentElement.classList.remove("dark");
+    } else {
       setDark(true);
       document.documentElement.classList.add("dark");
     }

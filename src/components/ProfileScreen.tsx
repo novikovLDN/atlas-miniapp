@@ -81,13 +81,13 @@ export default function ProfileScreen({
               <span
                 className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 style={{
-                  background: isActive ? "rgba(52,199,89,0.12)" : "rgba(255,59,48,0.1)",
-                  color: isActive ? "#2da44e" : "#ff3b30",
+                  background: isActive ? "rgba(216,255,0,0.12)" : "rgba(255,59,48,0.1)",
+                  color: isActive ? "#d8ff00" : "#ff3b30",
                 }}
               >
                 <span
                   className="inline-block h-[6px] w-[6px] rounded-full"
-                  style={{ background: isActive ? "#34c759" : "#ff3b30" }}
+                  style={{ background: isActive ? "#d8ff00" : "#ff3b30" }}
                 />
                 {isActive ? t.active : t.inactive}
               </span>
@@ -182,11 +182,21 @@ export default function ProfileScreen({
           type="button"
           onClick={onOpenSupport}
           className="w-full rounded-[14px] py-3 text-center text-[14px] font-medium"
-          style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "none" }}
+          style={{ background: "var(--bg-card)", color: "var(--text-secondary)", border: "none" }}
         >
           {t.support}
         </button>
       </div>
+
+      {/* Developer credit */}
+      <p
+        className="mt-6 mb-2 text-center text-[11px] font-medium tracking-wide"
+        style={{ color: "var(--text-muted)", opacity: 0.6 }}
+      >
+        developed by{" "}
+        <span style={{ color: "#00e676", fontWeight: 700, textShadow: "0 0 8px rgba(0,230,118,0.4)" }}>Q</span>
+        <span style={{ color: "var(--text-primary)" }}>oDev</span>
+      </p>
     </div>
   );
 }

@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import { TelegramViewport } from "@/components/TelegramViewport";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "cyrillic"],
+const geist = localFont({
+  src: [
+    {
+      path: "../../node_modules/next/dist/next-devtools/server/font/geist-latin.woff2",
+      style: "normal",
+    },
+  ],
+  variable: "--font-outfit",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" className="dark">
       <head>
         <meta
           name="viewport"
@@ -31,7 +37,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body className={`${inter.variable} antialiased min-h-screen`}>
+      <body className={`${geist.variable} antialiased min-h-screen`}>
         <TelegramViewport />
         {children}
       </body>

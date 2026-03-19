@@ -7,7 +7,7 @@ import { detectDevice, APP_LINKS, type DeviceType } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
 
 const CONFETTI_COLORS = [
-  "#d8ff00", "#1d1d1d", "#fafafa", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4",
+  "#1c1c1e", "#3478f6", "#34c759", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4",
 ];
 
 const confettiPieces = Array.from({ length: 80 }, (_, i) => ({
@@ -135,11 +135,10 @@ export default function SetupFlow({
                   height: "8px",
                   background:
                     s === step
-                      ? "#d8ff00"
+                      ? "var(--bg-card-active)"
                       : s < step
-                        ? "#d8ff00"
-                        : "var(--bg-card-active)",
-                  opacity: s <= step ? 1 : 0.4,
+                        ? "var(--accent-green)"
+                        : "#e5e5ea",
                 }}
               />
             ))}
@@ -261,7 +260,7 @@ export default function SetupFlow({
                     onClick={copySubUrl}
                     disabled={!subUrl}
                     className="mt-2 text-sm font-semibold"
-                    style={{ color: "var(--accent-text)", background: "transparent", border: "none" }}
+                    style={{ color: "var(--accent-blue)", background: "transparent", border: "none" }}
                   >
                     {copied ? t.copied : t.copyKey}
                   </button>
@@ -308,14 +307,14 @@ export default function SetupFlow({
                   width: "80px",
                   height: "80px",
                   borderRadius: "20px",
-                  background: "rgba(216, 255, 0, 0.12)",
+                  background: "rgba(52, 199, 89, 0.12)",
                 }}
                 aria-hidden
               >
                 <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
                   <path
                     d="M12 24 L20 32 L36 16"
-                    stroke="#d8ff00"
+                    stroke="#34c759"
                     strokeWidth="4"
                     strokeLinecap="round"
                     strokeLinejoin="round"

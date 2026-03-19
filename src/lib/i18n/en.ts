@@ -152,7 +152,7 @@ export const en: Translations = {
   paymentCrypto: "CryptoBot",
   paymentCryptoDesc: "Pay with cryptocurrency",
   paymentSBP: "SBP",
-  paymentSBPDesc: "Fast Payment System",
+  paymentSBPDesc: "Via your bank app",
   paymentCard: "Bank Card",
   paymentCardDesc: "Visa, Mastercard, MIR",
   paymentComingSoon: "Soon",

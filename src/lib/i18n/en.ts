@@ -135,8 +135,10 @@ export const en: Translations = {
   paymentChooseMethod: "Choose payment method",
   paymentStars: "Telegram Stars",
   paymentStarsDesc: "Pay with Telegram Stars",
+  paymentStarsPrice: "65 Stars",
   paymentCrypto: "CryptoBot",
   paymentCryptoDesc: "Pay with cryptocurrency",
+  paymentCryptoPrice: "149 \u20BD",
   paymentSBP: "SBP",
   paymentSBPDesc: "Fast Payment System",
   paymentCard: "Bank Card",
@@ -145,6 +147,7 @@ export const en: Translations = {
   paymentComingSoonToast: "This payment method will be available soon",
   paymentProcessing: "Processing payment\u2026",
   paymentError: "Payment error. Please try again",
+  paymentPerMonth: "/ mo",
 
   // Guide — TV
   guideTvTitle: "Setup on TV",

@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const plan = body.plan === "plus" ? "plus" : "basic";
-    const amount = plan === "plus" ? 100 : 50; // Stars amount
+    const amount = plan === "plus" ? 130 : 65; // Stars amount (+30% markup)
     const title = plan === "plus" ? "Atlas VPN Plus" : "Atlas VPN Basic";
 
     // Create invoice via Telegram Bot API

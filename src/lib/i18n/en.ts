@@ -32,6 +32,7 @@ export const en: Translations = {
   // Subscription card
   until: "until",
   connect: "Connect",
+  connectVPN: "Connect VPN",
   buySubscription: "Buy Subscription",
   buySubscriptionFrom: "Subscribe from 149 \u20BD",
   installAndSetup: "Setup Guide",

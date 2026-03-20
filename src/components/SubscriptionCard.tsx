@@ -1,5 +1,6 @@
 "use client";
 
+import { openDeepLink } from "@/lib/openDeepLink";
 import { useI18n } from "@/lib/i18n";
 
 type SubscriptionCardProps = {
@@ -30,6 +31,22 @@ export default function SubscriptionCard({
   onOpenPayment,
 }: SubscriptionCardProps) {
   const { t } = useI18n();
+
+  const handleConnectVPN = () => {
+    if (typeof window === "undefined" || !subUrl) {
+      onOpenSetup();
+      return;
+    }
+    const deepLink = `v2raytun://import/${subUrl}`;
+    openDeepLink(deepLink);
+    // If the app isn't installed, the deep link silently fails.
+    // After a short delay, fall back to the setup flow.
+    setTimeout(() => {
+      if (document.visibilityState !== "hidden") {
+        onOpenSetup();
+      }
+    }, 1500);
+  };
 
   return (
     <div
@@ -73,11 +90,11 @@ export default function SubscriptionCard({
       {isActive ? (
         <button
           type="button"
-          onClick={onOpenSetup}
+          onClick={handleConnectVPN}
           className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
           style={{ background: "var(--text-on-dark)", color: "#1c1c1e" }}
         >
-          {t.installAndSetup}
+          {t.connectVPN}
         </button>
       ) : (
         <button
@@ -90,6 +107,15 @@ export default function SubscriptionCard({
       )}
 
       {/* Secondary actions */}
+      <button
+        type="button"
+        onClick={onOpenSetup}
+        className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
+        style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
+      >
+        {t.installAndSetup}
+      </button>
+
       <button
         type="button"
         onClick={onOpenAddDevice}

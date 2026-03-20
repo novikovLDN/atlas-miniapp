@@ -32,6 +32,7 @@ export type Translations = {
   // Subscription card
   until: string;
   connect: string;
+  connectVPN: string;
   buySubscription: string;
   buySubscriptionFrom: string;
   installAndSetup: string;

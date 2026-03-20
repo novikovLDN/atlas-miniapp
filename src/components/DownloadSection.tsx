@@ -3,6 +3,7 @@
 import type { DeviceType } from "@/lib/detectDevice";
 import { APP_LINKS } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
+import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
 
 const DEVICE_ORDER: DeviceType[] = ["ios", "android", "windows", "macos"];
 
@@ -14,13 +15,6 @@ const LABELS: Record<DeviceType, string> = {
   unknown: "",
 };
 
-const ICONS: Record<DeviceType, string> = {
-  ios: "📱",
-  android: "🤖",
-  windows: "🖥",
-  macos: "🍎",
-  unknown: "📱",
-};
 
 type DownloadSectionProps = {
   deviceType?: DeviceType;
@@ -45,7 +39,7 @@ export default function DownloadSection({
         {ordered.map((d) => {
           const info = APP_LINKS[d];
           const label = LABELS[d];
-          const icon = ICONS[d];
+          const Icon = DEVICE_ICON_MAP[d];
           const isCurrent = d === deviceType;
           return (
             <a
@@ -59,7 +53,7 @@ export default function DownloadSection({
                 color: isCurrent ? "var(--text-on-dark)" : "var(--text-primary)",
               }}
             >
-              <span>{icon}</span>
+              <Icon size={20} />
               {label}
             </a>
           );

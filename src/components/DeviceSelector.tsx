@@ -35,11 +35,12 @@ export default function DeviceSelector({
           <div className="mt-8 grid w-full grid-cols-2 gap-3">
             {DEVICES.map(({ id, name, subtitle }) => {
               const isDetected = detectedDevice === id;
+              const Icon = DEVICE_ICON_MAP[id];
               return (
                 <div key={id} className="relative flex flex-col items-center">
                   {isDetected && (
                     <span
-                      className="mb-2 inline-block rounded-full px-3 py-1 text-xs font-semibold"
+                      className="absolute -top-3 z-10 inline-block rounded-full px-3 py-1 text-xs font-semibold"
                       style={{
                         background: "rgba(52, 199, 89, 0.12)",
                         color: "#2da44e",
@@ -55,8 +56,8 @@ export default function DeviceSelector({
                       isDetected ? "device-card--detected" : ""
                     }`}
                   >
-                    <span className="leading-none" style={{ color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)" }} aria-hidden>
-                      {(() => { const Icon = DEVICE_ICON_MAP[id]; return <Icon size={32} />; })()}
+                    <span className="flex items-center justify-center leading-none" style={{ color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)" }} aria-hidden>
+                      <Icon size={32} />
                     </span>
                     <span
                       className="mt-3 text-base font-bold"

@@ -3,14 +3,23 @@
 import { createContext, useContext } from "react";
 import type { Locale, Translations } from "./types";
 import { ru } from "./ru";
-import { en } from "./en";
 
 export type { Locale, Translations };
 
-const translations: Record<Locale, Translations> = { ru, en };
+/* Russian is always bundled (primary locale).
+   English is loaded on demand to reduce critical bundle size. */
+let cachedEn: Translations | null = null;
 
 export function getTranslations(locale: Locale): Translations {
-  return translations[locale];
+  if (locale === "ru") return ru;
+  return cachedEn ?? ru; // fallback to ru until en is loaded
+}
+
+export async function preloadLocale(locale: Locale) {
+  if (locale === "en" && !cachedEn) {
+    const mod = await import("./en");
+    cachedEn = mod.en;
+  }
 }
 
 type I18nContextValue = {

@@ -3,9 +3,7 @@
 import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
 import dynamic from "next/dynamic";
 import WebApp from "@twa-dev/sdk";
-import ShieldHero from "@/components/ShieldHero";
 import SubscriptionCard from "@/components/SubscriptionCard";
-import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
 
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
@@ -15,14 +13,17 @@ import {
   getSavedLocale,
   saveLocale,
   getTranslations,
+  preloadLocale,
   type Locale,
 } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
-import TouchRipple from "@/components/TouchRipple";
 import SetupBanner from "@/components/SetupBanner";
 import SplashScreen from "@/components/SplashScreen";
 
-/* Lazy-loaded heavy components (not needed on first render) */
+/* Lazy-loaded components (not needed on first render) */
+const ShieldHero = lazy(() => import("@/components/ShieldHero"));
+const DownloadSection = lazy(() => import("@/components/DownloadSection"));
+const TouchRipple = lazy(() => import("@/components/TouchRipple"));
 const SetupFlow = lazy(() => import("@/components/SetupFlow"));
 const AddDeviceScreen = lazy(() => import("@/components/AddDeviceScreen"));
 const ProfileScreen = lazy(() => import("@/components/ProfileScreen"));
@@ -87,7 +88,12 @@ export default function HomeClient() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    setLocaleState(getSavedLocale());
+    const savedLocale = getSavedLocale();
+    setLocaleState(savedLocale);
+    // Preload English translations asynchronously if needed
+    if (savedLocale === "en") {
+      preloadLocale("en").then(() => setLocaleState("en"));
+    }
     const saved = localStorage.getItem("atlas_theme");
     if (saved === "dark") {
       setDark(true);
@@ -104,7 +110,8 @@ export default function HomeClient() {
 
   const localeWrapRef = useRef<HTMLDivElement>(null);
 
-  const handleSetLocale = useCallback((newLocale: Locale) => {
+  const handleSetLocale = useCallback(async (newLocale: Locale) => {
+    await preloadLocale(newLocale);
     const el = localeWrapRef.current;
     if (el) {
       el.style.transition = "opacity 0.18s ease-out";
@@ -333,7 +340,7 @@ export default function HomeClient() {
   return (
     <I18nContext.Provider value={i18nValue}>
       {themeToggle}
-      <TouchRipple />
+      <Suspense fallback={null}><TouchRipple /></Suspense>
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
           ref={localeWrapRef}
@@ -349,7 +356,7 @@ export default function HomeClient() {
                 animation: activeTab === "home" ? "tabFadeIn 0.3s ease forwards" : "none",
               }}
             >
-              <ShieldHero />
+              <Suspense fallback={<div style={{ height: 200 }} />}><ShieldHero /></Suspense>
               <div className="px-5 pb-4">
                 {telegramId !== null && (
                   <SubscriptionCard
@@ -374,7 +381,7 @@ export default function HomeClient() {
                 )}
 
                 <div className="mt-4 space-y-3">
-                  <DownloadSection deviceType={deviceType} />
+                  <Suspense fallback={null}><DownloadSection deviceType={deviceType} /></Suspense>
                   <SupportLinks />
                 </div>
               </div>

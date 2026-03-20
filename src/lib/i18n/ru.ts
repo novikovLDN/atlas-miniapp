@@ -99,7 +99,11 @@ export const ru: Translations = {
   // Add device
   addDeviceTitle: "Добавить устройство",
   activeSubscriptionRequired: "Для подключения устройства необходима активная подписка.",
-  copyAndPasteLink: "Скопируйте ссылку и вставьте её в V2RayTun или Hiddify на другом устройстве.",
+  copyAndPasteLink: "Подключите VPN на другом устройстве в 3 шага:",
+  addDeviceStep1: "Нажмите «Скопировать ссылку» ниже",
+  addDeviceStep2: "Передайте скопированную ссылку на нужное устройство — через мессенджер, заметки или любым удобным способом",
+  addDeviceStep3: "На втором устройстве откройте приложение V2RayTun, нажмите «+» в правом верхнем углу и вставьте ссылку",
+  addDeviceOnSecondDevice: "На втором устройстве",
   linkAfterActivation: "Ссылка появится после активации подписки",
   linkCopied: "Ссылка скопирована \u2713",
   copiedCheck: "Скопировано \u2713",

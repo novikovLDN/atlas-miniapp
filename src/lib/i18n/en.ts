@@ -99,7 +99,11 @@ export const en: Translations = {
   // Add device
   addDeviceTitle: "Add Device",
   activeSubscriptionRequired: "An active subscription is required to connect a device.",
-  copyAndPasteLink: "Copy the link and paste it into V2RayTun or Hiddify on another device.",
+  copyAndPasteLink: "Connect VPN on another device in 3 steps:",
+  addDeviceStep1: "Tap \"Copy Link\" below",
+  addDeviceStep2: "Send the copied link to the other device — via messenger, notes, or any convenient way",
+  addDeviceStep3: "On the second device, open V2RayTun, tap \"+\" in the top-right corner and paste the link",
+  addDeviceOnSecondDevice: "On the second device",
   linkAfterActivation: "The link will appear after activating your subscription",
   linkCopied: "Link copied \u2713",
   copiedCheck: "Copied \u2713",

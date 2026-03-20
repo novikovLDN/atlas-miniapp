@@ -377,7 +377,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
 
             <div className="payment-divider" />
 
-            {/* СБП */}
+            {/* СБП — coming soon */}
             <button
               type="button"
               className="payment-method payment-method--disabled"
@@ -395,7 +395,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
               <span className="payment-method__badge">{t.paymentComingSoon}</span>
             </button>
 
-            {/* Card */}
+            {/* Card — coming soon */}
             <button
               type="button"
               className="payment-method payment-method--disabled"

@@ -97,13 +97,31 @@ export default function AddDeviceScreen({
           <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
             {t.addDeviceTitle}
           </h2>
-          <p className="mt-3 text-sm text-[var(--text-secondary)]">
+          <p className="mt-3 text-sm font-medium text-[var(--text-primary)]">
             {t.copyAndPasteLink}
           </p>
 
+          <div
+            className="mt-4 w-full rounded-[14px] p-4 text-left text-sm leading-relaxed"
+            style={{ background: "var(--bg-card)", color: "var(--text-secondary)" }}
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}>1</span>
+              <span>{t.addDeviceStep1}</span>
+            </div>
+            <div className="mt-3 flex items-start gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}>2</span>
+              <span>{t.addDeviceStep2}</span>
+            </div>
+            <div className="mt-3 flex items-start gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}>3</span>
+              <span>{t.addDeviceStep3}</span>
+            </div>
+          </div>
+
           <button
             type="button"
-            className="glass-button mt-6 w-full"
+            className="glass-button mt-5 w-full"
             onClick={handleCopy}
             disabled={!subscriptionUrl}
           >
@@ -125,7 +143,7 @@ export default function AddDeviceScreen({
             {subscriptionUrl || t.linkAfterActivation}
           </button>
 
-          <div className="mt-6 w-full space-y-2">
+          <div className="mt-5 w-full space-y-2">
             <button type="button" onClick={onBack} className="glass-button-secondary w-full">
               {t.backArrow}
             </button>

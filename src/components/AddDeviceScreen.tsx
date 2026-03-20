@@ -52,10 +52,15 @@ export default function AddDeviceScreen({
         <div className="app-container fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center px-8 page-fade">
           <div className="flex w-full max-w-[340px] flex-col items-center text-center">
             <div
-              className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px] text-[34px]"
+              className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px]"
               style={{ background: "var(--bg-card)" }}
             >
-              {"📲"}
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-primary)" }}>
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                <line x1="12" y1="18" x2="12" y2="18.01" strokeWidth="2" />
+                <line x1="17" y1="6" x2="23" y2="6" />
+                <line x1="20" y1="3" x2="20" y2="9" />
+              </svg>
             </div>
             <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
               {t.addDeviceTitle}
@@ -89,10 +94,15 @@ export default function AddDeviceScreen({
       <div className="app-container fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center px-8 page-fade">
         <div className="flex w-full max-w-[340px] flex-col items-center text-center">
           <div
-            className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px] text-[34px]"
+            className="flex h-[80px] w-[80px] items-center justify-center rounded-[20px]"
             style={{ background: "var(--bg-card)" }}
           >
-            {"📲"}
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-primary)" }}>
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+              <line x1="12" y1="18" x2="12" y2="18.01" strokeWidth="2" />
+              <line x1="17" y1="6" x2="23" y2="6" />
+              <line x1="20" y1="3" x2="20" y2="9" />
+            </svg>
           </div>
           <h2 className="mt-6 text-2xl font-bold text-[var(--text-primary)]">
             {t.addDeviceTitle}

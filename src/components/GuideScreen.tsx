@@ -3,15 +3,16 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { APP_LINKS } from "@/lib/detectDevice";
+import { IosIcon, AndroidIcon, WindowsIcon, MacosIcon } from "@/components/DeviceIcons";
 
 
 type Section = "tv" | "pc" | "phone";
 
 const DOWNLOAD_ITEMS = [
-  { key: "ios", label: "iOS", icon: "📱" },
-  { key: "android", label: "Android", icon: "🤖" },
-  { key: "windows", label: "Windows", icon: "🖥" },
-  { key: "macos", label: "macOS", icon: "🍎" },
+  { key: "ios", label: "iOS", Icon: IosIcon },
+  { key: "android", label: "Android", Icon: AndroidIcon },
+  { key: "windows", label: "Windows", Icon: WindowsIcon },
+  { key: "macos", label: "macOS", Icon: MacosIcon },
 ] as const;
 
 export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
@@ -132,7 +133,7 @@ export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
       <div className="guide-download">
         <h2 className="guide-download__title">{t.downloadApplication}</h2>
         <div className="guide-download__grid">
-          {DOWNLOAD_ITEMS.map(({ key, label, icon }) => (
+          {DOWNLOAD_ITEMS.map(({ key, label, Icon }) => (
             <a
               key={key}
               href={APP_LINKS[key].url}
@@ -140,7 +141,7 @@ export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
               rel="noopener noreferrer"
               className="guide-download__item"
             >
-              <span>{icon}</span>
+              <Icon size={20} />
               {label}
             </a>
           ))}

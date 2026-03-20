@@ -2,6 +2,7 @@
 
 import type { DeviceType } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
+import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
 
 type DeviceSelectorProps = {
   onSelectDevice: (device: DeviceType) => void;
@@ -16,11 +17,11 @@ export default function DeviceSelector({
 }: DeviceSelectorProps) {
   const { t } = useI18n();
 
-  const DEVICES: { id: DeviceType; icon: string; name: string; subtitle: string }[] = [
-    { id: "ios", icon: "📱", name: "iOS", subtitle: "iPhone / iPad" },
-    { id: "android", icon: "🤖", name: "Android", subtitle: "Samsung, Xiaomi..." },
-    { id: "windows", icon: "🖥", name: "Windows", subtitle: t.pcLaptop },
-    { id: "macos", icon: "🍎", name: "macOS", subtitle: "MacBook / iMac" },
+  const DEVICES: { id: DeviceType; name: string; subtitle: string }[] = [
+    { id: "ios", name: "iOS", subtitle: "iPhone / iPad" },
+    { id: "android", name: "Android", subtitle: "Samsung, Xiaomi..." },
+    { id: "windows", name: "Windows", subtitle: t.pcLaptop },
+    { id: "macos", name: "macOS", subtitle: "MacBook / iMac" },
   ];
 
   return (
@@ -32,7 +33,7 @@ export default function DeviceSelector({
           </h2>
 
           <div className="mt-8 grid w-full grid-cols-2 gap-3">
-            {DEVICES.map(({ id, icon, name, subtitle }) => {
+            {DEVICES.map(({ id, name, subtitle }) => {
               const isDetected = detectedDevice === id;
               return (
                 <div key={id} className="relative flex flex-col items-center">
@@ -54,8 +55,8 @@ export default function DeviceSelector({
                       isDetected ? "device-card--detected" : ""
                     }`}
                   >
-                    <span className="text-[32px] leading-none" aria-hidden>
-                      {icon}
+                    <span className="leading-none" style={{ color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)" }} aria-hidden>
+                      {(() => { const Icon = DEVICE_ICON_MAP[id]; return <Icon size={32} />; })()}
                     </span>
                     <span
                       className="mt-3 text-base font-bold"

@@ -33,6 +33,7 @@ export type Translations = {
   until: string;
   connect: string;
   connectVPN: string;
+  comingSoon: string;
   buySubscription: string;
   buySubscriptionFrom: string;
   installAndSetup: string;

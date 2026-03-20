@@ -149,10 +149,11 @@ export default function ProfileScreen({
       <div className="mt-3 space-y-2">
         <button
           type="button"
-          onClick={onOpenPayment}
-          className="glass-button w-full"
+          disabled
+          className="glass-button-liquid w-full"
         >
           {isActive ? t.renewSubscription : t.buySubscription}
+          <span className="glass-button-liquid__badge">{t.comingSoon}</span>
         </button>
 
         {subUrl && (

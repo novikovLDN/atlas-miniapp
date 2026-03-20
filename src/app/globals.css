@@ -34,7 +34,7 @@ html.dark {
   --color-bg-primary: var(--bg-dark);
   --color-accent: var(--accent);
   --color-accent-green: var(--accent-green);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -50,7 +50,7 @@ html {
 body {
   background: var(--bg-dark);
   color: var(--text-primary);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -67,12 +67,8 @@ body {
   overflow: hidden;
 }
 
-/* ─── GPU-accelerated press for ALL interactive elements ─── */
+/* ─── Press feedback for interactive elements ─── */
 button, a, .device-card, .theme-toggle, .bottom-pill-item {
-  will-change: transform;
-  transform: scale3d(1, 1, 1);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
   transition:
     transform 0.4s cubic-bezier(0.25, 1.5, 0.5, 1),
     opacity 0.2s ease;

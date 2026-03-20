@@ -25,6 +25,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import TouchRipple from "@/components/TouchRipple";
 import SetupBanner from "@/components/SetupBanner";
 import PaymentModal from "@/components/PaymentModal";
+import SplashScreen from "@/components/SplashScreen";
 
 type SubscriptionResponse =
   | {
@@ -73,6 +74,7 @@ export default function HomeClient() {
   });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
   const [showPayment, setShowPayment] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   // i18n state
   const [locale, setLocaleState] = useState<Locale>("ru");
@@ -193,6 +195,11 @@ export default function HomeClient() {
   const i18nValue = { locale, t, setLocale: handleSetLocale };
 
   const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
+
+  /* ─── Splash ─── */
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
 
   /* ─── Loading ─── */
   if (loading) {

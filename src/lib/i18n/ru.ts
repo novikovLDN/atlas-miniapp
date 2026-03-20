@@ -33,6 +33,7 @@ export const ru: Translations = {
   until: "до",
   connect: "Подключиться",
   connectVPN: "Подключить VPN",
+  comingSoon: "Скоро",
   buySubscription: "Купить подписку",
   buySubscriptionFrom: "Купить подписку от 149 \u20BD",
   installAndSetup: "Установка и настройка",

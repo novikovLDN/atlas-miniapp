@@ -37,51 +37,50 @@ export default function DeviceSelector({
               const isDetected = detectedDevice === id;
               const Icon = DEVICE_ICON_MAP[id];
               return (
-                <div key={id} className="relative flex flex-col items-center">
-                  {isDetected && (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => onSelectDevice(id)}
+                  className={`device-card flex w-full min-h-[140px] flex-col items-center justify-center rounded-[var(--radius-card)] px-3 py-5 text-center ${
+                    isDetected ? "device-card--detected" : ""
+                  }`}
+                >
+                  <span className="flex items-center justify-center leading-none" style={{ color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)" }} aria-hidden>
+                    <Icon size={32} />
+                  </span>
+                  <span
+                    className="mt-2 text-base font-bold"
+                    style={{
+                      color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)",
+                    }}
+                  >
+                    {name}
+                  </span>
+                  <span
+                    className="mt-0.5 text-xs"
+                    style={{
+                      color: isDetected ? "rgba(255,255,255,0.5)" : "var(--text-secondary)",
+                    }}
+                  >
+                    {subtitle}
+                  </span>
+
+                  {isDetected ? (
                     <span
-                      className="absolute -top-3 z-10 inline-block rounded-full px-3 py-1 text-xs font-semibold"
+                      className="mt-2 inline-block rounded-full px-3 py-0.5 text-[10px] font-semibold"
                       style={{
-                        background: "rgba(52, 199, 89, 0.12)",
-                        color: "#2da44e",
+                        background: "rgba(52, 199, 89, 0.18)",
+                        color: "#34c759",
                       }}
                     >
                       {t.yourDevice}
                     </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => onSelectDevice(id)}
-                    className={`device-card flex w-full min-h-[140px] flex-col items-center justify-center rounded-[var(--radius-card)] px-3 py-5 text-center ${
-                      isDetected ? "device-card--detected" : ""
-                    }`}
-                  >
-                    <span className="flex items-center justify-center leading-none" style={{ color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)" }} aria-hidden>
-                      <Icon size={32} />
-                    </span>
-                    <span
-                      className="mt-3 text-base font-bold"
-                      style={{
-                        color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)",
-                      }}
-                    >
-                      {name}
-                    </span>
-                    <span
-                      className="mt-1 text-xs"
-                      style={{
-                        color: isDetected ? "rgba(255,255,255,0.5)" : "var(--text-secondary)",
-                      }}
-                    >
-                      {subtitle}
-                    </span>
-
-                    {/* Toggle (like reference) */}
-                    <div className={`toggle-track mt-3 ${isDetected ? "active" : ""}`}>
+                  ) : (
+                    <div className={`toggle-track mt-3`}>
                       <div className="toggle-thumb" />
                     </div>
-                  </button>
-                </div>
+                  )}
+                </button>
               );
             })}
           </div>

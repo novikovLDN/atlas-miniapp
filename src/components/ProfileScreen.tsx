@@ -147,14 +147,18 @@ export default function ProfileScreen({
 
       {/* Actions */}
       <div className="mt-3 space-y-2">
-        <button
-          type="button"
-          disabled
-          className="glass-button-liquid w-full"
-        >
-          {isActive ? t.renewSubscription : t.buySubscription}
-          <span className="glass-button-liquid__badge">{t.comingSoon}</span>
-        </button>
+        <div className="glass-button-liquid-wrap">
+          <button
+            type="button"
+            disabled
+            className="glass-button w-full"
+          >
+            {isActive ? t.renewSubscription : t.buySubscription}
+          </button>
+          <div className="glass-button-liquid-overlay">
+            <span className="glass-button-liquid__badge">{t.comingSoon}</span>
+          </div>
+        </div>
 
         {subUrl && (
           <button

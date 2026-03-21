@@ -1,5 +1,3 @@
-export type Locale = "ru" | "en";
-
 export type Translations = {
   // Common
   loading: string;
@@ -64,11 +62,6 @@ export type Translations = {
   platinumAccess: string;
   cashbackPercent: string;
   invitedCount: string;
-
-  // Language
-  language: string;
-  russian: string;
-  english: string;
 
   // Setup flow
   setupIOS: string;

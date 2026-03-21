@@ -408,49 +408,6 @@ button:active, a:active, .device-card:active {
   transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─── Language switcher ─── */
-
-.lang-switcher {
-  display: flex;
-  gap: 6px;
-  position: relative;
-  background: var(--bg-card);
-  border-radius: 16px;
-  padding: 3px;
-}
-
-.lang-btn {
-  flex: 1;
-  position: relative;
-  z-index: 1;
-  border: none;
-  border-radius: 14px;
-  padding: 10px 0;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  background: transparent;
-  color: var(--text-primary);
-  transition:
-    color 0.3s ease,
-    transform 0.35s cubic-bezier(0.25, 1.4, 0.5, 1);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.lang-btn:active {
-  transform: scale(0.94);
-}
-
-.lang-btn--active {
-  background: var(--bg-card-active);
-  color: var(--text-on-dark);
-  transition:
-    background 0.35s ease,
-    color 0.3s ease,
-    transform 0.35s cubic-bezier(0.25, 1.4, 0.5, 1);
-}
-
 /* ─── Setup banner ─── */
 
 @keyframes bannerSlideIn {
@@ -1210,50 +1167,4 @@ html.dark .payment-summary {
   height: 0;
 }
 
-/* ─── Splash screen ─── */
-.splash {
-  animation: splashIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.splash--out {
-  animation: splashOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards;
-}
-
-.splash-icon {
-  opacity: 0;
-  transform: scale(0.6);
-  animation: splashIconIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
-}
-
-.splash-title {
-  opacity: 0;
-  transform: translateY(12px);
-  animation: splashTextIn 0.5s ease 0.3s forwards;
-}
-
-.splash-subtitle {
-  opacity: 0;
-  transform: translateY(8px);
-  animation: splashTextIn 0.5s ease 0.5s forwards;
-}
-
-@keyframes splashIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes splashOut {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(1.05); }
-}
-
-@keyframes splashIconIn {
-  from { opacity: 0; transform: scale(0.6); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes splashTextIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 

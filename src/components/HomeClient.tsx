@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import dynamic from "next/dynamic";
 import WebApp from "@twa-dev/sdk";
 import SubscriptionCard from "@/components/SubscriptionCard";
@@ -8,17 +8,9 @@ import SupportLinks from "@/components/SupportLinks";
 
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import { openTelegramLink } from "@/lib/openTelegramLink";
-import {
-  I18nContext,
-  getSavedLocale,
-  saveLocale,
-  getTranslations,
-  preloadLocale,
-  type Locale,
-} from "@/lib/i18n";
+import { I18nContext, t } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
 import SetupBanner from "@/components/SetupBanner";
-import SplashScreen from "@/components/SplashScreen";
 
 /* Lazy-loaded components (not needed on first render) */
 const ShieldHero = lazy(() => import("@/components/ShieldHero"));
@@ -78,22 +70,11 @@ export default function HomeClient() {
   });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
   const [showPayment, setShowPayment] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
-
-  // i18n state
-  const [locale, setLocaleState] = useState<Locale>("ru");
-  const t = getTranslations(locale);
 
   // Theme state
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    const savedLocale = getSavedLocale();
-    setLocaleState(savedLocale);
-    // Preload English translations asynchronously if needed
-    if (savedLocale === "en") {
-      preloadLocale("en").then(() => setLocaleState("en"));
-    }
     const saved = localStorage.getItem("atlas_theme");
     if (saved === "dark") {
       setDark(true);
@@ -107,30 +88,6 @@ export default function HomeClient() {
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("atlas_theme", next ? "dark" : "light");
   };
-
-  const localeWrapRef = useRef<HTMLDivElement>(null);
-
-  const handleSetLocale = useCallback(async (newLocale: Locale) => {
-    await preloadLocale(newLocale);
-    const el = localeWrapRef.current;
-    if (el) {
-      el.style.transition = "opacity 0.18s ease-out";
-      el.style.opacity = "0";
-      setTimeout(() => {
-        setLocaleState(newLocale);
-        saveLocale(newLocale);
-        document.documentElement.lang = newLocale;
-        requestAnimationFrame(() => {
-          el.style.transition = "opacity 0.22s ease-in";
-          el.style.opacity = "1";
-        });
-      }, 180);
-    } else {
-      setLocaleState(newLocale);
-      saveLocale(newLocale);
-      document.documentElement.lang = newLocale;
-    }
-  }, []);
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
@@ -202,14 +159,9 @@ export default function HomeClient() {
     return `${d.getDate()} ${t.months[d.getMonth()]} ${d.getFullYear()}`;
   };
 
-  const i18nValue = { locale, t, setLocale: handleSetLocale };
+  const i18nValue = { t };
 
   const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
-
-  /* ─── Splash ─── */
-  if (showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
-  }
 
   /* ─── Loading ─── */
   if (loading) {
@@ -343,7 +295,6 @@ export default function HomeClient() {
       <Suspense fallback={null}><TouchRipple /></Suspense>
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
-          ref={localeWrapRef}
           className="app-container"
           style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}
         >

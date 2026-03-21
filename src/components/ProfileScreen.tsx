@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { openTelegramLink } from "@/lib/openTelegramLink";
-import { useI18n, type Locale } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 
 type ProfileScreenProps = {
   name: string;
@@ -29,7 +29,7 @@ export default function ProfileScreen({
   onOpenSupport,
   onOpenPayment,
 }: ProfileScreenProps) {
-  const { t, locale, setLocale } = useI18n();
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   const handleCopySubUrl = async () => {
@@ -118,31 +118,6 @@ export default function ProfileScreen({
             </>
           )}
         </dl>
-      </div>
-
-      {/* Language selector */}
-      <div
-        className="mt-3 rounded-[var(--radius-card)] p-4"
-        style={{ background: "var(--bg-card)" }}
-      >
-        <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">
-          {t.language}
-        </h3>
-        <div className="lang-switcher">
-          {([
-            { key: "ru" as Locale, label: t.russian },
-            { key: "en" as Locale, label: t.english },
-          ]).map(({ key, label }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setLocale(key)}
-              className={`lang-btn${locale === key ? " lang-btn--active" : ""}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Actions */}

@@ -65,11 +65,6 @@ export const ru: Translations = {
   cashbackPercent: "кэшбэк",
   invitedCount: "приглашённых",
 
-  // Language
-  language: "Язык",
-  russian: "Русский",
-  english: "English",
-
   // Setup flow
   setupIOS: "Настройка на iOS",
   setupAndroid: "Настройка на Android",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import InstallPrompt from "@/components/InstallPrompt";
 import { openDeepLink } from "@/lib/openDeepLink";
 import { detectDevice, APP_LINKS, type DeviceType } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
@@ -52,7 +51,6 @@ export default function SetupFlow({
   );
   const [step, setStep] = useState(1);
   const [copied, setCopied] = useState(false);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
@@ -89,16 +87,11 @@ export default function SetupFlow({
   const handleAddConfig = () => {
     if (typeof window === "undefined") return;
     if (isWindows) return;
-    if (!subUrl) {
-      setShowInstallPrompt(true);
-      return;
-    }
+    if (!subUrl) return;
     const deepLink = appInfo.deeplink
       ? appInfo.deeplink(subUrl)
       : `v2raytun://import/${subUrl}`;
-    setShowInstallPrompt(false);
     openDeepLink(deepLink);
-    setTimeout(() => setShowInstallPrompt(true), 3000);
   };
 
   const step1Title = step1TitleMap[deviceType];
@@ -349,9 +342,6 @@ export default function SetupFlow({
           )}
         </div>
 
-        {showInstallPrompt && (
-          <InstallPrompt onClose={() => setShowInstallPrompt(false)} />
-        )}
       </div>
     </div>
   );

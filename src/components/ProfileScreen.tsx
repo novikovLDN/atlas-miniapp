@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import { openTelegramLink } from "@/lib/openTelegramLink";
-import { useI18n, type Locale } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 
 type ProfileScreenProps = {
   name: string;
   telegramId: number;
   isActive: boolean;
-  tariff?: "basic" | "plus";
+  tariff?: "basic" | "plus" | "business";
   expiresFormatted?: string;
   daysLeft?: number;
   subUrl?: string;
   buyUrl: string;
   onOpenSupport: () => void;
+  onOpenPayment: () => void;
 };
 
 export default function ProfileScreen({
@@ -26,8 +27,9 @@ export default function ProfileScreen({
   subUrl,
   buyUrl,
   onOpenSupport,
+  onOpenPayment,
 }: ProfileScreenProps) {
-  const { t, locale, setLocale } = useI18n();
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   const handleCopySubUrl = async () => {
@@ -81,8 +83,8 @@ export default function ProfileScreen({
               <span
                 className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 style={{
-                  background: isActive ? "rgba(52,199,89,0.12)" : "rgba(255,59,48,0.1)",
-                  color: isActive ? "#2da44e" : "#ff3b30",
+                  background: isActive ? "rgba(52,199,89,0.15)" : "rgba(255,59,48,0.1)",
+                  color: isActive ? "#34c759" : "#ff3b30",
                 }}
               >
                 <span
@@ -98,7 +100,7 @@ export default function ProfileScreen({
               <div className="flex justify-between">
                 <dt className="text-[var(--text-secondary)]">{t.tariff}</dt>
                 <dd className="font-semibold text-[var(--text-primary)]">
-                  {tariff === "plus" ? "Plus" : "Basic"}
+                  {tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic"}
                 </dd>
               </div>
               <div className="flex justify-between">
@@ -118,40 +120,20 @@ export default function ProfileScreen({
         </dl>
       </div>
 
-      {/* Language selector */}
-      <div
-        className="mt-3 rounded-[var(--radius-card)] p-4"
-        style={{ background: "var(--bg-card)" }}
-      >
-        <h3 className="mb-3 text-sm font-bold text-[var(--text-primary)]">
-          {t.language}
-        </h3>
-        <div className="lang-switcher">
-          {([
-            { key: "ru" as Locale, label: t.russian },
-            { key: "en" as Locale, label: t.english },
-          ]).map(({ key, label }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setLocale(key)}
-              className={`lang-btn${locale === key ? " lang-btn--active" : ""}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Actions */}
       <div className="mt-3 space-y-2">
-        <button
-          type="button"
-          onClick={() => openTelegramLink(buyUrl)}
-          className="glass-button w-full"
-        >
-          {isActive ? t.renewSubscription : t.buySubscription}
-        </button>
+        <div className="glass-button-liquid-wrap">
+          <button
+            type="button"
+            disabled
+            className="glass-button w-full"
+          >
+            {isActive ? t.renewSubscription : t.buySubscription}
+          </button>
+          <div className="glass-button-liquid-overlay">
+            <span className="glass-button-liquid__badge">{t.comingSoon}</span>
+          </div>
+        </div>
 
         {subUrl && (
           <button
@@ -182,11 +164,21 @@ export default function ProfileScreen({
           type="button"
           onClick={onOpenSupport}
           className="w-full rounded-[14px] py-3 text-center text-[14px] font-medium"
-          style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "none" }}
+          style={{ background: "var(--bg-card)", color: "var(--text-secondary)", border: "none" }}
         >
           {t.support}
         </button>
       </div>
+
+      {/* Developer credit */}
+      <p
+        className="mt-6 mb-2 text-center text-[11px] font-medium tracking-wide"
+        style={{ color: "var(--text-muted)", opacity: 0.6 }}
+      >
+        developed by{" "}
+        <span style={{ color: "#00e676", fontWeight: 700, textShadow: "0 0 8px rgba(0,230,118,0.4)" }}>Q</span>
+        <span style={{ color: "var(--text-primary)" }}>oDev</span>
+      </p>
     </div>
   );
 }

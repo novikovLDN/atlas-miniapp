@@ -2,6 +2,7 @@
 
 import type { DeviceType } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
+import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
 
 type DeviceSelectorProps = {
   onSelectDevice: (device: DeviceType) => void;
@@ -16,11 +17,11 @@ export default function DeviceSelector({
 }: DeviceSelectorProps) {
   const { t } = useI18n();
 
-  const DEVICES: { id: DeviceType; icon: string; name: string; subtitle: string }[] = [
-    { id: "ios", icon: "📱", name: "iOS", subtitle: "iPhone / iPad" },
-    { id: "android", icon: "🤖", name: "Android", subtitle: "Samsung, Xiaomi..." },
-    { id: "windows", icon: "🖥", name: "Windows", subtitle: t.pcLaptop },
-    { id: "macos", icon: "🍎", name: "macOS", subtitle: "MacBook / iMac" },
+  const DEVICES: { id: DeviceType; name: string; subtitle: string }[] = [
+    { id: "ios", name: "iOS", subtitle: "iPhone / iPad" },
+    { id: "android", name: "Android", subtitle: "Samsung, Xiaomi..." },
+    { id: "windows", name: "Windows", subtitle: t.pcLaptop },
+    { id: "macos", name: "macOS", subtitle: "MacBook / iMac" },
   ];
 
   return (
@@ -32,54 +33,54 @@ export default function DeviceSelector({
           </h2>
 
           <div className="mt-8 grid w-full grid-cols-2 gap-3">
-            {DEVICES.map(({ id, icon, name, subtitle }) => {
+            {DEVICES.map(({ id, name, subtitle }) => {
               const isDetected = detectedDevice === id;
+              const Icon = DEVICE_ICON_MAP[id];
               return (
-                <div key={id} className="relative flex flex-col items-center">
-                  {isDetected && (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => onSelectDevice(id)}
+                  className={`device-card flex w-full min-h-[140px] flex-col items-center justify-center rounded-[var(--radius-card)] px-3 py-5 text-center ${
+                    isDetected ? "device-card--detected" : ""
+                  }`}
+                >
+                  <span className="flex items-center justify-center leading-none" style={{ color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)" }} aria-hidden>
+                    <Icon size={32} />
+                  </span>
+                  <span
+                    className="mt-2 text-base font-bold"
+                    style={{
+                      color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)",
+                    }}
+                  >
+                    {name}
+                  </span>
+                  <span
+                    className="mt-0.5 text-xs"
+                    style={{
+                      color: isDetected ? "rgba(255,255,255,0.5)" : "var(--text-secondary)",
+                    }}
+                  >
+                    {subtitle}
+                  </span>
+
+                  {isDetected ? (
                     <span
-                      className="mb-2 inline-block rounded-full px-3 py-1 text-xs font-semibold"
+                      className="mt-2 inline-block rounded-full px-3 py-0.5 text-[10px] font-semibold"
                       style={{
-                        background: "rgba(52, 199, 89, 0.12)",
-                        color: "#2da44e",
+                        background: "rgba(52, 199, 89, 0.18)",
+                        color: "#34c759",
                       }}
                     >
                       {t.yourDevice}
                     </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => onSelectDevice(id)}
-                    className={`device-card flex w-full min-h-[140px] flex-col items-center justify-center rounded-[var(--radius-card)] px-3 py-5 text-center ${
-                      isDetected ? "device-card--detected" : ""
-                    }`}
-                  >
-                    <span className="text-[32px] leading-none" aria-hidden>
-                      {icon}
-                    </span>
-                    <span
-                      className="mt-3 text-base font-bold"
-                      style={{
-                        color: isDetected ? "var(--text-on-dark)" : "var(--text-primary)",
-                      }}
-                    >
-                      {name}
-                    </span>
-                    <span
-                      className="mt-1 text-xs"
-                      style={{
-                        color: isDetected ? "rgba(255,255,255,0.5)" : "var(--text-secondary)",
-                      }}
-                    >
-                      {subtitle}
-                    </span>
-
-                    {/* Toggle (like reference) */}
-                    <div className={`toggle-track mt-3 ${isDetected ? "active" : ""}`}>
+                  ) : (
+                    <div className={`toggle-track mt-3`}>
                       <div className="toggle-thumb" />
                     </div>
-                  </button>
-                </div>
+                  )}
+                </button>
               );
             })}
           </div>

@@ -1,5 +1,3 @@
-export type Locale = "ru" | "en";
-
 export type Translations = {
   // Common
   loading: string;
@@ -32,6 +30,8 @@ export type Translations = {
   // Subscription card
   until: string;
   connect: string;
+  connectVPN: string;
+  comingSoon: string;
   buySubscription: string;
   buySubscriptionFrom: string;
   installAndSetup: string;
@@ -63,11 +63,6 @@ export type Translations = {
   cashbackPercent: string;
   invitedCount: string;
 
-  // Language
-  language: string;
-  russian: string;
-  english: string;
-
   // Setup flow
   setupIOS: string;
   setupAndroid: string;
@@ -97,6 +92,10 @@ export type Translations = {
   addDeviceTitle: string;
   activeSubscriptionRequired: string;
   copyAndPasteLink: string;
+  addDeviceStep1: string;
+  addDeviceStep2: string;
+  addDeviceStep3: string;
+  addDeviceOnSecondDevice: string;
   linkAfterActivation: string;
   linkCopied: string;
   copiedCheck: string;
@@ -145,6 +144,36 @@ export type Translations = {
   guidePcOption2Step1: string;
   guidePcOption2Step2: string;
   guidePcOption2Step3: string;
+
+  // Payment
+  paymentTitle: string;
+  paymentChooseTariff: string;
+  paymentChoosePeriod: string;
+  paymentChooseMethod: string;
+  paymentTariffBasic: string;
+  paymentTariffBasicDesc: string;
+  paymentTariffPlus: string;
+  paymentTariffPlusDesc: string;
+  paymentTariffBusiness: string;
+  paymentTariffBusinessDesc: string;
+  paymentMonths1: string;
+  paymentMonths3: string;
+  paymentMonths6: string;
+  paymentMonths12: string;
+  paymentClientsPerDay: (n: number) => string;
+  paymentPerMonth: string;
+  paymentStars: string;
+  paymentStarsDesc: string;
+  paymentCrypto: string;
+  paymentCryptoDesc: string;
+  paymentSBP: string;
+  paymentSBPDesc: string;
+  paymentCard: string;
+  paymentCardDesc: string;
+  paymentComingSoon: string;
+  paymentComingSoonToast: string;
+  paymentProcessing: string;
+  paymentError: string;
 
   // Guide — Second phone
   guidePhoneTitle: string;

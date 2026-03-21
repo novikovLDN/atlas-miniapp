@@ -32,6 +32,8 @@ export const ru: Translations = {
   // Subscription card
   until: "до",
   connect: "Подключиться",
+  connectVPN: "Подключить VPN",
+  comingSoon: "Скоро",
   buySubscription: "Купить подписку",
   buySubscriptionFrom: "Купить подписку от 149 \u20BD",
   installAndSetup: "Установка и настройка",
@@ -62,11 +64,6 @@ export const ru: Translations = {
   platinumAccess: "Platinum Access",
   cashbackPercent: "кэшбэк",
   invitedCount: "приглашённых",
-
-  // Language
-  language: "Язык",
-  russian: "Русский",
-  english: "English",
 
   // Setup flow
   setupIOS: "Настройка на iOS",
@@ -99,7 +96,11 @@ export const ru: Translations = {
   // Add device
   addDeviceTitle: "Добавить устройство",
   activeSubscriptionRequired: "Для подключения устройства необходима активная подписка.",
-  copyAndPasteLink: "Скопируйте ссылку и вставьте её в V2RayTun или Hiddify на другом устройстве.",
+  copyAndPasteLink: "Подключите VPN на другом устройстве в 3 шага:",
+  addDeviceStep1: "Нажмите «Скопировать ссылку» ниже",
+  addDeviceStep2: "Передайте скопированную ссылку на нужное устройство — через мессенджер, заметки или любым удобным способом",
+  addDeviceStep3: "На втором устройстве откройте приложение V2RayTun, нажмите «+» в правом верхнем углу и вставьте ссылку",
+  addDeviceOnSecondDevice: "На втором устройстве",
   linkAfterActivation: "Ссылка появится после активации подписки",
   linkCopied: "Ссылка скопирована \u2713",
   copiedCheck: "Скопировано \u2713",
@@ -129,6 +130,36 @@ export const ru: Translations = {
   guideTitle: "Как подключить VPN",
   guideSubtitle: "Пошаговые инструкции для всех устройств",
   guideLabel: "Инструкции",
+
+  // Payment
+  paymentTitle: "Оплата подписки",
+  paymentChooseTariff: "Выберите тариф",
+  paymentChoosePeriod: "Выберите период",
+  paymentChooseMethod: "Выберите способ оплаты",
+  paymentTariffBasic: "Basic",
+  paymentTariffBasicDesc: "Базовый доступ к VPN",
+  paymentTariffPlus: "Plus",
+  paymentTariffPlusDesc: "Расширенный доступ + дополнительные серверы",
+  paymentTariffBusiness: "Business",
+  paymentTariffBusinessDesc: "Для команд с несколькими клиентами",
+  paymentMonths1: "1 месяц",
+  paymentMonths3: "3 месяца",
+  paymentMonths6: "6 месяцев",
+  paymentMonths12: "12 месяцев",
+  paymentClientsPerDay: (n: number) => `До ${n} кл/день`,
+  paymentPerMonth: "/ мес",
+  paymentStars: "Telegram Stars",
+  paymentStarsDesc: "Оплата звёздами Telegram",
+  paymentCrypto: "CryptoBot",
+  paymentCryptoDesc: "Оплата криптовалютой",
+  paymentSBP: "СБП",
+  paymentSBPDesc: "Система быстрых платежей",
+  paymentCard: "Банковская карта",
+  paymentCardDesc: "Visa, Mastercard, МИР",
+  paymentComingSoon: "Скоро",
+  paymentComingSoonToast: "Скоро добавим этот способ оплаты",
+  paymentProcessing: "Обработка платежа\u2026",
+  paymentError: "Ошибка оплаты. Попробуйте ещё раз",
 
   // Guide — TV
   guideTvTitle: "Установка на телевизор",

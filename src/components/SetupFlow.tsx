@@ -5,6 +5,7 @@ import InstallPrompt from "@/components/InstallPrompt";
 import { openDeepLink } from "@/lib/openDeepLink";
 import { detectDevice, APP_LINKS, type DeviceType } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
+import { DEVICE_ICON_MAP, DownloadIcon, PlusIcon } from "@/components/DeviceIcons";
 
 const CONFETTI_COLORS = [
   "#1c1c1e", "#3478f6", "#34c759", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4",
@@ -24,18 +25,12 @@ const confettiPieces = Array.from({ length: 80 }, (_, i) => ({
     | "rect-wide",
 }));
 
-const STEP1_ICON: Record<DeviceType, string> = {
-  ios: "📱",
-  android: "🤖",
-  windows: "🖥",
-  macos: "🍎",
-  unknown: "📱",
-};
+const STEP_ICON_SIZE = 34;
 
 type SetupFlowProps = {
   telegramId: number;
   onClose: () => void;
-  tariff: "basic" | "plus";
+  tariff: "basic" | "plus" | "business";
   subUrl?: string;
   deviceType?: DeviceType;
   onSelectOtherDevice?: () => void;
@@ -147,8 +142,8 @@ export default function SetupFlow({
           {/* Step 1 */}
           {step === 1 && (
             <div className="step-enter flex w-full flex-col items-center">
-              <div className={iconBox} style={{ background: "var(--bg-card)" }} aria-hidden>
-                {STEP1_ICON[deviceType]}
+              <div className={iconBox} style={{ background: "var(--bg-card)", color: "var(--text-primary)" }} aria-hidden>
+                {(() => { const Icon = DEVICE_ICON_MAP[deviceType]; return <Icon size={STEP_ICON_SIZE} />; })()}
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
                 {step1Title}
@@ -176,8 +171,8 @@ export default function SetupFlow({
           {/* Step 2 */}
           {step === 2 && (
             <div className="step-enter flex w-full flex-col items-center">
-              <div className={iconBox} style={{ background: "var(--bg-card)" }} aria-hidden>
-                {"⬇️"}
+              <div className={iconBox} style={{ background: "var(--bg-card)", color: "var(--text-primary)" }} aria-hidden>
+                <DownloadIcon size={STEP_ICON_SIZE} />
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
                 {t.application}
@@ -206,8 +201,8 @@ export default function SetupFlow({
           {/* Step 3 */}
           {step === 3 && (
             <div className="step-enter flex w-full flex-col items-center">
-              <div className={iconBox} style={{ background: "var(--bg-card)" }} aria-hidden>
-                {"➕"}
+              <div className={iconBox} style={{ background: "var(--bg-card)", color: "var(--text-primary)" }} aria-hidden>
+                <PlusIcon size={STEP_ICON_SIZE} />
               </div>
               <h2 className="mt-6 text-center text-2xl font-bold text-[var(--text-primary)]">
                 {t.subscriptionStep}

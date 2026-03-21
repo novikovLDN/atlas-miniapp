@@ -1,35 +1,33 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
+import dynamic from "next/dynamic";
 import WebApp from "@twa-dev/sdk";
-import ShieldHero from "@/components/ShieldHero";
 import SubscriptionCard from "@/components/SubscriptionCard";
-import SetupFlow from "@/components/SetupFlow";
-import DownloadSection from "@/components/DownloadSection";
 import SupportLinks from "@/components/SupportLinks";
-import AddDeviceScreen from "@/components/AddDeviceScreen";
-import ProfileScreen from "@/components/ProfileScreen";
-import GuideScreen from "@/components/GuideScreen";
 
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import { openTelegramLink } from "@/lib/openTelegramLink";
-import DeviceSelector from "@/components/DeviceSelector";
-import {
-  I18nContext,
-  getSavedLocale,
-  saveLocale,
-  getTranslations,
-  type Locale,
-} from "@/lib/i18n";
+import { I18nContext, t } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
-import TouchRipple from "@/components/TouchRipple";
 import SetupBanner from "@/components/SetupBanner";
+
+/* Lazy-loaded components (not needed on first render) */
+const ShieldHero = lazy(() => import("@/components/ShieldHero"));
+const DownloadSection = lazy(() => import("@/components/DownloadSection"));
+const TouchRipple = lazy(() => import("@/components/TouchRipple"));
+const SetupFlow = lazy(() => import("@/components/SetupFlow"));
+const AddDeviceScreen = lazy(() => import("@/components/AddDeviceScreen"));
+const ProfileScreen = lazy(() => import("@/components/ProfileScreen"));
+const GuideScreen = lazy(() => import("@/components/GuideScreen"));
+const DeviceSelector = lazy(() => import("@/components/DeviceSelector"));
+const PaymentModal = dynamic(() => import("@/components/PaymentModal"), { ssr: false });
 
 type SubscriptionResponse =
   | {
       is_active: true;
       name: string;
-      tariff: "basic" | "plus";
+      tariff: "basic" | "plus" | "business";
       expires_at: string;
       expires_formatted: string;
       days_left: number;
@@ -71,16 +69,12 @@ export default function HomeClient() {
     return "home";
   });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
-
-  // i18n state
-  const [locale, setLocaleState] = useState<Locale>("ru");
-  const t = getTranslations(locale);
+  const [showPayment, setShowPayment] = useState(false);
 
   // Theme state
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    setLocaleState(getSavedLocale());
     const saved = localStorage.getItem("atlas_theme");
     if (saved === "dark") {
       setDark(true);
@@ -94,29 +88,6 @@ export default function HomeClient() {
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("atlas_theme", next ? "dark" : "light");
   };
-
-  const localeWrapRef = useRef<HTMLDivElement>(null);
-
-  const handleSetLocale = useCallback((newLocale: Locale) => {
-    const el = localeWrapRef.current;
-    if (el) {
-      el.style.transition = "opacity 0.18s ease-out";
-      el.style.opacity = "0";
-      setTimeout(() => {
-        setLocaleState(newLocale);
-        saveLocale(newLocale);
-        document.documentElement.lang = newLocale;
-        requestAnimationFrame(() => {
-          el.style.transition = "opacity 0.22s ease-in";
-          el.style.opacity = "1";
-        });
-      }, 180);
-    } else {
-      setLocaleState(newLocale);
-      saveLocale(newLocale);
-      document.documentElement.lang = newLocale;
-    }
-  }, []);
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
@@ -188,7 +159,7 @@ export default function HomeClient() {
     return `${d.getDate()} ${t.months[d.getMonth()]} ${d.getFullYear()}`;
   };
 
-  const i18nValue = { locale, t, setLocale: handleSetLocale };
+  const i18nValue = { t };
 
   const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
 
@@ -234,21 +205,29 @@ export default function HomeClient() {
     );
   }
 
+  const suspenseFallback = (
+    <div className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg-dark)" }}>
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--text-muted)] border-t-[var(--text-primary)]" />
+    </div>
+  );
+
   /* ─── Add device ─── */
   if (view === "add_device" && telegramId !== null) {
     const hasActive = data?.is_active ?? false;
     return (
       <I18nContext.Provider value={i18nValue}>
         {themeToggle}
-        <AddDeviceScreen
-          hasActiveSubscription={hasActive}
-          subUrl={
-            hasActive ? (data as { sub_url?: string }).sub_url : undefined
-          }
-          buySubscriptionUrl={buyUrl}
-          onBack={() => setView("main")}
-          onOpenSupport={openSupport}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <AddDeviceScreen
+            hasActiveSubscription={hasActive}
+            subUrl={
+              hasActive ? (data as { sub_url?: string }).sub_url : undefined
+            }
+            buySubscriptionUrl={buyUrl}
+            onBack={() => setView("main")}
+            onOpenSupport={openSupport}
+          />
+        </Suspense>
       </I18nContext.Provider>
     );
   }
@@ -258,14 +237,16 @@ export default function HomeClient() {
     return (
       <I18nContext.Provider value={i18nValue}>
         {themeToggle}
-        <DeviceSelector
-          onSelectDevice={(device) => {
-            setSelectedDevice(device);
-            setView("setup_manual");
-          }}
-          onBack={() => setView("main")}
-          detectedDevice={deviceType === "unknown" ? undefined : deviceType}
-        />
+        <Suspense fallback={suspenseFallback}>
+          <DeviceSelector
+            onSelectDevice={(device) => {
+              setSelectedDevice(device);
+              setView("setup_manual");
+            }}
+            onBack={() => setView("main")}
+            detectedDevice={deviceType === "unknown" ? undefined : deviceType}
+          />
+        </Suspense>
       </I18nContext.Provider>
     );
   }
@@ -280,23 +261,25 @@ export default function HomeClient() {
     return (
       <I18nContext.Provider value={i18nValue}>
         {themeToggle}
-        <SetupFlow
-          telegramId={telegramId}
-          onClose={() => setView("main")}
-          tariff={data?.is_active ? data.tariff : "basic"}
-          subUrl={
-            data?.is_active
-              ? (data as { sub_url?: string }).sub_url
-              : undefined
-          }
-          deviceType={setupDeviceType}
-          onSelectOtherDevice={() => setView("device_select")}
-          onBackFromStep1={
-            view === "setup_manual"
-              ? () => setView("device_select")
-              : undefined
-          }
-        />
+        <Suspense fallback={suspenseFallback}>
+          <SetupFlow
+            telegramId={telegramId}
+            onClose={() => setView("main")}
+            tariff={data?.is_active ? data.tariff : "basic"}
+            subUrl={
+              data?.is_active
+                ? (data as { sub_url?: string }).sub_url
+                : undefined
+            }
+            deviceType={setupDeviceType}
+            onSelectOtherDevice={() => setView("device_select")}
+            onBackFromStep1={
+              view === "setup_manual"
+                ? () => setView("device_select")
+                : undefined
+            }
+          />
+        </Suspense>
       </I18nContext.Provider>
     );
   }
@@ -309,10 +292,9 @@ export default function HomeClient() {
   return (
     <I18nContext.Provider value={i18nValue}>
       {themeToggle}
-      <TouchRipple />
+      <Suspense fallback={null}><TouchRipple /></Suspense>
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
-          ref={localeWrapRef}
           className="app-container"
           style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}
         >
@@ -325,7 +307,7 @@ export default function HomeClient() {
                 animation: activeTab === "home" ? "tabFadeIn 0.3s ease forwards" : "none",
               }}
             >
-              <ShieldHero />
+              <Suspense fallback={<div style={{ height: 200 }} />}><ShieldHero /></Suspense>
               <div className="px-5 pb-4">
                 {telegramId !== null && (
                   <SubscriptionCard
@@ -345,11 +327,12 @@ export default function HomeClient() {
                     onOpenSetup={() => setView("setup")}
                     onOpenSupport={openSupport}
                     onOpenAddDevice={() => setView("add_device")}
+                    onOpenPayment={() => setShowPayment(true)}
                   />
                 )}
 
                 <div className="mt-4 space-y-3">
-                  <DownloadSection deviceType={deviceType} />
+                  <Suspense fallback={null}><DownloadSection deviceType={deviceType} /></Suspense>
                   <SupportLinks />
                 </div>
               </div>
@@ -362,7 +345,9 @@ export default function HomeClient() {
                 animation: activeTab === "guide" ? "tabFadeIn 0.3s ease forwards" : "none",
               }}
             >
-              <GuideScreen onSetup={() => setView("setup")} />
+              <Suspense fallback={suspenseFallback}>
+                <GuideScreen onSetup={() => setView("setup")} />
+              </Suspense>
             </div>
 
             {/* Profile tab */}
@@ -373,23 +358,26 @@ export default function HomeClient() {
               }}
             >
               {telegramId !== null && (
-                <ProfileScreen
-                  name={name}
-                  telegramId={telegramId}
-                  isActive={isActive}
-                  tariff={data?.is_active ? data.tariff : undefined}
-                  expiresFormatted={
-                    data?.is_active ? formatDate(data.expires_at) : undefined
-                  }
-                  daysLeft={data?.is_active ? data.days_left : undefined}
-                  subUrl={
-                    data?.is_active
-                      ? (data as { sub_url?: string }).sub_url
-                      : undefined
-                  }
-                  buyUrl={buyUrl}
-                  onOpenSupport={openSupport}
-                />
+                <Suspense fallback={suspenseFallback}>
+                  <ProfileScreen
+                    name={name}
+                    telegramId={telegramId}
+                    isActive={isActive}
+                    tariff={data?.is_active ? data.tariff : undefined}
+                    expiresFormatted={
+                      data?.is_active ? formatDate(data.expires_at) : undefined
+                    }
+                    daysLeft={data?.is_active ? data.days_left : undefined}
+                    subUrl={
+                      data?.is_active
+                        ? (data as { sub_url?: string }).sub_url
+                        : undefined
+                    }
+                    buyUrl={buyUrl}
+                    onOpenSupport={openSupport}
+                    onOpenPayment={() => setShowPayment(true)}
+                  />
+                </Suspense>
               )}
             </div>
           </div>
@@ -441,6 +429,10 @@ export default function HomeClient() {
             </div>
           </div>
         </div>
+
+        {showPayment && (
+          <PaymentModal onClose={() => setShowPayment(false)} />
+        )}
       </main>
     </I18nContext.Provider>
   );

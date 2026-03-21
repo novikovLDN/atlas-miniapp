@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
     const expiresAt = row.expires_at instanceof Date
       ? row.expires_at.toISOString()
       : String(row.expires_at);
-    const tariff = row.subscription_type === "plus" ? "plus" : "basic";
+    const tariff = row.subscription_type === "business" ? "business" : row.subscription_type === "plus" ? "plus" : "basic";
 
     const subToken = crypto
       .createHmac("sha256", botToken)

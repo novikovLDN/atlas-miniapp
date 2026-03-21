@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { openTelegramLink } from "@/lib/openTelegramLink";
 import { useI18n } from "@/lib/i18n";
+import QRCode from "qrcode";
 
 type AddDeviceScreenProps = {
   subUrl?: string;
@@ -21,8 +22,18 @@ export default function AddDeviceScreen({
 }: AddDeviceScreenProps) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const subscriptionUrl = hasActiveSubscription && subUrl ? subUrl : "";
+
+  useEffect(() => {
+    if (!subscriptionUrl || !canvasRef.current) return;
+    QRCode.toCanvas(canvasRef.current, subscriptionUrl, {
+      width: 200,
+      margin: 2,
+      color: { dark: "#000000", light: "#ffffff" },
+    });
+  }, [subscriptionUrl]);
 
   const handleCopy = async () => {
     if (!subscriptionUrl) return;
@@ -109,6 +120,20 @@ export default function AddDeviceScreen({
           </h2>
           <p className="mt-3 text-sm font-medium text-[var(--text-primary)]">
             {t.copyAndPasteLink}
+          </p>
+
+          {/* QR Code */}
+          {subscriptionUrl && (
+            <div
+              className="mt-4 rounded-[16px] p-4"
+              style={{ background: "#ffffff" }}
+            >
+              <canvas ref={canvasRef} />
+            </div>
+          )}
+
+          <p className="mt-2 text-xs text-[var(--text-muted)]">
+            {t.addDeviceOnSecondDevice}
           </p>
 
           <div

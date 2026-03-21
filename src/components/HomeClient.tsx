@@ -11,6 +11,7 @@ import { openTelegramLink } from "@/lib/openTelegramLink";
 import { I18nContext, t } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
 import SetupBanner from "@/components/SetupBanner";
+import SplashScreen from "@/components/SplashScreen";
 
 /* Lazy-loaded components (not needed on first render) */
 const ShieldHero = lazy(() => import("@/components/ShieldHero"));
@@ -70,6 +71,7 @@ export default function HomeClient() {
   });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
   const [showPayment, setShowPayment] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   // Theme state
   const [dark, setDark] = useState(false);
@@ -162,6 +164,11 @@ export default function HomeClient() {
   const i18nValue = { t };
 
   const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
+
+  /* ─── Splash ─── */
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
 
   /* ─── Loading ─── */
   if (loading) {

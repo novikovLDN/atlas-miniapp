@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, lazy, Suspense } from "react";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import dynamic from "next/dynamic";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import SupportLinks from "@/components/SupportLinks";
@@ -12,37 +12,20 @@ import ThemeToggle from "@/components/ThemeToggle";
 import SetupBanner from "@/components/SetupBanner";
 import SplashScreen from "@/components/SplashScreen";
 
-/** Safely get Telegram WebApp — returns null if SDK not loaded yet */
-function getTelegramWebApp() {
-  try {
-    return window.Telegram?.WebApp ?? null;
-  } catch {
-    return null;
-  }
+/* ── Telegram helpers ── */
+
+function getWebApp() {
+  try { return window.Telegram?.WebApp ?? null; } catch { return null; }
 }
 
-/** Wait for Telegram SDK to become available (up to maxMs) */
-function waitForTelegramSdk(maxMs = 5000): Promise<NonNullable<NonNullable<typeof window.Telegram>["WebApp"]> | null> {
-  return new Promise((resolve) => {
-    const wa = getTelegramWebApp();
-    if (wa) { resolve(wa); return; }
-    const start = Date.now();
-    const interval = setInterval(() => {
-      const wa = getTelegramWebApp();
-      if (wa) { clearInterval(interval); resolve(wa); return; }
-      if (Date.now() - start >= maxMs) { clearInterval(interval); resolve(null); }
-    }, 100);
-  });
+function getTelegramUser() {
+  const wa = getWebApp();
+  if (!wa) return null;
+  const user = wa.initDataUnsafe?.user;
+  return user?.id && wa.initData ? { id: user.id, initData: wa.initData, startParam: wa.initDataUnsafe?.start_param } : null;
 }
 
-/** Fetch with timeout via AbortController */
-function fetchWithTimeout(url: string, opts: RequestInit, timeoutMs = 15000): Promise<Response> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
-}
-
-/* Lazy-loaded components (not needed on first render) */
+/* ── Lazy components ── */
 const ShieldHero = lazy(() => import("@/components/ShieldHero"));
 const DownloadSection = lazy(() => import("@/components/DownloadSection"));
 const TouchRipple = lazy(() => import("@/components/TouchRipple"));
@@ -66,42 +49,32 @@ type SubscriptionResponse =
   | { is_active: false; name: string };
 
 type Tab = "home" | "guide" | "profile";
+type ViewState = "main" | "setup" | "device_select" | "setup_manual" | "add_device";
 
 const TAB_INDEX: Record<Tab, number> = { home: 0, guide: 1, profile: 2 };
-const BLOB_STEP = 52; // 48px item + 4px gap
+const BLOB_STEP = 52;
+const MAX_RETRIES = 3;
+const FETCH_TIMEOUT = 10_000;
 
 export default function HomeClient() {
   const [data, setData] = useState<SubscriptionResponse | null>(null);
   const [telegramId, setTelegramId] = useState<number | null>(null);
-  const [deviceType, setDeviceType] =
-    useState<ReturnType<typeof detectDevice>>("unknown");
+  const [deviceType, setDeviceType] = useState<ReturnType<typeof detectDevice>>("unknown");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  type ViewState =
-    | "main"
-    | "setup"
-    | "device_select"
-    | "setup_manual"
-    | "add_device";
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
-  // Resolve initial tab from Telegram startapp param (before first render)
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     try {
-      const wa = getTelegramWebApp();
-      const startParam =
-        wa?.initDataUnsafe?.start_param ||
-        new URLSearchParams(window.location.search).get("startapp");
-      if (startParam === "guide") return "guide";
-      if (startParam === "profile") return "profile";
-    } catch { /* SSR safety */ }
+      const p = getTelegramUser()?.startParam || new URLSearchParams(window.location.search).get("startapp");
+      if (p === "guide") return "guide";
+      if (p === "profile") return "profile";
+    } catch {}
     return "home";
   });
   const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
   const [showPayment, setShowPayment] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-
-  // Theme state
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -121,97 +94,71 @@ export default function HomeClient() {
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
-    const dir = TAB_INDEX[tab] > TAB_INDEX[activeTab] ? "to-right" : "to-left";
-    setBlobAnim(dir);
+    setBlobAnim(TAB_INDEX[tab] > TAB_INDEX[activeTab] ? "to-right" : "to-left");
     setActiveTab(tab);
     setTimeout(() => setBlobAnim(""), 400);
   };
 
+  useEffect(() => { setDeviceType(detectDevice()); }, []);
+
+  /* ── Init Telegram SDK ── */
   useEffect(() => {
-    setDeviceType(detectDevice());
+    const wa = getWebApp();
+    if (!wa) return;
+    try { wa.ready(); } catch {}
+    try { wa.expand(); } catch {}
   }, []);
 
-  const initAttempt = useRef(0);
-
-  const loadSubscription = useCallback(async () => {
+  /* ── Load subscription with auto-retry ── */
+  const loadSubscription = useCallback(async (retry = 0) => {
     setLoading(true);
     setError(null);
 
+    const tg = getTelegramUser();
+    if (!tg) {
+      setError("no_telegram");
+      setLoading(false);
+      return;
+    }
+
+    setTelegramId(tg.id);
+
     try {
-      // Wait for Telegram SDK to become available
-      const wa = await waitForTelegramSdk(5000);
-      if (!wa) {
-        setError("no_telegram");
-        setLoading(false);
-        return;
-      }
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT);
+      const res = await fetch(`/api/subscription?telegram_id=${tg.id}`, {
+        headers: { "x-telegram-init-data": tg.initData },
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
 
-      try { wa.ready(); } catch { /* old SDK versions */ }
-      try { wa.expand(); } catch { /* old SDK versions */ }
+      if (!res.ok) throw new Error(res.status === 401 ? "unauthorized" : "load_error");
 
-      const user = wa.initDataUnsafe?.user;
-      const userId = user?.id;
-      const initData = wa.initData;
-
-      if (!userId || !initData) {
-        setError("no_telegram");
-        setLoading(false);
-        return;
-      }
-
-      setTelegramId(userId);
-
-      const res = await fetchWithTimeout(
-        `/api/subscription?telegram_id=${userId}`,
-        { headers: { "x-telegram-init-data": initData } },
-        15000,
-      );
-
-      if (!res.ok) {
-        throw new Error(res.status === 401 ? "unauthorized" : "load_error");
-      }
-
-      const json: SubscriptionResponse = await res.json();
-      setData(json);
+      setData(await res.json());
       setError(null);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "subscription_error";
-      // Map AbortError (timeout) to connection error
-      if (err instanceof DOMException && err.name === "AbortError") {
-        setError("connection_error");
-      } else if (msg === "Failed to fetch" || msg === "NetworkError when attempting to fetch resource.") {
-        setError("connection_error");
-      } else {
-        setError(msg || "subscription_error");
+      const isNetwork =
+        (err instanceof DOMException && err.name === "AbortError") ||
+        (err instanceof TypeError);
+
+      // Auto-retry network errors with exponential backoff
+      if (isNetwork && retry < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, 1000 * 2 ** retry));
+        return loadSubscription(retry + 1);
       }
+
+      setError(isNetwork ? "connection_error" : (err instanceof Error ? err.message : "load_error"));
       setData(null);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    loadSubscription();
-  }, [loadSubscription]);
+  useEffect(() => { loadSubscription(); }, [loadSubscription]);
 
-  const buyUrl =
-    process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/atlassecure_bot?start=buy";
-
+  /* ── Constants ── */
+  const buyUrl = process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/atlassecure_bot?start=buy";
   const openSupport = () => openTelegramLink("https://t.me/Atlas_SupportSecurity");
-
-  const getErrorMessage = (err: string) => {
-    switch (err) {
-      case "no_telegram": return t.openFromTelegram;
-      case "unauthorized": return t.unauthorized;
-      case "load_error": return t.loadError;
-      case "connection_error": return t.connectionError;
-      case "subscription_error": return t.subscriptionLoadError;
-      default: return err;
-    }
-  };
-
-  const isRetryable = (err: string) =>
-    err === "load_error" || err === "connection_error" || err === "subscription_error";
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return undefined;
@@ -220,7 +167,6 @@ export default function HomeClient() {
   };
 
   const i18nValue = { t };
-
   const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
 
   /* ─── Splash ─── */
@@ -248,29 +194,29 @@ export default function HomeClient() {
 
   /* ─── Error ─── */
   if (error) {
+    const messages: Record<string, string> = {
+      no_telegram: t.openFromTelegram,
+      unauthorized: t.unauthorized,
+      load_error: t.loadError,
+      connection_error: t.connectionError,
+      subscription_error: t.subscriptionLoadError,
+    };
+    const canRetry = error !== "no_telegram" && error !== "unauthorized";
+
     return (
       <I18nContext.Provider value={i18nValue}>
         {themeToggle}
         <main style={{ background: "var(--bg-dark)" }}>
           <div className="app-container flex min-h-screen flex-col items-center justify-center gap-5 px-8 page-enter">
             <p className="text-center text-lg font-bold text-[var(--text-primary)]">
-              {getErrorMessage(error)}
+              {messages[error] ?? error}
             </p>
-            {isRetryable(error) && (
-              <button
-                type="button"
-                className="glass-button max-w-[240px] text-center"
-                onClick={loadSubscription}
-              >
+            {canRetry && (
+              <button type="button" className="glass-button max-w-[240px] text-center" onClick={() => loadSubscription()}>
                 {t.retry}
               </button>
             )}
-            <a
-              href={buyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-button max-w-[240px] text-center no-underline"
-            >
+            <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="glass-button max-w-[240px] text-center no-underline">
               {t.openBot}
             </a>
           </div>
@@ -490,7 +436,7 @@ export default function HomeClient() {
                   <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2ZM6 20V4H13V9H18V20H6ZM8 15.01V17H16V15.01H8ZM8 11.01V13H16V11.01H8Z" />
                 </svg>
               </button>
-<button
+              <button
                 type="button"
                 className={`bottom-pill-item ${activeTab === "profile" ? "active" : ""}`}
                 onClick={() => switchTab("profile")}

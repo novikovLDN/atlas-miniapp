@@ -21,6 +21,7 @@ const BASIC_CONFIGS: ServerConfig[] = [
   { ip: "185.241.193.94", port: 443,  sni: "eh.vk.com", fp: "chrome",  type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA", name: "🇷🇺 LTE-5G ОБХОД | Все операторы ⚡️" },
   { ip: "185.241.193.94", port: 443,  sni: "max.ru",    fp: "firefox", type: "tcp", flow: true, sid: "1a2b3c4d", pbk: "CrQHeDnhvv7Cqdbrx19mmbmTLN02uqIrmVzyufVUz0s", name: "🇷🇺 LTE-5G ОБХОД | Все + Мегафон ⚡️" },
   { ip: "185.241.193.94", port: 8444, sni: "eh.vk.com", fp: "chrome",  type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA", name: "🇪🇺 LTE-5G ОБХОД + ВПН ⚡️" },
+  { ip: "185.241.193.94", port: 8443, sni: "max.ru",          fp: "firefox", type: "tcp", flow: true, sid: "1a2b3c4d", pbk: "7uELniOcmygn2k9ywnZsJ0QzCsli_1e0bFGpqHcF4RY", name: "🇪🇺 LTE-5G ОБХОД + ВПН Мегафон ⚡️" },
   { ip: "62.84.123.132",  port: 443,  sni: "ads.x5.ru",      fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg", name: "⚪️ Резерв LTE" },
   { ip: "62.84.123.132",  port: 8443, sni: "yandex.ru",      fp: "chrome", type: "tcp", flow: true, sid: "b2c3d4e5", pbk: "WHlvowEffIH0xWQC7hTbYAn1PqcLCHSHGkkW2fWI2Rk", name: "⚪️ Резерв 5G" },
 ];

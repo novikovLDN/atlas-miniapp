@@ -9,6 +9,24 @@ declare global {
         viewportHeight: number;
         viewportStableHeight: number;
         onEvent: (event: string, callback: () => void) => void;
+        ready: () => void;
+        expand: () => void;
+        initData: string;
+        initDataUnsafe: {
+          user?: { id: number; first_name?: string; username?: string };
+          start_param?: string;
+          [key: string]: unknown;
+        };
+        openInvoice: (url: string, cb?: (status: string) => void) => void;
+        openLink: (url: string) => void;
+        openTelegramLink: (url: string) => void;
+        BackButton: {
+          show: () => void;
+          hide: () => void;
+          onClick: (cb: () => void) => void;
+          offClick: (cb: () => void) => void;
+        };
+        [key: string]: unknown;
       };
     };
   }

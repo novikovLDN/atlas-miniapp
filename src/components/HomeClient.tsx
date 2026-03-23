@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, useCallback, useRef, lazy, Suspense } from "react";
 import dynamic from "next/dynamic";
-import WebApp from "@twa-dev/sdk";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import SupportLinks from "@/components/SupportLinks";
 
@@ -12,6 +11,36 @@ import { I18nContext, t } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
 import SetupBanner from "@/components/SetupBanner";
 import SplashScreen from "@/components/SplashScreen";
+
+/** Safely get Telegram WebApp — returns null if SDK not loaded yet */
+function getTelegramWebApp() {
+  try {
+    return window.Telegram?.WebApp ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Wait for Telegram SDK to become available (up to maxMs) */
+function waitForTelegramSdk(maxMs = 5000): Promise<NonNullable<NonNullable<typeof window.Telegram>["WebApp"]> | null> {
+  return new Promise((resolve) => {
+    const wa = getTelegramWebApp();
+    if (wa) { resolve(wa); return; }
+    const start = Date.now();
+    const interval = setInterval(() => {
+      const wa = getTelegramWebApp();
+      if (wa) { clearInterval(interval); resolve(wa); return; }
+      if (Date.now() - start >= maxMs) { clearInterval(interval); resolve(null); }
+    }, 100);
+  });
+}
+
+/** Fetch with timeout via AbortController */
+function fetchWithTimeout(url: string, opts: RequestInit, timeoutMs = 15000): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
 
 /* Lazy-loaded components (not needed on first render) */
 const ShieldHero = lazy(() => import("@/components/ShieldHero"));
@@ -57,12 +86,11 @@ export default function HomeClient() {
   const [view, setView] = useState<ViewState>("main");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("ios");
   // Resolve initial tab from Telegram startapp param (before first render)
-  // WebApp.initDataUnsafe.start_param works for deep links (t.me/bot/app?startapp=guide)
-  // URL query param works for WebAppInfo(url="...?startapp=guide")
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     try {
+      const wa = getTelegramWebApp();
       const startParam =
-        WebApp.initDataUnsafe?.start_param ||
+        wa?.initDataUnsafe?.start_param ||
         new URLSearchParams(window.location.search).get("startapp");
       if (startParam === "guide") return "guide";
       if (startParam === "profile") return "profile";
@@ -103,42 +131,68 @@ export default function HomeClient() {
     setDeviceType(detectDevice());
   }, []);
 
-  useEffect(() => {
-    WebApp.ready();
-    WebApp.expand();
+  const initAttempt = useRef(0);
 
-    const user = WebApp.initDataUnsafe?.user;
-    const userId = user?.id;
-    const initData = WebApp.initData;
+  const loadSubscription = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-    if (!userId || !initData) {
-      setError("no_telegram");
+    try {
+      // Wait for Telegram SDK to become available
+      const wa = await waitForTelegramSdk(5000);
+      if (!wa) {
+        setError("no_telegram");
+        setLoading(false);
+        return;
+      }
+
+      try { wa.ready(); } catch { /* old SDK versions */ }
+      try { wa.expand(); } catch { /* old SDK versions */ }
+
+      const user = wa.initDataUnsafe?.user;
+      const userId = user?.id;
+      const initData = wa.initData;
+
+      if (!userId || !initData) {
+        setError("no_telegram");
+        setLoading(false);
+        return;
+      }
+
+      setTelegramId(userId);
+
+      const res = await fetchWithTimeout(
+        `/api/subscription?telegram_id=${userId}`,
+        { headers: { "x-telegram-init-data": initData } },
+        15000,
+      );
+
+      if (!res.ok) {
+        throw new Error(res.status === 401 ? "unauthorized" : "load_error");
+      }
+
+      const json: SubscriptionResponse = await res.json();
+      setData(json);
+      setError(null);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "subscription_error";
+      // Map AbortError (timeout) to connection error
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setError("connection_error");
+      } else if (msg === "Failed to fetch" || msg === "NetworkError when attempting to fetch resource.") {
+        setError("connection_error");
+      } else {
+        setError(msg || "subscription_error");
+      }
+      setData(null);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setTelegramId(userId);
-
-    fetch(`/api/subscription?telegram_id=${userId}`, {
-      headers: { "x-telegram-init-data": initData },
-    })
-      .then((res) => {
-        if (!res.ok)
-          throw new Error(
-            res.status === 401 ? "unauthorized" : "load_error"
-          );
-        return res.json();
-      })
-      .then((json: SubscriptionResponse) => {
-        setData(json);
-        setError(null);
-      })
-      .catch((err) => {
-        setError(err.message || "subscription_error");
-        setData(null);
-      })
-      .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadSubscription();
+  }, [loadSubscription]);
 
   const buyUrl =
     process.env.NEXT_PUBLIC_BOT_DEEP_LINK || "https://t.me/atlassecure_bot?start=buy";
@@ -150,10 +204,14 @@ export default function HomeClient() {
       case "no_telegram": return t.openFromTelegram;
       case "unauthorized": return t.unauthorized;
       case "load_error": return t.loadError;
+      case "connection_error": return t.connectionError;
       case "subscription_error": return t.subscriptionLoadError;
       default: return err;
     }
   };
+
+  const isRetryable = (err: string) =>
+    err === "load_error" || err === "connection_error" || err === "subscription_error";
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return undefined;
@@ -198,6 +256,15 @@ export default function HomeClient() {
             <p className="text-center text-lg font-bold text-[var(--text-primary)]">
               {getErrorMessage(error)}
             </p>
+            {isRetryable(error) && (
+              <button
+                type="button"
+                className="glass-button max-w-[240px] text-center"
+                onClick={loadSubscription}
+              >
+                {t.retry}
+              </button>
+            )}
             <a
               href={buyUrl}
               target="_blank"

@@ -46,7 +46,6 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
   const { t } = useI18n();
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [closing, setClosing] = useState(false);
 
   const [step, setStep] = useState<Step>("tariff");
   const [selectedTariff, setSelectedTariff] = useState<Tariff>("basic");
@@ -55,8 +54,7 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
   const [selectedClients, setSelectedClients] = useState(0);
 
   const close = useCallback(() => {
-    setClosing(true);
-    setTimeout(onClose, 220);
+    onClose();
   }, [onClose]);
 
   const goBack = useCallback(() => {
@@ -187,11 +185,11 @@ export default function PaymentModal({ onClose }: PaymentModalProps) {
 
   return (
     <div
-      className={`payment-overlay ${closing ? "payment-overlay--closing" : ""}`}
+      className="payment-overlay"
       onClick={close}
     >
       <div
-        className={`payment-sheet ${closing ? "payment-sheet--closing" : ""}`}
+        className="payment-sheet"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="payment-handle" />

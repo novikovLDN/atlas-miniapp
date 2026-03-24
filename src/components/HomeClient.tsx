@@ -10,7 +10,6 @@ import { openTelegramLink } from "@/lib/openTelegramLink";
 import { I18nContext, t } from "@/lib/i18n";
 import ThemeToggle from "@/components/ThemeToggle";
 import SetupBanner from "@/components/SetupBanner";
-import SplashScreen from "@/components/SplashScreen";
 
 /* ── Telegram helpers ── */
 
@@ -28,7 +27,6 @@ function getTelegramUser() {
 /* ── Lazy components ── */
 const ShieldHero = lazy(() => import("@/components/ShieldHero"));
 const DownloadSection = lazy(() => import("@/components/DownloadSection"));
-const TouchRipple = lazy(() => import("@/components/TouchRipple"));
 const SetupFlow = lazy(() => import("@/components/SetupFlow"));
 const AddDeviceScreen = lazy(() => import("@/components/AddDeviceScreen"));
 const ProfileScreen = lazy(() => import("@/components/ProfileScreen"));
@@ -72,9 +70,8 @@ export default function HomeClient() {
     } catch {}
     return "home";
   });
-  const [blobAnim, setBlobAnim] = useState<"" | "to-right" | "to-left">("");
+  const [blobAnim] = useState<"" | "to-right" | "to-left">("");
   const [showPayment, setShowPayment] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -94,9 +91,7 @@ export default function HomeClient() {
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
-    setBlobAnim(TAB_INDEX[tab] > TAB_INDEX[activeTab] ? "to-right" : "to-left");
     setActiveTab(tab);
-    setTimeout(() => setBlobAnim(""), 400);
   };
 
   useEffect(() => { setDeviceType(detectDevice()); }, []);
@@ -168,11 +163,6 @@ export default function HomeClient() {
 
   const i18nValue = { t };
   const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
-
-  /* ─── Splash ─── */
-  if (showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
-  }
 
   /* ─── Loading ─── */
   if (loading) {
@@ -312,7 +302,6 @@ export default function HomeClient() {
   return (
     <I18nContext.Provider value={i18nValue}>
       {themeToggle}
-      <Suspense fallback={null}><TouchRipple /></Suspense>
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
           className="app-container"
@@ -324,7 +313,7 @@ export default function HomeClient() {
             <div
               style={{
                 display: activeTab === "home" ? "block" : "none",
-                animation: activeTab === "home" ? "tabFadeIn 0.3s ease forwards" : "none",
+                animation: "none",
               }}
             >
               <Suspense fallback={<div style={{ height: 200 }} />}><ShieldHero /></Suspense>
@@ -362,7 +351,7 @@ export default function HomeClient() {
             <div
               style={{
                 display: activeTab === "guide" ? "block" : "none",
-                animation: activeTab === "guide" ? "tabFadeIn 0.3s ease forwards" : "none",
+                animation: "none",
               }}
             >
               <Suspense fallback={suspenseFallback}>
@@ -374,7 +363,7 @@ export default function HomeClient() {
             <div
               style={{
                 display: activeTab === "profile" ? "block" : "none",
-                animation: activeTab === "profile" ? "tabFadeIn 0.3s ease forwards" : "none",
+                animation: "none",
               }}
             >
               {telegramId !== null && (

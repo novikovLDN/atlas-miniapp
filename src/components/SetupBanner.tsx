@@ -12,33 +12,27 @@ type SetupBannerProps = {
 export default function SetupBanner({ onSetup }: SetupBannerProps) {
   const { t } = useI18n();
   const [visible, setVisible] = useState(false);
-  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem(STORAGE_KEY)) return;
-    const timer = setTimeout(() => setVisible(true), 600);
-    return () => clearTimeout(timer);
+    setVisible(true);
   }, []);
 
   const dismiss = () => {
-    setLeaving(true);
-    setTimeout(() => {
-      setVisible(false);
-      localStorage.setItem(STORAGE_KEY, "1");
-    }, 340);
+    setVisible(false);
+    localStorage.setItem(STORAGE_KEY, "1");
   };
 
   const handleSetup = () => {
     dismiss();
-    setTimeout(() => onSetup(), 120);
+    onSetup();
   };
 
   if (!visible) return null;
 
   return (
-    <div className={`setup-banner ${leaving ? "setup-banner--leave" : "setup-banner--enter"}`}>
+    <div className="setup-banner setup-banner--enter">
       <div className="setup-banner__content">
-        {/* Close button */}
         <button
           type="button"
           className="setup-banner__close"
@@ -51,7 +45,6 @@ export default function SetupBanner({ onSetup }: SetupBannerProps) {
           </svg>
         </button>
 
-        {/* Top row: icon + text */}
         <div className="setup-banner__header">
           <div className="setup-banner__icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -81,7 +74,6 @@ export default function SetupBanner({ onSetup }: SetupBannerProps) {
           </div>
         </div>
 
-        {/* Action button — full width */}
         <button
           type="button"
           className="setup-banner__action"

@@ -6,24 +6,6 @@ import { detectDevice, APP_LINKS, type DeviceType } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
 import { DEVICE_ICON_MAP, DownloadIcon, PlusIcon } from "@/components/DeviceIcons";
 
-const CONFETTI_COLORS = [
-  "#1c1c1e", "#3478f6", "#34c759", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4",
-];
-
-const confettiPieces = Array.from({ length: 80 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  delay: Math.random() * 1.5,
-  duration: 2 + Math.random() * 1.5,
-  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-  size: 6 + Math.random() * 8,
-  rotation: Math.random() * 360,
-  shape: (i % 3 === 0 ? "circle" : i % 3 === 1 ? "rect" : "rect-wide") as
-    | "circle"
-    | "rect"
-    | "rect-wide",
-}));
-
 const STEP_ICON_SIZE = 34;
 
 type SetupFlowProps = {
@@ -51,14 +33,6 @@ export default function SetupFlow({
   );
   const [step, setStep] = useState(1);
   const [copied, setCopied] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  useEffect(() => {
-    if (step !== 4) return;
-    setShowConfetti(true);
-    const timer = setTimeout(() => setShowConfetti(false), 3000);
-    return () => clearTimeout(timer);
-  }, [step]);
 
   useEffect(() => {
     if (deviceTypeProp) setDeviceType(deviceTypeProp);
@@ -117,7 +91,7 @@ export default function SetupFlow({
             {[1, 2, 3, 4].map((s) => (
               <div
                 key={s}
-                className="rounded-full transition-all duration-300"
+                className="rounded-full"
                 style={{
                   width: s === step ? "28px" : "8px",
                   height: "8px",
@@ -261,28 +235,6 @@ export default function SetupFlow({
                   </button>
                 </>
               )}
-            </div>
-          )}
-
-          {/* Fullscreen confetti (outside step container) */}
-          {step === 4 && showConfetti && (
-            <div className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none" style={{ top: 0, left: 0, width: "100vw", height: "100vh" }} aria-hidden>
-              {confettiPieces.map((p) => (
-                <div
-                  key={p.id}
-                  className="absolute -top-5"
-                  style={{
-                    left: `${p.x}%`,
-                    width: p.shape === "rect-wide" ? `${p.size * 2}px` : `${p.size}px`,
-                    height: `${p.size}px`,
-                    borderRadius: p.shape === "circle" ? "50%" : "2px",
-                    background: p.color,
-                    opacity: 0.9,
-                    animation: `confettiFall ${p.duration}s ${p.delay}s ease-in forwards`,
-                    transform: `rotate(${p.rotation}deg)`,
-                  }}
-                />
-              ))}
             </div>
           )}
 

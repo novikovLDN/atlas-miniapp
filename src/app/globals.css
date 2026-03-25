@@ -58,7 +58,7 @@ body {
   padding: 0;
 }
 
-/* ─── White container (like reference) ─── */
+/* ─── White container ─── */
 .app-container {
   background: var(--bg-container);
   border-radius: var(--radius-container) var(--radius-container) 0 0;
@@ -67,21 +67,12 @@ body {
   overflow: hidden;
 }
 
-/* ─── Press feedback for interactive elements ─── */
-button, a, .device-card, .theme-toggle, .bottom-pill-item {
-  transition:
-    transform 0.4s cubic-bezier(0.25, 1.5, 0.5, 1),
-    opacity 0.2s ease;
-}
-
+/* ─── Press feedback ─── */
 button:active, a:active, .device-card:active {
   transform: scale3d(0.965, 0.965, 1);
-  transition:
-    transform 0.12s cubic-bezier(0.2, 0, 0.4, 1),
-    opacity 0.08s ease;
 }
 
-/* ─── Card (flat, no shadow, no border) ─── */
+/* ─── Card ─── */
 .glass-card {
   background: var(--bg-card);
   border: none;
@@ -91,7 +82,7 @@ button:active, a:active, .device-card:active {
   overflow: hidden;
 }
 
-/* ─── Primary button (dark) ─── */
+/* ─── Primary button ─── */
 .glass-button {
   background: var(--bg-card-active);
   border: none;
@@ -110,7 +101,7 @@ button:active, a:active, .device-card:active {
   opacity: 0.88;
 }
 
-/* ─── Liquid Glass overlay (disabled / coming soon) ─── */
+/* ─── Liquid Glass overlay ─── */
 .glass-button-liquid-wrap {
   position: relative;
   border-radius: 14px;
@@ -145,7 +136,7 @@ button:active, a:active, .device-card:active {
   text-transform: uppercase;
 }
 
-/* ─── Secondary button (light gray, flat) ─── */
+/* ─── Secondary button ─── */
 .glass-button-secondary {
   background: var(--bg-card);
   border: none;
@@ -180,83 +171,22 @@ button:active, a:active, .device-card:active {
   opacity: 0.88;
 }
 
-/* ─── Tab fade animation ─── */
-@keyframes tabFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ─── No-animation page/step classes ─── */
+.page-enter, .page-fade, .step-enter, .slide-up {
+  /* instant display, no animation */
 }
 
-/* ─── Page & step animations ─── */
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pageFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes stepIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.page-enter { animation: pageIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-.page-fade { animation: pageFadeIn 0.3s ease forwards; }
-.step-enter { animation: stepIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-.slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-/* ─── Shield animations ─── */
-@keyframes shieldFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes shieldPulse {
-  0%, 100% { transform: scale(1); opacity: 0.15; }
-  50% { transform: scale(1.08); opacity: 0.25; }
-}
-
-@keyframes ringRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* ─── Confetti ─── */
-@keyframes confettiFall {
-  0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-  70% { opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0; }
-}
-
-/* ─── Success checkmark ─── */
-@keyframes checkPop {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes drawCheck {
-  from { stroke-dashoffset: 40; }
-  to { stroke-dashoffset: 0; }
-}
-
+/* ─── Success checkmark (instant) ─── */
 .success-check-path {
   stroke-dasharray: 40;
-  stroke-dashoffset: 40;
-  animation: drawCheck 0.6s ease forwards;
+  stroke-dashoffset: 0;
 }
 
 .success-check-circle {
-  animation: checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* no animation */
 }
 
-/* ─── Device cards (reference style) ─── */
+/* ─── Device cards ─── */
 .device-card {
   background: var(--bg-card);
   border: none;
@@ -269,14 +199,13 @@ button:active, a:active, .device-card:active {
   color: var(--text-on-dark);
 }
 
-/* ─── Toggle switch (iOS style, like reference) ─── */
+/* ─── Toggle switch ─── */
 .toggle-track {
   width: 40px;
   height: 24px;
   border-radius: 12px;
   background: var(--text-muted);
   position: relative;
-  transition: background 0.3s ease;
   flex-shrink: 0;
 }
 
@@ -293,8 +222,6 @@ button:active, a:active, .device-card:active {
   top: 2px;
   left: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  will-change: transform;
-  transition: transform 0.3s cubic-bezier(0.25, 1.5, 0.5, 1);
 }
 
 .toggle-track.active .toggle-thumb {
@@ -319,7 +246,6 @@ button:active, a:active, .device-card:active {
   position: relative;
 }
 
-/* Liquid blob indicator — driven by --blob-target custom property */
 .bottom-pill-blob {
   position: absolute;
   width: 48px;
@@ -330,25 +256,7 @@ button:active, a:active, .device-card:active {
   left: 6px;
   z-index: 0;
   pointer-events: none;
-  will-change: transform;
-  transform-origin: center center;
   transform: translateX(var(--blob-target, 0));
-  transition: transform 0.38s cubic-bezier(0.4, 1.6, 0.5, 1);
-}
-
-/* ── Squish effect during movement ── */
-.bottom-pill-blob.to-right,
-.bottom-pill-blob.to-left {
-  animation: blobSquish 0.38s ease forwards;
-}
-
-@keyframes blobSquish {
-  0%   { scale: 1    1;    }
-  20%  { scale: 1.35 0.82; }
-  40%  { scale: 1.2  0.88; }
-  60%  { scale: 1.05 0.96; }
-  80%  { scale: 0.96 1.03; }
-  100% { scale: 1    1;    }
 }
 
 .bottom-pill-item {
@@ -390,10 +298,6 @@ button:active, a:active, .device-card:active {
   top: 16px;
   right: 16px;
   z-index: 100;
-  transition:
-    transform 0.4s cubic-bezier(0.25, 1.5, 0.5, 1),
-    background 0.5s ease,
-    color 0.5s ease !important;
 }
 
 .theme-toggle:active {
@@ -404,34 +308,9 @@ button:active, a:active, .device-card:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  will-change: transform;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── Setup banner ─── */
-
-@keyframes bannerSlideIn {
-  from {
-    transform: translateY(100%) scale(0.96);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bannerSlideOut {
-  from {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(100%) scale(0.96);
-    opacity: 0;
-  }
-}
-
 .setup-banner {
   position: fixed;
   bottom: 0;
@@ -443,11 +322,11 @@ button:active, a:active, .device-card:active {
 }
 
 .setup-banner--enter {
-  animation: bannerSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* instant show */
 }
 
 .setup-banner--leave {
-  animation: bannerSlideOut 0.34s cubic-bezier(0.4, 0, 1, 1) forwards;
+  display: none;
 }
 
 .setup-banner__content {
@@ -616,7 +495,6 @@ html.dark .guide-header__accent {
   background: var(--bg-card);
   border-radius: var(--radius-card);
   overflow: hidden;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
   border: 1.5px solid var(--bg-card);
 }
 
@@ -679,8 +557,6 @@ html.dark .guide-card__icon {
 .guide-card__chevron {
   flex-shrink: 0;
   color: var(--text-muted);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.3s ease;
   display: flex;
 }
 
@@ -695,9 +571,6 @@ html.dark .guide-card__icon {
   overflow: hidden;
   opacity: 0;
   padding: 0 18px;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s ease,
-              padding 0.3s ease;
 }
 
 .guide-card--open .guide-card__body {
@@ -814,7 +687,6 @@ html.dark .guide-steps li:not(:last-child)::after {
   font-weight: 600;
   text-decoration: none;
   border: 1.5px solid var(--bg-card);
-  transition: border-color 0.2s ease;
 }
 
 html.dark .guide-download__item {
@@ -845,7 +717,6 @@ html.dark .guide-download__item {
   border: 1.5px solid var(--bg-card);
   cursor: pointer;
   text-align: center;
-  transition: border-color 0.2s ease;
 }
 
 html.dark .guide-support__btn {
@@ -859,30 +730,6 @@ html.dark .guide-support__btn {
 
 /* ─── Payment modal ─── */
 
-@keyframes paymentOverlayIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes paymentOverlayOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-@keyframes paymentSheetIn {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-@keyframes paymentSheetOut {
-  from { transform: translateY(0); }
-  to { transform: translateY(100%); }
-}
-@keyframes paymentToastIn {
-  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-@keyframes paymentSpin {
-  to { transform: rotate(360deg); }
-}
-
 .payment-overlay {
   position: fixed;
   inset: 0;
@@ -893,10 +740,9 @@ html.dark .guide-support__btn {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  animation: paymentOverlayIn 0.22s ease-out forwards;
 }
 .payment-overlay--closing {
-  animation: paymentOverlayOut 0.22s ease-in forwards;
+  display: none;
 }
 
 .payment-sheet {
@@ -907,10 +753,9 @@ html.dark .guide-support__btn {
   padding: 8px 20px calc(env(safe-area-inset-bottom, 0px) + 20px);
   max-height: 85vh;
   overflow-y: auto;
-  animation: paymentSheetIn 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 .payment-sheet--closing {
-  animation: paymentSheetOut 0.22s ease-in forwards;
+  display: none;
 }
 
 html.dark .payment-sheet {
@@ -962,7 +807,6 @@ html.dark .payment-sheet {
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: transform 0.15s ease, opacity 0.15s ease;
   width: 100%;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1074,6 +918,10 @@ html.dark .payment-method {
   color: var(--text-secondary);
 }
 
+@keyframes paymentSpin {
+  to { transform: rotate(360deg); }
+}
+
 .payment-spinner {
   width: 18px;
   height: 18px;
@@ -1156,7 +1004,6 @@ html.dark .payment-summary {
   font-size: 14px;
   font-weight: 500;
   z-index: 300;
-  animation: paymentToastIn 0.25s ease-out forwards;
   white-space: nowrap;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
@@ -1166,52 +1013,3 @@ html.dark .payment-summary {
   width: 0;
   height: 0;
 }
-
-/* ─── Splash screen ─── */
-.splash {
-  animation: splashIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.splash--out {
-  animation: splashOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards;
-}
-
-.splash-icon {
-  opacity: 0;
-  transform: scale(0.6);
-  animation: splashIconIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
-}
-
-.splash-title {
-  opacity: 0;
-  transform: translateY(12px);
-  animation: splashTextIn 0.5s ease 0.3s forwards;
-}
-
-.splash-subtitle {
-  opacity: 0;
-  transform: translateY(8px);
-  animation: splashTextIn 0.5s ease 0.5s forwards;
-}
-
-@keyframes splashIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes splashOut {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(1.05); }
-}
-
-@keyframes splashIconIn {
-  from { opacity: 0; transform: scale(0.6); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes splashTextIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-

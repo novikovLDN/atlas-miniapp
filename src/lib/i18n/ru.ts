@@ -8,6 +8,8 @@ export const ru: Translations = {
   subscriptionLoadError: "Ошибка загрузки подписки",
   openFromTelegram: "Откройте приложение из Telegram",
   openBot: "Открыть бота",
+  retry: "Повторить",
+  connectionError: "Ошибка соединения. Проверьте интернет и попробуйте снова",
   back: "Назад",
   backArrow: "\u2190 Назад",
   close: "Закрыть",

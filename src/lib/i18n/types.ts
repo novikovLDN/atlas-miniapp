@@ -6,6 +6,8 @@ export type Translations = {
   subscriptionLoadError: string;
   openFromTelegram: string;
   openBot: string;
+  retry: string;
+  connectionError: string;
   back: string;
   backArrow: string;
   close: string;

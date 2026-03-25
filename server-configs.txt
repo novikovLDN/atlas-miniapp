@@ -1,0 +1,71 @@
+===== BASIC_CONFIGS =====
+
+--- 1. 🇳🇱 Atlas Fast #1 ---
+IP:    159.195.20.201
+Port:  4443
+SNI:   myvpncloud.net
+FP:    chrome
+PBK:   4km41B5xZ3iJ4Z_VJ9WazIg3s_Pf2qSDmm55Yf28akg
+SID:   a1b2c3d4
+Flow:  xtls-rprx-vision
+Type:  tcp
+
+--- 2. 🇩🇪 Atlas Fast #2 ⚡️ ---
+IP:    45.144.55.159
+Port:  4443
+SNI:   flowgrocery.com
+FP:    chrome
+PBK:   5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA
+SID:   a1b2c3d4
+Flow:  xtls-rprx-vision
+Type:  tcp
+
+--- 3. 🇷🇺 LTE-5G ОБХОД | Все операторы ⚡️ ---
+IP:    185.241.193.94
+Port:  443
+SNI:   eh.vk.com
+FP:    chrome
+PBK:   AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA
+SID:   a1b2c3d4
+Flow:  xtls-rprx-vision
+Type:  tcp
+
+--- 4. 🇷🇺 LTE-5G ОБХОД | Все + Мегафон ⚡️ ---
+IP:    185.241.193.94
+Port:  443
+SNI:   max.ru
+FP:    firefox
+PBK:   CrQHeDnhvv7Cqdbrx19mmbmTLN02uqIrmVzyufVUz0s
+SID:   1a2b3c4d
+Flow:  xtls-rprx-vision
+Type:  tcp
+
+--- 5. 🇪🇺 LTE-5G ОБХОД + ВПН ⚡️ ---
+IP:    185.241.193.94
+Port:  8444
+SNI:   eh.vk.com
+FP:    chrome
+PBK:   AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA
+SID:   a1b2c3d4
+Flow:  xtls-rprx-vision
+Type:  tcp
+
+--- 6. 🇪🇺 LTE-5G ОБХОД + ВПН Мегафон ⚡️ ---
+IP:    185.241.193.94
+Port:  8443
+SNI:   max.ru
+FP:    firefox
+PBK:   7uELniOcmygn2k9ywnZsJ0QzCsli_1e0bFGpqHcF4RY
+SID:   1a2b3c4d
+Flow:  xtls-rprx-vision
+Type:  tcp
+
+
+===== PLUS_EXTRA_CONFIGS =====
+
+(пусто)
+
+
+===== Формат VLESS-ссылки =====
+
+vless://{UUID}@{IP}:{Port}?encryption=none&security=reality&sni={SNI}&fp={FP}&pbk={PBK}&sid={SID}&flow=xtls-rprx-vision&type={Type}#{Name}

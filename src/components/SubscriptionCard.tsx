@@ -39,13 +39,6 @@ export default function SubscriptionCard({
     }
     const deepLink = `v2raytun://import/${subUrl}`;
     openDeepLink(deepLink);
-    // If the app isn't installed, the deep link silently fails.
-    // After a short delay, fall back to the setup flow.
-    setTimeout(() => {
-      if (document.visibilityState !== "hidden") {
-        onOpenSetup();
-      }
-    }, 1500);
   };
 
   return (

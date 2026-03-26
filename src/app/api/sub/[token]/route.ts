@@ -16,6 +16,7 @@ type ServerConfig = {
 };
 
 const BASIC_CONFIGS: ServerConfig[] = [
+  { ip: "89.169.55.75",   port: 4443, sni: "google.com",     fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "🇩🇪 Atlas Fast #3 ⚡️" },
   { ip: "45.144.55.159",  port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #2 ⚡️" },
   { ip: "185.241.193.94", port: 443,  sni: "eh.vk.com", fp: "chrome",  type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA", name: "🇷🇺 LTE-5G ОБХОД | Все операторы ⚡️" },
   { ip: "185.241.193.94", port: 443,  sni: "max.ru",    fp: "firefox", type: "tcp", flow: true, sid: "1a2b3c4d", pbk: "CrQHeDnhvv7Cqdbrx19mmbmTLN02uqIrmVzyufVUz0s", name: "🇷🇺 LTE-5G ОБХОД | Все + Мегафон ⚡️" },

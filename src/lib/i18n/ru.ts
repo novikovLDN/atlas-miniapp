@@ -34,7 +34,7 @@ export const ru: Translations = {
   // Subscription card
   until: "до",
   connect: "Подключиться",
-  connectVPN: "Подключить VPN",
+  connectVPN: "Подключиться",
   comingSoon: "Скоро",
   buySubscription: "Купить подписку",
   buySubscriptionFrom: "Купить подписку от 149 \u20BD",
@@ -51,7 +51,7 @@ export const ru: Translations = {
   copyKey: "Скопировать ключ",
   copied: "Скопировано \u2713",
   inviteFriend: "Пригласить друга",
-  inviteShareText: "Попробуй Atlas VPN \u2014 быстрый и надёжный VPN!",
+  inviteShareText: "Попробуй Atlas Secure \u2014 быстрый и надёжный сервис!",
 
   // Referral stats
   referralStats: "Реферальная программа",
@@ -73,7 +73,7 @@ export const ru: Translations = {
   setupWindows: "Настройка на Windows",
   setupMacOS: "Настройка на macOS",
   setupGeneric: "Настройка",
-  setupDescription: "Настройка VPN происходит в 3 шага и занимает пару минут",
+  setupDescription: "Настройка происходит в 3 шага и занимает пару минут",
   startSetupThisDevice: "Начать настройку на этом устройстве",
   installOnOtherDevice: "Установить на другом устройстве",
   application: "Приложение",
@@ -90,15 +90,15 @@ export const ru: Translations = {
     `Добавьте подписку в приложение ${appName} с помощью кнопки ниже`,
   addConfig: "Добавить конфиг",
   done: "Готово!",
-  connectV2RayN: "Подключите подписку в v2RayN и включите VPN",
+  connectV2RayN: "Подключите подписку в v2RayN и включите соединение",
   clickVpnButton: (appName: string) =>
-    `Нажмите на круглую кнопку включения VPN в приложении ${appName}`,
+    `Нажмите на круглую кнопку включения в приложении ${appName}`,
   completeSetup: "Завершить настройку",
 
   // Add device
   addDeviceTitle: "Добавить устройство",
   activeSubscriptionRequired: "Для подключения устройства необходима активная подписка.",
-  copyAndPasteLink: "Подключите VPN на другом устройстве:",
+  copyAndPasteLink: "Подключите на другом устройстве:",
   addDeviceStep1: "Отсканируйте QR-код камерой второго устройства или скопируйте ссылку ниже",
   addDeviceStep2: "На втором устройстве откройте приложение V2RayTun и нажмите «+» в правом верхнем углу",
   addDeviceStep3: "Вставьте скопированную ссылку или разрешите открыть её из QR-кода",
@@ -124,12 +124,12 @@ export const ru: Translations = {
 
   // Setup banner
   bannerTitle: "Впервые здесь?",
-  bannerDescription: "Давайте настроим VPN на этом устройстве — это займёт пару минут",
+  bannerDescription: "Давайте настроим подключение на этом устройстве — это займёт пару минут",
   bannerAction: "Настроить",
 
   // Guide tab
   tabGuide: "Инструкция",
-  guideTitle: "Как подключить VPN",
+  guideTitle: "Как подключиться",
   guideSubtitle: "Пошаговые инструкции для всех устройств",
   guideLabel: "Инструкции",
 
@@ -139,7 +139,7 @@ export const ru: Translations = {
   paymentChoosePeriod: "Выберите период",
   paymentChooseMethod: "Выберите способ оплаты",
   paymentTariffBasic: "Basic",
-  paymentTariffBasicDesc: "Базовый доступ к VPN",
+  paymentTariffBasicDesc: "Базовый доступ к сервису",
   paymentTariffPlus: "Plus",
   paymentTariffPlusDesc: "Расширенный доступ + дополнительные серверы",
   paymentTariffBusiness: "Business",

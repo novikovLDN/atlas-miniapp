@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     const tariffLabel = tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic";
-    const title = `Atlas VPN ${tariffLabel}`;
+    const title = `Atlas Secure ${tariffLabel}`;
     const description = tariff === "business"
       ? `${title} — ${clients} clients/day`
       : `${title} — ${months} mo`;

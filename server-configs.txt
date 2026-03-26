@@ -20,7 +20,7 @@ SID:   a1b2c3d4
 Flow:  xtls-rprx-vision
 Type:  tcp
 
---- 3. 🇷🇺 LTE-5G ОБХОД | Все операторы ⚡️ ---
+--- 3. 🇷🇺 Atlas LTE-5G | Все операторы ⚡️ ---
 IP:    185.241.193.94
 Port:  443
 SNI:   eh.vk.com
@@ -30,7 +30,7 @@ SID:   a1b2c3d4
 Flow:  xtls-rprx-vision
 Type:  tcp
 
---- 4. 🇷🇺 LTE-5G ОБХОД | Все + Мегафон ⚡️ ---
+--- 4. 🇷🇺 Atlas LTE-5G | Мегафон ⚡️ ---
 IP:    185.241.193.94
 Port:  443
 SNI:   max.ru
@@ -40,7 +40,7 @@ SID:   1a2b3c4d
 Flow:  xtls-rprx-vision
 Type:  tcp
 
---- 5. 🇪🇺 LTE-5G ОБХОД + ВПН ⚡️ ---
+--- 5. 🇪🇺 Atlas EU ⚡️ ---
 IP:    185.241.193.94
 Port:  8444
 SNI:   eh.vk.com
@@ -50,7 +50,7 @@ SID:   a1b2c3d4
 Flow:  xtls-rprx-vision
 Type:  tcp
 
---- 6. 🇪🇺 LTE-5G ОБХОД + ВПН Мегафон ⚡️ ---
+--- 6. 🇪🇺 Atlas EU | Мегафон ⚡️ ---
 IP:    185.241.193.94
 Port:  8443
 SNI:   max.ru

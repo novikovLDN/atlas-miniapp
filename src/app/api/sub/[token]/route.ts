@@ -21,7 +21,7 @@ const BASIC_CONFIGS: ServerConfig[] = [
   { ip: "185.241.193.94", port: 443,  sni: "eh.vk.com", fp: "chrome",  type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA", name: "🇷🇺 LTE-5G ОБХОД | Все операторы ⚡️" },
   { ip: "185.241.193.94", port: 443,  sni: "max.ru",    fp: "firefox", type: "tcp", flow: true, sid: "1a2b3c4d", pbk: "CrQHeDnhvv7Cqdbrx19mmbmTLN02uqIrmVzyufVUz0s", name: "🇷🇺 LTE-5G ОБХОД | Все + Мегафон ⚡️" },
   { ip: "185.241.193.94", port: 8444, sni: "eh.vk.com", fp: "chrome",  type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA", name: "🇪🇺 LTE-5G ОБХОД + ВПН ⚡️" },
-  { ip: "185.241.193.94", port: 8443, sni: "max.ru",          fp: "firefox", type: "tcp", flow: true, sid: "1a2b3c4d", pbk: "7uELniOcmygn2k9ywnZsJ0QzCsli_1e0bFGpqHcF4RY", name: "🇪🇺 LTE-5G ОБХОД + ВПН Мегафон ⚡️" },
+  { ip: "185.241.193.94", port: 8443, sni: "max.ru",    fp: "firefox", type: "tcp", flow: true, sid: "1a2b3c4d", pbk: "7uELniOcmygn2k9ywnZsJ0QzCsli_1e0bFGpqHcF4RY", name: "🇪🇺 LTE-5G ОБХОД + ВПН Мегафон ⚡️" },
 ];
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];

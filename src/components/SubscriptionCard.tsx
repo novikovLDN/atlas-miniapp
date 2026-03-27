@@ -84,7 +84,7 @@ export default function SubscriptionCard({
         <button
           type="button"
           onClick={handleConnectVPN}
-          className="btn-notch mb-2 w-full"
+          className="btn-accent mb-2 w-full"
         >
           {t.connectVPN}
         </button>
@@ -92,7 +92,7 @@ export default function SubscriptionCard({
         <button
           type="button"
           onClick={onOpenPayment}
-          className="btn-notch mb-2 w-full"
+          className="btn-accent mb-2 w-full"
           style={{ background: "var(--accent-green)" }}
         >
           {t.buySubscriptionFrom}

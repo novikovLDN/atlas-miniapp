@@ -27,8 +27,6 @@
   --shield-bottom: #000000;
   --shield-lock: rgba(255, 255, 255, 0.9);
 
-  /* Concave notch radius */
-  --notch-r: 12px;
 }
 
 html.dark {
@@ -101,10 +99,8 @@ button:active, a:active, .device-card:active {
   overflow: hidden;
 }
 
-/* ─── Concave notch button (accent) ───
-   All corners rounded, but top-right curves INWARD */
-.btn-notch {
-  position: relative;
+/* ─── Accent button ─── */
+.btn-accent {
   background: var(--accent-blue);
   color: #ffffff;
   border: none;
@@ -116,14 +112,9 @@ button:active, a:active, .device-card:active {
   text-align: center;
   display: block;
   border-radius: var(--radius-button);
-  /* Mask: cut out a circle at top-right to create concave */
-  mask-image:
-    radial-gradient(circle var(--notch-r) at calc(100% - var(--notch-r)) calc(var(--notch-r)), transparent calc(var(--notch-r) - 0.5px), black var(--notch-r));
-  -webkit-mask-image:
-    radial-gradient(circle var(--notch-r) at calc(100% - var(--notch-r)) calc(var(--notch-r)), transparent calc(var(--notch-r) - 0.5px), black var(--notch-r));
 }
 
-.btn-notch:active {
+.btn-accent:active {
   opacity: 0.85;
 }
 
@@ -463,11 +454,6 @@ html.dark .setup-banner__content {
   font-weight: 600;
   cursor: pointer;
   text-align: center;
-  /* Concave notch on top-right */
-  mask-image:
-    radial-gradient(circle var(--notch-r) at calc(100% - var(--notch-r)) calc(var(--notch-r)), transparent calc(var(--notch-r) - 0.5px), black var(--notch-r));
-  -webkit-mask-image:
-    radial-gradient(circle var(--notch-r) at calc(100% - var(--notch-r)) calc(var(--notch-r)), transparent calc(var(--notch-r) - 0.5px), black var(--notch-r));
 }
 
 .setup-banner__action:active {

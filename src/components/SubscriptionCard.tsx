@@ -79,13 +79,12 @@ export default function SubscriptionCard({
         )}
       </div>
 
-      {/* Main action */}
+      {/* Main action — accent with concave notch */}
       {isActive ? (
         <button
           type="button"
           onClick={handleConnectVPN}
-          className="mb-2 w-full rounded-[14px] py-3.5 text-center text-[15px] font-semibold"
-          style={{ background: "var(--text-on-dark)", color: "#1c1c1e" }}
+          className="btn-notch mb-2 w-full"
         >
           {t.connectVPN}
         </button>
@@ -93,7 +92,8 @@ export default function SubscriptionCard({
         <button
           type="button"
           onClick={onOpenPayment}
-          className="btn-green mb-2 w-full"
+          className="btn-notch mb-2 w-full"
+          style={{ background: "var(--accent-green)" }}
         >
           {t.buySubscriptionFrom}
         </button>
@@ -122,7 +122,7 @@ export default function SubscriptionCard({
         type="button"
         onClick={onOpenSupport}
         className="w-full rounded-[14px] py-3.5 text-center text-[14px] font-medium"
-        style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}
+        style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}
       >
         {t.support}
       </button>

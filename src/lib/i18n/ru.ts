@@ -182,6 +182,22 @@ export const ru: Translations = {
   guidePcOption2Step2: "Скачайте и установите V2RayTun для вашей ОС",
   guidePcOption2Step3: "Следуйте инструкции в боте для добавления подписки",
 
+  // Client setup screen
+  deviceSelectTitle: "Выбор устройств",
+  deviceSelectSubtitle: "Нажмите на кнопку с нужным устройством, чтобы продолжить настройку",
+  androidTv: "Android/Google TV",
+  chooseClientApp: "Нажмите на кнопку с нужным приложением-клиентом для инструкции:",
+  chooseClientAppSubtitle: "Нажмите на кнопку с нужным приложением-клиентом для инструкции:",
+  setupAutomatically: "Настроить автоматически",
+  copyKeyManually: "Скопировать ключ вручную",
+  addOtherDeviceByQR: "Добавить другое устройство по QR",
+  hideQrCode: "Скрыть QR-код",
+  shareSubscription: "Поделиться подпиской",
+  scanQrToImport: "Отсканируйте этот QR-код камерой или из приложения на другом устройстве, чтобы импортировать подписку",
+  scanQrHint: "В приложении: «+» → «Сканировать QR-код» или «Импорт из QR»",
+  downloadClient: (name: string) => `Скачать ${name}`,
+  tariffDeviceLimit: "Тариф Basic — до 5 устройств. Тариф Plus — до 7 устройств. Воспользуйтесь кнопкой «Поделиться ключом» для быстрого подключения дополнительных устройств.",
+
   // Guide — Second phone
   guidePhoneTitle: "Установка на другой телефон",
   guidePhoneStep1: "Установите V2RayTun на втором телефоне из App Store или Google Play",

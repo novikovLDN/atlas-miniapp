@@ -1041,6 +1041,184 @@ html.dark .payment-summary {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* ─── Setup flow ─── */
+.setup-device-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 12px;
+  border-radius: var(--radius-card);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.setup-device-btn:active {
+  opacity: 0.75;
+}
+
+.setup-client-chip {
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--grid-line);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.setup-client-chip:active {
+  opacity: 0.7;
+}
+
+.setup-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background: var(--bg-container);
+  border: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+html.dark .setup-share-btn {
+  background: var(--bg-card);
+}
+
+.setup-share-btn:active {
+  opacity: 0.75;
+}
+
+.setup-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+}
+
+.setup-info-icon {
+  flex-shrink: 0;
+  color: var(--accent-blue);
+}
+
+.setup-help-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.setup-help-btn:active {
+  opacity: 0.75;
+}
+
+.setup-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: setup-step;
+}
+
+.setup-steps li {
+  position: relative;
+  padding-left: 36px;
+  padding-bottom: 20px;
+}
+
+.setup-steps li:last-child {
+  padding-bottom: 0;
+}
+
+.setup-step-number {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Connecting line between steps */
+.setup-steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 30px;
+  bottom: 0;
+  width: 2px;
+  background: color-mix(in srgb, var(--accent-blue) 20%, transparent);
+  border-radius: 1px;
+}
+
+.setup-download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-button);
+  background: var(--bg-card);
+  border: 1.5px solid var(--grid-line);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.setup-download-btn:active {
+  opacity: 0.75;
+}
+
+.setup-secondary-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius-button);
+  background: var(--bg-card);
+  border: 1.5px solid var(--grid-line);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.setup-secondary-action:active {
+  opacity: 0.75;
+}
+
 /* ─── Scrollbar hide ─── */
 ::-webkit-scrollbar {
   width: 0;

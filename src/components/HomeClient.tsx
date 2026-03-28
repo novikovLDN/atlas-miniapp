@@ -242,32 +242,11 @@ export default function HomeClient() {
     );
   }
 
-  /* ─── Device selector ─── */
-  if (view === "device_select") {
-    return (
-      <I18nContext.Provider value={i18nValue}>
-        {themeToggle}
-        <Suspense fallback={suspenseFallback}>
-          <DeviceSelector
-            onSelectDevice={(device) => {
-              setSelectedDevice(device);
-              setView("setup_manual");
-            }}
-            onBack={() => setView("main")}
-            detectedDevice={deviceType === "unknown" ? undefined : deviceType}
-          />
-        </Suspense>
-      </I18nContext.Provider>
-    );
-  }
-
   /* ─── Setup flow ─── */
   if (
-    (view === "setup" || view === "setup_manual") &&
+    (view === "setup" || view === "setup_manual" || view === "device_select") &&
     telegramId !== null
   ) {
-    const setupDeviceType =
-      view === "setup_manual" ? selectedDevice : deviceType;
     return (
       <I18nContext.Provider value={i18nValue}>
         {themeToggle}
@@ -281,13 +260,7 @@ export default function HomeClient() {
                 ? (data as { sub_url?: string }).sub_url
                 : undefined
             }
-            deviceType={setupDeviceType}
-            onSelectOtherDevice={() => setView("device_select")}
-            onBackFromStep1={
-              view === "setup_manual"
-                ? () => setView("device_select")
-                : undefined
-            }
+            deviceType={deviceType}
           />
         </Suspense>
       </I18nContext.Provider>

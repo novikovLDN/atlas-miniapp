@@ -1,6 +1,5 @@
 "use client";
 
-import { openDeepLink } from "@/lib/openDeepLink";
 import { useI18n } from "@/lib/i18n";
 
 type SubscriptionCardProps = {
@@ -33,12 +32,7 @@ export default function SubscriptionCard({
   const { t } = useI18n();
 
   const handleConnectVPN = () => {
-    if (typeof window === "undefined" || !subUrl) {
-      onOpenSetup();
-      return;
-    }
-    const deepLink = `v2raytun://import/${subUrl}`;
-    openDeepLink(deepLink);
+    onOpenSetup();
   };
 
   return (
@@ -79,7 +73,7 @@ export default function SubscriptionCard({
         )}
       </div>
 
-      {/* Main action — accent with concave notch */}
+      {/* Main action */}
       {isActive ? (
         <button
           type="button"

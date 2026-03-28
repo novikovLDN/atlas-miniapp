@@ -368,10 +368,7 @@ export default function HomeClient() {
           <SetupBanner onSetup={() => setView("setup")} />
 
           {/* ─── Bottom bar ─── */}
-          <div
-            className="flex-shrink-0 flex justify-center pb-4 pt-2"
-            style={{ background: "var(--bg-container)" }}
-          >
+          <div className="bottom-pill-wrap">
             <div className="bottom-pill">
               {/* Liquid blob indicator */}
               <div

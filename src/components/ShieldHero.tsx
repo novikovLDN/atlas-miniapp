@@ -4,7 +4,7 @@ export default function ShieldHero() {
   return (
     <div
       className="relative flex w-full flex-shrink-0 items-center justify-center"
-      style={{ height: "150px", overflow: "hidden" }}
+      style={{ height: "clamp(100px, 18vh, 150px)", overflow: "hidden" }}
       aria-hidden
     >
       {/* Grid pattern with dots at intersections */}

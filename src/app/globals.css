@@ -110,8 +110,12 @@ button:active, a:active, .device-card:active {
   width: 100%;
   cursor: pointer;
   text-align: center;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border-radius: var(--radius-button);
+  font-family: inherit;
 }
 
 .btn-accent:active {
@@ -270,6 +274,14 @@ button:active, a:active, .device-card:active {
 }
 
 /* ─── Bottom pill bar ─── */
+.bottom-pill-wrap {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  background: var(--bg-container);
+}
+
 .bottom-pill {
   background: var(--bg-card);
   border-radius: var(--radius-pill);
@@ -1042,16 +1054,66 @@ html.dark .payment-summary {
 }
 
 /* ─── Setup flow ─── */
+
+.setup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 8px;
+  flex-shrink: 0;
+}
+
+.setup-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: inherit;
+}
+
+.setup-back-btn:active { opacity: 0.6; }
+
+.setup-notify-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.setup-notify-btn:active { opacity: 0.6; }
+
 .setup-device-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px 12px;
-  border-radius: var(--radius-card);
-  border: 1.5px solid transparent;
+  gap: 8px;
+  padding: 14px 10px;
+  border-radius: 16px;
+  border: 1.5px solid var(--grid-line);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   font-family: inherit;
+}
+
+.setup-device-btn[data-active] {
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
+  border-color: color-mix(in srgb, var(--accent-blue) 60%, transparent);
 }
 
 .setup-device-btn:active {
@@ -1059,42 +1121,44 @@ html.dark .payment-summary {
 }
 
 .setup-client-chip {
-  padding: 8px 18px;
+  padding: 8px 16px;
   border-radius: var(--radius-pill);
   border: 1.5px solid var(--grid-line);
   background: transparent;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
+}
+
+.setup-client-chip[data-active] {
+  background: transparent;
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
 }
 
 .setup-client-chip:active {
   opacity: 0.7;
 }
 
-.setup-share-btn {
+.setup-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  border-radius: var(--radius-card);
-  background: var(--bg-container);
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bg-card);
   border: none;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
 }
 
-html.dark .setup-share-btn {
-  background: var(--bg-card);
-}
-
-.setup-share-btn:active {
+.setup-action-btn:active {
   opacity: 0.75;
 }
 
@@ -1102,47 +1166,27 @@ html.dark .setup-share-btn {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px;
-  border-radius: var(--radius-card);
+  padding: 14px 16px;
+  border-radius: 16px;
   background: var(--bg-card);
 }
 
 .setup-info-icon {
   flex-shrink: 0;
   color: var(--accent-blue);
-}
-
-.setup-help-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  border-radius: var(--radius-card);
-  background: var(--bg-card);
-  border: none;
-  color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.setup-help-btn:active {
-  opacity: 0.75;
+  margin-top: 1px;
 }
 
 .setup-steps {
   list-style: none;
   padding: 0;
   margin: 0;
-  counter-reset: setup-step;
 }
 
 .setup-steps li {
   position: relative;
-  padding-left: 36px;
-  padding-bottom: 20px;
+  padding-left: 34px;
+  padding-bottom: 18px;
 }
 
 .setup-steps li:last-child {
@@ -1152,28 +1196,27 @@ html.dark .setup-share-btn {
 .setup-step-number {
   position: absolute;
   left: 0;
-  top: 2px;
-  width: 24px;
-  height: 24px;
+  top: 1px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--accent-blue);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Connecting line between steps */
 .setup-steps li:not(:last-child)::after {
   content: "";
   position: absolute;
-  left: 11px;
-  top: 30px;
+  left: 10px;
+  top: 27px;
   bottom: 0;
   width: 2px;
-  background: color-mix(in srgb, var(--accent-blue) 20%, transparent);
+  background: color-mix(in srgb, var(--accent-blue) 15%, transparent);
   border-radius: 1px;
 }
 
@@ -1183,12 +1226,12 @@ html.dark .setup-share-btn {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 12px;
+  padding: 11px;
   border-radius: var(--radius-button);
-  background: var(--bg-card);
+  background: transparent;
   border: 1.5px solid var(--grid-line);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -1204,12 +1247,12 @@ html.dark .setup-share-btn {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px;
+  padding: 11px;
   border-radius: var(--radius-button);
-  background: var(--bg-card);
+  background: transparent;
   border: 1.5px solid var(--grid-line);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
@@ -1217,6 +1260,11 @@ html.dark .setup-share-btn {
 
 .setup-secondary-action:active {
   opacity: 0.75;
+}
+
+.setup-footer {
+  flex-shrink: 0;
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 8px);
 }
 
 /* ─── Scrollbar hide ─── */

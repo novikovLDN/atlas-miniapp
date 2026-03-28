@@ -4,8 +4,8 @@ import { TelegramViewport } from "@/components/TelegramViewport";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Atlas VPN",
-  description: "Подписка и подключение Atlas VPN",
+  title: "Atlas Secure",
+  description: "Подписка и подключение Atlas Secure",
 };
 
 export default function RootLayout({

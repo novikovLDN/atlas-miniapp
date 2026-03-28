@@ -177,6 +177,22 @@ export type Translations = {
   paymentProcessing: string;
   paymentError: string;
 
+  // Client setup screen
+  deviceSelectTitle: string;
+  deviceSelectSubtitle: string;
+  androidTv: string;
+  chooseClientApp: string;
+  chooseClientAppSubtitle: string;
+  setupAutomatically: string;
+  copyKeyManually: string;
+  addOtherDeviceByQR: string;
+  hideQrCode: string;
+  shareSubscription: string;
+  scanQrToImport: string;
+  scanQrHint: string;
+  downloadClient: (name: string) => string;
+  tariffDeviceLimit: string;
+
   // Guide — Second phone
   guidePhoneTitle: string;
   guidePhoneStep1: string;

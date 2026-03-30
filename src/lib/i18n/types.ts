@@ -175,43 +175,4 @@ export type Translations = {
   downloadClient: (name: string) => string;
   tariffDeviceLimit: string;
 
-  // Guide — Happ per device
-  guideHappIosStep1: string;
-  guideHappIosStep2: string;
-  guideHappIosStep3: string;
-  guideHappIosStep4: string;
-  guideHappAndroidStep1: string;
-  guideHappAndroidStep2: string;
-  guideHappAndroidStep3: string;
-  guideHappAndroidStep4: string;
-  guideHappMacStep1: string;
-  guideHappMacStep2: string;
-  guideHappMacStep3: string;
-  guideHappMacStep4: string;
-  guideHappWinStep1: string;
-  guideHappWinStep2: string;
-  guideHappWinStep3: string;
-  guideHappWinStep4: string;
-
-  // Guide — V2RayTun per device
-  guideV2IosStep1: string;
-  guideV2IosStep2: string;
-  guideV2IosStep3: string;
-  guideV2IosStep4: string;
-  guideV2AndroidStep1: string;
-  guideV2AndroidStep2: string;
-  guideV2AndroidStep3: string;
-  guideV2AndroidStep4: string;
-  guideV2MacStep1: string;
-  guideV2MacStep2: string;
-  guideV2MacStep3: string;
-  guideV2MacStep4: string;
-  guideV2WinStep1: string;
-  guideV2WinStep2: string;
-  guideV2WinStep3: string;
-  guideV2WinStep4: string;
-  guideV2TvStep1: string;
-  guideV2TvStep2: string;
-  guideV2TvStep3: string;
-  guideV2TvStep4: string;
 };

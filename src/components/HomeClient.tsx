@@ -306,7 +306,14 @@ export default function HomeClient() {
               }}
             >
               <Suspense fallback={suspenseFallback}>
-                <GuideScreen onSetup={() => setView("setup")} />
+                <GuideScreen
+                  onSetup={() => setView("setup")}
+                  subUrl={
+                    data?.is_active
+                      ? (data as { sub_url?: string }).sub_url
+                      : undefined
+                  }
+                />
               </Suspense>
             </div>
 

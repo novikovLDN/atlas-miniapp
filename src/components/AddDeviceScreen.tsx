@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { openTelegramLink } from "@/lib/openTelegramLink";
 import { useI18n } from "@/lib/i18n";
+import { openDeepLink } from "@/lib/openDeepLink";
 import QRCode from "qrcode";
 
 type AddDeviceScreenProps = {
@@ -13,6 +14,62 @@ type AddDeviceScreenProps = {
   onOpenSupport: () => void;
 };
 
+type AppId = "happ" | "v2raytun" | "hiddify" | "streisand";
+
+type AppInfo = {
+  id: AppId;
+  name: string;
+  steps: string[];
+  deeplink: ((subUrl: string) => string) | null;
+};
+
+const APPS: AppInfo[] = [
+  {
+    id: "happ",
+    name: "Happ\u26A1\uFE0F",
+    deeplink: (subUrl: string) => `https://api.atlassecure.ru/open/happ?url=${encodeURIComponent(subUrl)}`,
+    steps: [
+      "Установите Happ из App Store на другом устройстве (iPhone, iPad, Mac).",
+      "Отсканируйте QR-код выше камерой устройства или скопируйте ссылку подписки.",
+      "Откройте Happ. Нажмите «+» в правом верхнем углу, затем вставьте скопированную ссылку.",
+      "Выберите сервер из списка и нажмите кнопку подключения. Разрешите VPN-конфигурацию при первом запуске.",
+    ],
+  },
+  {
+    id: "v2raytun",
+    name: "V2RayTun",
+    deeplink: (subUrl: string) => `v2raytun://import/${subUrl}`,
+    steps: [
+      "Установите V2RayTun из App Store или Google Play на другом устройстве.",
+      "Отсканируйте QR-код выше камерой устройства или скопируйте ссылку подписки.",
+      "Откройте V2RayTun. Нажмите «+» в правом верхнем углу → «Импорт из буфера обмена» или «Импорт из QR».",
+      "Выберите добавленный сервер в списке и нажмите кнопку подключения.",
+    ],
+  },
+  {
+    id: "hiddify",
+    name: "Hiddify",
+    deeplink: (subUrl: string) => `hiddify://import/${subUrl}`,
+    steps: [
+      "Установите Hiddify из App Store, Google Play или скачайте с GitHub (Windows/macOS/Linux).",
+      "Отсканируйте QR-код выше камерой устройства или скопируйте ссылку подписки.",
+      "Откройте Hiddify. На главном экране нажмите «+» → «Добавить из буфера обмена». Подписка добавится автоматически.",
+      "Выберите сервер и нажмите круглую кнопку подключения. Разрешите VPN при первом запуске.",
+    ],
+  },
+  {
+    id: "streisand",
+    name: "Streisand",
+    deeplink: (subUrl: string) => `streisand://import/${subUrl}`,
+    steps: [
+      "Установите Streisand из App Store на другом устройстве (iPhone, iPad, Mac).",
+      "Отсканируйте QR-код выше камерой устройства или скопируйте ссылку подписки.",
+      "Откройте Streisand. Нажмите «+» → «Импорт из буфера обмена». Конфигурация будет добавлена автоматически.",
+      "Выберите сервер из списка и нажмите кнопку подключения. Разрешите VPN-конфигурацию.",
+    ],
+  },
+];
+
 export default function AddDeviceScreen({
   subUrl,
   hasActiveSubscription,
@@ -22,6 +79,7 @@ export default function AddDeviceScreen({
 }: AddDeviceScreenProps) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<AppId | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const subscriptionUrl = hasActiveSubscription && subUrl ? subUrl : "";
@@ -57,15 +115,31 @@ export default function AddDeviceScreen({
     }
   };
 
+  const handleAutoSetup = useCallback(
+    (app: AppInfo) => {
+      if (!subscriptionUrl || !app.deeplink) return;
+      openDeepLink(app.deeplink(subscriptionUrl));
+    },
+    [subscriptionUrl]
+  );
+
   const devCredit = (
-    <p
-      className="mt-6 mb-2 text-center text-[11px] font-medium tracking-wide"
-      style={{ color: "var(--text-muted)", opacity: 0.6 }}
-    >
-      developed by{" "}
-      <span style={{ color: "#00e676", fontWeight: 700, textShadow: "0 0 8px rgba(0,230,118,0.4)" }}>Q</span>
-      <span style={{ color: "var(--text-primary)" }}>oDev</span>
-    </p>
+    <>
+      <p
+        className="mt-6 mb-0.5 text-center text-[11px] font-medium tracking-wide"
+        style={{ color: "var(--text-muted)", opacity: 0.6 }}
+      >
+        developed by{" "}
+        <span style={{ color: "#00e676", fontWeight: 700, textShadow: "0 0 8px rgba(0,230,118,0.4)" }}>Q</span>
+        <span style={{ color: "var(--text-primary)" }}>oDev</span>
+      </p>
+      <p
+        className="mb-2 text-center text-[9px] tracking-wider"
+        style={{ color: "var(--text-muted)", opacity: 0.4 }}
+      >
+        Spectrum
+      </p>
+    </>
   );
 
   if (!hasActiveSubscription) {
@@ -115,13 +189,26 @@ export default function AddDeviceScreen({
     );
   }
 
+  const currentApp = APPS.find((a) => a.id === selectedApp);
+
   return (
     <div
       style={{ background: "var(--bg-dark)", minHeight: "100dvh" }}
       className="overflow-y-auto"
     >
-      <div className="app-container flex min-h-[100dvh] flex-col px-5 py-6 page-fade">
-        {/* Header */}
+      <div className="app-container flex min-h-[100dvh] flex-col page-fade">
+        {/* Header — back in top-left */}
+        <div className="setup-header">
+          <button type="button" onClick={onBack} className="setup-back-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            {t.back}
+          </button>
+        </div>
+
+        <div className="px-5 pb-6">
+        {/* Title */}
         <div className="flex flex-col items-center text-center">
           <h2 className="text-xl font-bold text-[var(--text-primary)]">
             {t.addDeviceTitle}
@@ -149,25 +236,6 @@ export default function AddDeviceScreen({
           </div>
         )}
 
-        {/* Steps */}
-        <div
-          className="mt-3 w-full rounded-[var(--radius-card)] p-4 text-left text-[13px] leading-relaxed"
-          style={{ background: "var(--bg-card)", color: "var(--text-secondary)" }}
-        >
-          <div className="flex items-start gap-3">
-            <span className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold" style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}>1</span>
-            <span>{t.addDeviceStep1}</span>
-          </div>
-          <div className="mt-2.5 flex items-start gap-3">
-            <span className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold" style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}>2</span>
-            <span>{t.addDeviceStep2}</span>
-          </div>
-          <div className="mt-2.5 flex items-start gap-3">
-            <span className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold" style={{ background: "var(--bg-card-active)", color: "var(--text-on-dark)" }}>3</span>
-            <span>{t.addDeviceStep3}</span>
-          </div>
-        </div>
-
         {/* Copy button */}
         <button
           type="button"
@@ -178,12 +246,80 @@ export default function AddDeviceScreen({
           {copied ? t.copiedCheck : t.copyLink}
         </button>
 
+        {/* App selector */}
+        <p
+          className="mt-5 mb-2 text-[13px] font-semibold"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          {t.addDeviceChooseApp}
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          {APPS.map((app) => {
+            const isActive = selectedApp === app.id;
+            return (
+              <button
+                key={app.id}
+                type="button"
+                onClick={() => setSelectedApp(isActive ? null : app.id)}
+                className="setup-client-chip"
+                data-active={isActive || undefined}
+              >
+                {app.name}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Expandable instructions per app */}
+        {currentApp && (
+          <div
+            className="mt-3 w-full rounded-[var(--radius-card)] p-4 text-left"
+            style={{ background: "var(--bg-card)" }}
+          >
+            <h3
+              className="text-[14px] font-bold mb-3"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {t.addDeviceInstructionTitle(currentApp.name)}
+            </h3>
+
+            <ol className="setup-steps">
+              {currentApp.steps.map((step, i) => (
+                <li key={i}>
+                  <div className="setup-step-number">{i + 1}</div>
+                  <p
+                    className="text-[13px] leading-[1.6]"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {step}
+                  </p>
+                </li>
+              ))}
+            </ol>
+
+            {/* Auto-setup button */}
+            {subscriptionUrl && currentApp.deeplink && (
+              <button
+                type="button"
+                onClick={() => handleAutoSetup(currentApp)}
+                className="btn-accent w-full mt-3"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                {t.setupAutomatically}
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Link display */}
         <button
           type="button"
           onClick={handleCopy}
           disabled={!subscriptionUrl}
-          className="mt-2 w-full cursor-pointer rounded-[12px] p-3 text-left font-mono text-[11px]"
+          className="mt-3 w-full cursor-pointer rounded-[12px] p-3 text-left font-mono text-[11px]"
           style={{
             background: "var(--bg-card)",
             color: "var(--text-muted)",
@@ -194,11 +330,8 @@ export default function AddDeviceScreen({
           {subscriptionUrl || t.linkAfterActivation}
         </button>
 
-        {/* Actions */}
-        <div className="mt-4 w-full space-y-2">
-          <button type="button" onClick={onBack} className="glass-button-secondary w-full">
-            {t.backArrow}
-          </button>
+        {/* Support */}
+        <div className="mt-4 w-full">
           <button
             type="button"
             onClick={onOpenSupport}
@@ -211,6 +344,7 @@ export default function AddDeviceScreen({
         {/* Spacer + credit */}
         <div className="flex-1" />
         {devCredit}
+        </div>
       </div>
 
       {copied && (

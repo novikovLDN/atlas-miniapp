@@ -94,10 +94,9 @@ export type Translations = {
   addDeviceTitle: string;
   activeSubscriptionRequired: string;
   copyAndPasteLink: string;
-  addDeviceStep1: string;
-  addDeviceStep2: string;
-  addDeviceStep3: string;
   addDeviceOnSecondDevice: string;
+  addDeviceChooseApp: string;
+  addDeviceInstructionTitle: (appName: string) => string;
   linkAfterActivation: string;
   linkCopied: string;
   copiedCheck: string;
@@ -128,24 +127,6 @@ export type Translations = {
   guideSubtitle: string;
   guideLabel: string;
 
-  // Guide — TV
-  guideTvTitle: string;
-  guideTvStep1: string;
-  guideTvStep2: string;
-  guideTvStep3: string;
-  guideTvStep4: string;
-  guideTvStep5: string;
-
-  // Guide — PC
-  guidePcTitle: string;
-  guidePcOption1Title: string;
-  guidePcOption1Step1: string;
-  guidePcOption1Step2: string;
-  guidePcOption1Step3: string;
-  guidePcOption2Title: string;
-  guidePcOption2Step1: string;
-  guidePcOption2Step2: string;
-  guidePcOption2Step3: string;
 
   // Payment
   paymentTitle: string;
@@ -177,11 +158,20 @@ export type Translations = {
   paymentProcessing: string;
   paymentError: string;
 
-  // Guide — Second phone
-  guidePhoneTitle: string;
-  guidePhoneStep1: string;
-  guidePhoneStep2: string;
-  guidePhoneStep3: string;
-  guidePhoneStep4: string;
-  guidePhoneStep5: string;
+  // Client setup screen
+  deviceSelectTitle: string;
+  deviceSelectSubtitle: string;
+  androidTv: string;
+  chooseClientApp: string;
+  chooseClientAppSubtitle: string;
+  setupAutomatically: string;
+  copyKeyManually: string;
+  addOtherDeviceByQR: string;
+  hideQrCode: string;
+  shareSubscription: string;
+  scanQrToImport: string;
+  scanQrHint: string;
+  downloadClient: (name: string) => string;
+  tariffDeviceLimit: string;
+
 };

@@ -8,7 +8,6 @@ import SupportLinks from "@/components/SupportLinks";
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import { openTelegramLink } from "@/lib/openTelegramLink";
 import { I18nContext, t } from "@/lib/i18n";
-import ThemeToggle from "@/components/ThemeToggle";
 import SetupBanner from "@/components/SetupBanner";
 
 /* ── Telegram helpers ── */
@@ -26,12 +25,10 @@ function getTelegramUser() {
 
 /* ── Lazy components ── */
 const ShieldHero = lazy(() => import("@/components/ShieldHero"));
-const DownloadSection = lazy(() => import("@/components/DownloadSection"));
 const SetupFlow = lazy(() => import("@/components/SetupFlow"));
 const AddDeviceScreen = lazy(() => import("@/components/AddDeviceScreen"));
 const ProfileScreen = lazy(() => import("@/components/ProfileScreen"));
 const GuideScreen = lazy(() => import("@/components/GuideScreen"));
-const DeviceSelector = lazy(() => import("@/components/DeviceSelector"));
 const PaymentModal = dynamic(() => import("@/components/PaymentModal"), { ssr: false });
 
 type SubscriptionResponse =
@@ -72,22 +69,6 @@ export default function HomeClient() {
   });
   const [blobAnim] = useState<"" | "to-right" | "to-left">("");
   const [showPayment, setShowPayment] = useState(false);
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("atlas_theme");
-    if (saved === "dark") {
-      setDark(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("atlas_theme", next ? "dark" : "light");
-  };
 
   const switchTab = (tab: Tab) => {
     if (tab === activeTab) return;
@@ -162,13 +143,12 @@ export default function HomeClient() {
   };
 
   const i18nValue = { t };
-  const themeToggle = <ThemeToggle dark={dark} onToggle={toggleTheme} />;
 
   /* ─── Loading ─── */
   if (loading) {
     return (
       <I18nContext.Provider value={i18nValue}>
-        {themeToggle}
+
         <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg-dark)" }}>
           <div className="app-container flex min-h-screen w-full flex-col items-center justify-center gap-4">
             <div
@@ -195,7 +175,7 @@ export default function HomeClient() {
 
     return (
       <I18nContext.Provider value={i18nValue}>
-        {themeToggle}
+
         <main style={{ background: "var(--bg-dark)" }}>
           <div className="app-container flex min-h-screen flex-col items-center justify-center gap-5 px-8 page-enter">
             <p className="text-center text-lg font-bold text-[var(--text-primary)]">
@@ -226,7 +206,7 @@ export default function HomeClient() {
     const hasActive = data?.is_active ?? false;
     return (
       <I18nContext.Provider value={i18nValue}>
-        {themeToggle}
+
         <Suspense fallback={suspenseFallback}>
           <AddDeviceScreen
             hasActiveSubscription={hasActive}
@@ -242,35 +222,14 @@ export default function HomeClient() {
     );
   }
 
-  /* ─── Device selector ─── */
-  if (view === "device_select") {
-    return (
-      <I18nContext.Provider value={i18nValue}>
-        {themeToggle}
-        <Suspense fallback={suspenseFallback}>
-          <DeviceSelector
-            onSelectDevice={(device) => {
-              setSelectedDevice(device);
-              setView("setup_manual");
-            }}
-            onBack={() => setView("main")}
-            detectedDevice={deviceType === "unknown" ? undefined : deviceType}
-          />
-        </Suspense>
-      </I18nContext.Provider>
-    );
-  }
-
   /* ─── Setup flow ─── */
   if (
-    (view === "setup" || view === "setup_manual") &&
+    (view === "setup" || view === "setup_manual" || view === "device_select") &&
     telegramId !== null
   ) {
-    const setupDeviceType =
-      view === "setup_manual" ? selectedDevice : deviceType;
     return (
       <I18nContext.Provider value={i18nValue}>
-        {themeToggle}
+
         <Suspense fallback={suspenseFallback}>
           <SetupFlow
             telegramId={telegramId}
@@ -281,13 +240,7 @@ export default function HomeClient() {
                 ? (data as { sub_url?: string }).sub_url
                 : undefined
             }
-            deviceType={setupDeviceType}
-            onSelectOtherDevice={() => setView("device_select")}
-            onBackFromStep1={
-              view === "setup_manual"
-                ? () => setView("device_select")
-                : undefined
-            }
+            deviceType={deviceType}
           />
         </Suspense>
       </I18nContext.Provider>
@@ -301,7 +254,6 @@ export default function HomeClient() {
 
   return (
     <I18nContext.Provider value={i18nValue}>
-      {themeToggle}
       <main style={{ background: "var(--bg-dark)", height: "100vh", overflow: "hidden" }}>
         <div
           className="app-container"
@@ -337,12 +289,45 @@ export default function HomeClient() {
                     onOpenSupport={openSupport}
                     onOpenAddDevice={() => setView("add_device")}
                     onOpenPayment={() => setShowPayment(true)}
+                    onOpenGuide={() => switchTab("guide")}
                   />
                 )}
 
-                <div className="mt-4 space-y-3">
-                  <Suspense fallback={null}><DownloadSection deviceType={deviceType} /></Suspense>
+                {/* System status */}
+                <div className="system-status mt-3">
+                  <span className="system-status__dot" />
+                  System Status: Active Protect
+                </div>
+
+                <div className="mt-3">
                   <SupportLinks />
+                </div>
+
+                {/* Website invite */}
+                <div
+                  className="mt-3 rounded-[var(--radius-card)] px-4 py-3.5 text-center"
+                  style={{ background: "var(--bg-card)" }}
+                >
+                  <p
+                    className="text-[13px] leading-snug mb-2.5"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Telegram не работает у друга? Пригласи его через веб-версию — без приложения
+                  </p>
+                  <a
+                    href="https://qodev.dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="glass-button w-full"
+                    style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", textDecoration: "none" }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                    </svg>
+                    Перейти на сайт
+                  </a>
                 </div>
               </div>
             </div>
@@ -355,7 +340,14 @@ export default function HomeClient() {
               }}
             >
               <Suspense fallback={suspenseFallback}>
-                <GuideScreen onSetup={() => setView("setup")} />
+                <GuideScreen
+                  onSetup={() => setView("setup")}
+                  subUrl={
+                    data?.is_active
+                      ? (data as { sub_url?: string }).sub_url
+                      : undefined
+                  }
+                />
               </Suspense>
             </div>
 
@@ -395,10 +387,7 @@ export default function HomeClient() {
           <SetupBanner onSetup={() => setView("setup")} />
 
           {/* ─── Bottom bar ─── */}
-          <div
-            className="flex-shrink-0 flex justify-center pb-4 pt-2"
-            style={{ background: "var(--bg-container)" }}
-          >
+          <div className="bottom-pill-wrap">
             <div className="bottom-pill">
               {/* Liquid blob indicator */}
               <div

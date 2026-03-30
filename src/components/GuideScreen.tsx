@@ -1,25 +1,148 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useI18n } from "@/lib/i18n";
-import { APP_LINKS } from "@/lib/detectDevice";
-import { IosIcon, AndroidIcon, WindowsIcon, MacosIcon } from "@/components/DeviceIcons";
+import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
+import { CLIENT_APPS, type ClientApp } from "@/lib/clientApps";
+import type { DeviceType } from "@/lib/detectDevice";
 
+type AppTab = "v2raytun" | "happ" | "hiddify" | "streisand";
 
-type Section = "tv" | "pc" | "phone";
+const APP_TABS: { id: AppTab; label: string }[] = [
+  { id: "v2raytun", label: "V2RayTun" },
+  { id: "happ", label: "Happ\u26A1\uFE0F" },
+  { id: "hiddify", label: "Hiddify" },
+  { id: "streisand", label: "Streisand" },
+];
 
-const DOWNLOAD_ITEMS = [
-  { key: "ios", label: "iOS", Icon: IosIcon },
-  { key: "android", label: "Android", Icon: AndroidIcon },
-  { key: "windows", label: "Windows", Icon: WindowsIcon },
-  { key: "macos", label: "macOS", Icon: MacosIcon },
-] as const;
+type DeviceGuide = {
+  id: string;
+  label: string;
+  Icon: React.FC<{ size?: number }>;
+  app: ClientApp;
+};
 
-export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
+const TvIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M8 21h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M12 17v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const DEVICE_LIST: { id: DeviceType | "tv"; label: string; iconKey: string }[] = [
+  { id: "ios", label: "iPhone / iPad", iconKey: "ios" },
+  { id: "android", label: "Android", iconKey: "android" },
+  { id: "macos", label: "macOS", iconKey: "macos" },
+  { id: "windows", label: "Windows", iconKey: "windows" },
+];
+
+function getFilteredDevices(appId: AppTab): DeviceGuide[] {
+  const result: DeviceGuide[] = [];
+
+  for (const dg of DEVICE_LIST) {
+    const deviceType = dg.id as DeviceType;
+    const deviceApps = CLIENT_APPS[deviceType] || [];
+    const match = deviceApps.find((a) => a.id === appId);
+
+    if (match) {
+      result.push({
+        id: dg.id,
+        label: dg.label,
+        Icon: dg.id === "tv"
+          ? TvIcon
+          : DEVICE_ICON_MAP[dg.iconKey as keyof typeof DEVICE_ICON_MAP],
+        app: match,
+      });
+    }
+  }
+
+  // TV — only for V2RayTun and Hiddify
+  if (appId === "v2raytun" || appId === "hiddify") {
+    const androidApps = CLIENT_APPS.android || [];
+    const tvApp = androidApps.find((a) => a.id === appId);
+    if (tvApp) {
+      const tvSteps =
+        appId === "v2raytun"
+          ? [
+              "На телевизоре откройте магазин приложений и найдите «V2RayTun». Установите приложение.",
+              "На телефоне установите V2RayTun и добавьте подписку Atlas (скопируйте ссылку подписки и импортируйте).",
+              "Откройте V2RayTun на телевизоре и нажмите «Добавить по QR-коду».",
+              "На телефоне в V2RayTun нажмите «+» → «Сканировать QR» и отсканируйте код с экрана ТВ.",
+              "Подписка добавится автоматически. Выберите сервер и подключитесь.",
+            ]
+          : [
+              "На телевизоре откройте магазин приложений и найдите «Hiddify». Установите приложение.",
+              "На телефоне установите Hiddify и добавьте подписку Atlas (скопируйте ссылку подписки и импортируйте).",
+              "На телевизоре откройте Hiddify и создайте QR-код для импорта.",
+              "На телефоне отсканируйте QR-код с экрана ТВ — подписка добавится автоматически.",
+              "Выберите сервер и нажмите круглую кнопку подключения.",
+            ];
+      result.push({
+        id: "tv",
+        label: "Android/Google TV",
+        Icon: TvIcon,
+        app: { ...tvApp, steps: tvSteps },
+      });
+    }
+  }
+
+  return result;
+}
+
+function DownloadIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
+}
+
+function AutoSetupIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+    </svg>
+  );
+}
+
+export default function GuideScreen({
+  onSetup,
+  subUrl,
+}: {
+  onSetup?: () => void;
+  subUrl?: string;
+}) {
   const { t } = useI18n();
-  const [open, setOpen] = useState<Section | null>(null);
+  const [activeApp, setActiveApp] = useState<AppTab>("v2raytun");
+  const [openDevice, setOpenDevice] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const guides = getFilteredDevices(activeApp);
 
-  const toggle = (s: Section) => setOpen(open === s ? null : s);
+  const toggleDevice = (id: string) => {
+    setOpenDevice(openDevice === id ? null : id);
+  };
+
+  const handleCopyKey = useCallback(async () => {
+    if (!subUrl) return;
+    try {
+      await navigator.clipboard.writeText(subUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+    }
+  }, [subUrl]);
+
+  const handleAutoSetup = useCallback(
+    (app: ClientApp) => {
+      if (!subUrl || !app.deeplink) return;
+      window.location.href = app.deeplink(subUrl);
+    },
+    [subUrl]
+  );
 
   return (
     <div className="guide-screen page-enter">
@@ -33,119 +156,99 @@ export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
         <p className="guide-header__subtitle">{t.guideSubtitle}</p>
       </div>
 
-      <div className="guide-sections">
-        {/* TV */}
-        <div className={`guide-card ${open === "tv" ? "guide-card--open" : ""}`}>
-          <button type="button" className="guide-card__trigger" onClick={() => toggle("tv")}>
-            <span className="guide-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M8 21h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M12 17v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="guide-card__label">{t.guideTvTitle}</span>
-            <span className="guide-card__chevron">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
+      {/* App tabs */}
+      <div className="guide-app-tabs">
+        {APP_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`guide-app-tab ${activeApp === tab.id ? "guide-app-tab--active" : ""}`}
+            onClick={() => {
+              setActiveApp(tab.id);
+              setOpenDevice(null);
+            }}
+          >
+            {tab.label}
           </button>
-          <div className="guide-card__body">
-            <div>
-              <ol className="guide-steps">
-                <li>{t.guideTvStep1}</li>
-                <li>{t.guideTvStep2}</li>
-                <li>{t.guideTvStep3}</li>
-                <li>{t.guideTvStep4}</li>
-                <li>{t.guideTvStep5}</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        {/* PC */}
-        <div className={`guide-card ${open === "pc" ? "guide-card--open" : ""}`}>
-          <button type="button" className="guide-card__trigger" onClick={() => toggle("pc")}>
-            <span className="guide-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M2 20h20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M9 16h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="guide-card__label">{t.guidePcTitle}</span>
-            <span className="guide-card__chevron">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
-          </button>
-          <div className="guide-card__body">
-            <div>
-              <p className="guide-option-title">{t.guidePcOption1Title}</p>
-              <ol className="guide-steps">
-                <li>{t.guidePcOption1Step1}</li>
-                <li>{t.guidePcOption1Step2}</li>
-                <li>{t.guidePcOption1Step3}</li>
-              </ol>
-              <p className="guide-option-title guide-option-title--spaced">{t.guidePcOption2Title}</p>
-              <ol className="guide-steps">
-                <li>{t.guidePcOption2Step1}</li>
-                <li>{t.guidePcOption2Step2}</li>
-                <li>{t.guidePcOption2Step3}</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        {/* Second phone */}
-        <div className={`guide-card ${open === "phone" ? "guide-card--open" : ""}`}>
-          <button type="button" className="guide-card__trigger" onClick={() => toggle("phone")}>
-            <span className="guide-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="2" width="12" height="20" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M10 18h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="guide-card__label">{t.guidePhoneTitle}</span>
-            <span className="guide-card__chevron">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
-          </button>
-          <div className="guide-card__body">
-            <div>
-              <ol className="guide-steps">
-                <li>{t.guidePhoneStep1}</li>
-                <li>{t.guidePhoneStep2}</li>
-                <li>{t.guidePhoneStep3}</li>
-                <li>{t.guidePhoneStep4}</li>
-                <li>{t.guidePhoneStep5}</li>
-              </ol>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Download section */}
-      <div className="guide-download">
-        <h2 className="guide-download__title">{t.downloadApplication}</h2>
-        <div className="guide-download__grid">
-          {DOWNLOAD_ITEMS.map(({ key, label, Icon }) => (
-            <a
-              key={key}
-              href={APP_LINKS[key].url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="guide-download__item"
+      {/* Device sections */}
+      <div className="guide-sections">
+        {guides.map(({ id, label, Icon, app }) => (
+          <div
+            key={id}
+            className={`guide-card ${openDevice === id ? "guide-card--open" : ""}`}
+          >
+            <button
+              type="button"
+              className="guide-card__trigger"
+              onClick={() => toggleDevice(id)}
             >
-              <Icon size={20} />
-              {label}
-            </a>
-          ))}
-        </div>
+              <span className="guide-card__icon">
+                <Icon size={24} />
+              </span>
+              <span className="guide-card__label">{label}</span>
+              <span className="guide-card__chevron">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </button>
+            <div className="guide-card__body">
+              <div>
+                {/* Download button */}
+                <a
+                  href={app.storeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="guide-action-btn guide-action-btn--download"
+                >
+                  <DownloadIcon />
+                  {t.downloadApp(app.name)} — {app.storeLabel}
+                </a>
+
+                {/* Steps */}
+                <ol className="guide-steps">
+                  {app.steps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+
+                {/* Auto-setup button */}
+                {subUrl && app.deeplink && (
+                  <button
+                    type="button"
+                    className="guide-action-btn guide-action-btn--auto"
+                    onClick={() => handleAutoSetup(app)}
+                  >
+                    <AutoSetupIcon />
+                    {t.setupAutomatically}
+                  </button>
+                )}
+
+                {/* Copy key button */}
+                {subUrl && (
+                  <button
+                    type="button"
+                    className="guide-action-btn guide-action-btn--copy"
+                    onClick={handleCopyKey}
+                  >
+                    {copied ? t.copiedCheck : t.copyKeyManually}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Setup button */}

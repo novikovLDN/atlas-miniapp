@@ -2,24 +2,145 @@
 
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { APP_LINKS } from "@/lib/detectDevice";
-import { IosIcon, AndroidIcon, WindowsIcon, MacosIcon } from "@/components/DeviceIcons";
+import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
 
+type AppTab = "happ" | "v2raytun";
 
-type Section = "tv" | "pc" | "phone";
+type DeviceGuide = {
+  id: string;
+  label: string;
+  Icon: React.FC<{ size?: number }>;
+  steps: string[];
+};
 
-const DOWNLOAD_ITEMS = [
-  { key: "ios", label: "iOS", Icon: IosIcon },
-  { key: "android", label: "Android", Icon: AndroidIcon },
-  { key: "windows", label: "Windows", Icon: WindowsIcon },
-  { key: "macos", label: "macOS", Icon: MacosIcon },
-] as const;
+const TvIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M8 21h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M12 17v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+function getGuides(app: AppTab, t: ReturnType<typeof import("@/lib/i18n").useI18n>["t"]): DeviceGuide[] {
+  if (app === "happ") {
+    return [
+      {
+        id: "ios",
+        label: "iPhone / iPad",
+        Icon: DEVICE_ICON_MAP.ios,
+        steps: [
+          t.guideHappIosStep1,
+          t.guideHappIosStep2,
+          t.guideHappIosStep3,
+          t.guideHappIosStep4,
+        ],
+      },
+      {
+        id: "android",
+        label: "Android",
+        Icon: DEVICE_ICON_MAP.android,
+        steps: [
+          t.guideHappAndroidStep1,
+          t.guideHappAndroidStep2,
+          t.guideHappAndroidStep3,
+          t.guideHappAndroidStep4,
+        ],
+      },
+      {
+        id: "macos",
+        label: "macOS",
+        Icon: DEVICE_ICON_MAP.macos,
+        steps: [
+          t.guideHappMacStep1,
+          t.guideHappMacStep2,
+          t.guideHappMacStep3,
+          t.guideHappMacStep4,
+        ],
+      },
+      {
+        id: "windows",
+        label: "Windows",
+        Icon: DEVICE_ICON_MAP.windows,
+        steps: [
+          t.guideHappWinStep1,
+          t.guideHappWinStep2,
+          t.guideHappWinStep3,
+          t.guideHappWinStep4,
+        ],
+      },
+    ];
+  }
+
+  // V2RayTun
+  return [
+    {
+      id: "ios",
+      label: "iPhone / iPad",
+      Icon: DEVICE_ICON_MAP.ios,
+      steps: [
+        t.guideV2IosStep1,
+        t.guideV2IosStep2,
+        t.guideV2IosStep3,
+        t.guideV2IosStep4,
+      ],
+    },
+    {
+      id: "android",
+      label: "Android",
+      Icon: DEVICE_ICON_MAP.android,
+      steps: [
+        t.guideV2AndroidStep1,
+        t.guideV2AndroidStep2,
+        t.guideV2AndroidStep3,
+        t.guideV2AndroidStep4,
+      ],
+    },
+    {
+      id: "macos",
+      label: "macOS",
+      Icon: DEVICE_ICON_MAP.macos,
+      steps: [
+        t.guideV2MacStep1,
+        t.guideV2MacStep2,
+        t.guideV2MacStep3,
+        t.guideV2MacStep4,
+      ],
+    },
+    {
+      id: "windows",
+      label: "Windows",
+      Icon: DEVICE_ICON_MAP.windows,
+      steps: [
+        t.guideV2WinStep1,
+        t.guideV2WinStep2,
+        t.guideV2WinStep3,
+        t.guideV2WinStep4,
+      ],
+    },
+    {
+      id: "tv",
+      label: "Android/Google TV",
+      Icon: TvIcon,
+      steps: [
+        t.guideV2TvStep1,
+        t.guideV2TvStep2,
+        t.guideV2TvStep3,
+        t.guideV2TvStep4,
+      ],
+    },
+  ];
+}
 
 export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
   const { t } = useI18n();
-  const [open, setOpen] = useState<Section | null>(null);
+  const [activeApp, setActiveApp] = useState<AppTab>("happ");
+  const [openDevice, setOpenDevice] = useState<string | null>(null);
 
-  const toggle = (s: Section) => setOpen(open === s ? null : s);
+  const guides = getGuides(activeApp, t);
+
+  const toggleDevice = (id: string) => {
+    setOpenDevice(openDevice === id ? null : id);
+  };
 
   return (
     <div className="guide-screen page-enter">
@@ -33,119 +154,50 @@ export default function GuideScreen({ onSetup }: { onSetup?: () => void }) {
         <p className="guide-header__subtitle">{t.guideSubtitle}</p>
       </div>
 
-      <div className="guide-sections">
-        {/* TV */}
-        <div className={`guide-card ${open === "tv" ? "guide-card--open" : ""}`}>
-          <button type="button" className="guide-card__trigger" onClick={() => toggle("tv")}>
-            <span className="guide-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M8 21h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M12 17v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="guide-card__label">{t.guideTvTitle}</span>
-            <span className="guide-card__chevron">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
-          </button>
-          <div className="guide-card__body">
-            <div>
-              <ol className="guide-steps">
-                <li>{t.guideTvStep1}</li>
-                <li>{t.guideTvStep2}</li>
-                <li>{t.guideTvStep3}</li>
-                <li>{t.guideTvStep4}</li>
-                <li>{t.guideTvStep5}</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        {/* PC */}
-        <div className={`guide-card ${open === "pc" ? "guide-card--open" : ""}`}>
-          <button type="button" className="guide-card__trigger" onClick={() => toggle("pc")}>
-            <span className="guide-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M2 20h20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M9 16h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="guide-card__label">{t.guidePcTitle}</span>
-            <span className="guide-card__chevron">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
-          </button>
-          <div className="guide-card__body">
-            <div>
-              <p className="guide-option-title">{t.guidePcOption1Title}</p>
-              <ol className="guide-steps">
-                <li>{t.guidePcOption1Step1}</li>
-                <li>{t.guidePcOption1Step2}</li>
-                <li>{t.guidePcOption1Step3}</li>
-              </ol>
-              <p className="guide-option-title guide-option-title--spaced">{t.guidePcOption2Title}</p>
-              <ol className="guide-steps">
-                <li>{t.guidePcOption2Step1}</li>
-                <li>{t.guidePcOption2Step2}</li>
-                <li>{t.guidePcOption2Step3}</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-        {/* Second phone */}
-        <div className={`guide-card ${open === "phone" ? "guide-card--open" : ""}`}>
-          <button type="button" className="guide-card__trigger" onClick={() => toggle("phone")}>
-            <span className="guide-card__icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="2" width="12" height="20" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M10 18h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="guide-card__label">{t.guidePhoneTitle}</span>
-            <span className="guide-card__chevron">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
-          </button>
-          <div className="guide-card__body">
-            <div>
-              <ol className="guide-steps">
-                <li>{t.guidePhoneStep1}</li>
-                <li>{t.guidePhoneStep2}</li>
-                <li>{t.guidePhoneStep3}</li>
-                <li>{t.guidePhoneStep4}</li>
-                <li>{t.guidePhoneStep5}</li>
-              </ol>
-            </div>
-          </div>
-        </div>
+      {/* App tabs */}
+      <div className="guide-app-tabs">
+        <button
+          type="button"
+          className={`guide-app-tab ${activeApp === "happ" ? "guide-app-tab--active" : ""}`}
+          onClick={() => { setActiveApp("happ"); setOpenDevice(null); }}
+        >
+          Happ⚡️
+        </button>
+        <button
+          type="button"
+          className={`guide-app-tab ${activeApp === "v2raytun" ? "guide-app-tab--active" : ""}`}
+          onClick={() => { setActiveApp("v2raytun"); setOpenDevice(null); }}
+        >
+          V2RayTun
+        </button>
       </div>
 
-      {/* Download section */}
-      <div className="guide-download">
-        <h2 className="guide-download__title">{t.downloadApplication}</h2>
-        <div className="guide-download__grid">
-          {DOWNLOAD_ITEMS.map(({ key, label, Icon }) => (
-            <a
-              key={key}
-              href={APP_LINKS[key].url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="guide-download__item"
-            >
-              <Icon size={20} />
-              {label}
-            </a>
-          ))}
-        </div>
+      {/* Device sections */}
+      <div className="guide-sections">
+        {guides.map(({ id, label, Icon, steps }) => (
+          <div key={id} className={`guide-card ${openDevice === id ? "guide-card--open" : ""}`}>
+            <button type="button" className="guide-card__trigger" onClick={() => toggleDevice(id)}>
+              <span className="guide-card__icon">
+                <Icon size={24} />
+              </span>
+              <span className="guide-card__label">{label}</span>
+              <span className="guide-card__chevron">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </button>
+            <div className="guide-card__body">
+              <div>
+                <ol className="guide-steps">
+                  {steps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Setup button */}

@@ -29,23 +29,6 @@
 
 }
 
-html.dark {
-  --bg-dark: #000000;
-  --bg-container: #0a0a0a;
-  --bg-card: #1a1a1a;
-  --bg-card-active: #ffffff;
-  --text-primary: #ffffff;
-  --text-secondary: #8e8e93;
-  --text-muted: #48484a;
-  --text-on-dark: #000000;
-
-  --grid-line: rgba(255, 255, 255, 0.06);
-  --grid-dot: rgba(255, 255, 255, 0.15);
-
-  --shield-top: #e5e5e7;
-  --shield-bottom: #ffffff;
-  --shield-lock: rgba(0, 0, 0, 0.85);
-}
 
 @theme inline {
   --color-bg-primary: var(--bg-dark);
@@ -78,7 +61,7 @@ body {
 /* ─── Container ─── */
 .app-container {
   background: var(--bg-container);
-  border-radius: var(--radius-container) var(--radius-container) 0 0;
+  border-radius: 0;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
@@ -110,8 +93,12 @@ button:active, a:active, .device-card:active {
   width: 100%;
   cursor: pointer;
   text-align: center;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border-radius: var(--radius-button);
+  font-family: inherit;
 }
 
 .btn-accent:active {
@@ -270,6 +257,14 @@ button:active, a:active, .device-card:active {
 }
 
 /* ─── Bottom pill bar ─── */
+.bottom-pill-wrap {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  background: var(--bg-container);
+}
+
 .bottom-pill {
   background: var(--bg-card);
   border-radius: var(--radius-pill);
@@ -317,33 +312,6 @@ button:active, a:active, .device-card:active {
   color: var(--text-on-dark);
 }
 
-/* ─── Theme toggle ─── */
-.theme-toggle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--grid-line);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-container);
-  color: var(--text-primary);
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 100;
-}
-
-.theme-toggle:active {
-  transform: scale3d(0.85, 0.85, 1);
-}
-
-.theme-icon-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 /* ─── Setup banner ─── */
 .setup-banner {
@@ -377,12 +345,6 @@ button:active, a:active, .device-card:active {
     0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-html.dark .setup-banner__content {
-  background: var(--bg-card);
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.2);
-}
 
 .setup-banner__close {
   position: absolute;
@@ -468,10 +430,6 @@ html.dark .setup-banner__content {
   padding: 0 20px 24px;
 }
 
-html.dark .guide-screen {
-  --guide-accent: var(--accent-blue);
-  --guide-accent-rgb: 52, 120, 246;
-}
 
 .guide-header {
   padding: 32px 0 28px;
@@ -506,15 +464,41 @@ html.dark .guide-screen {
   flex-shrink: 0;
 }
 
-html.dark .guide-header__accent {
-  box-shadow: 0 0 10px rgba(52, 120, 246, 0.5);
-}
 
 .guide-header__subtitle {
   font-size: 15px;
   color: var(--text-secondary);
   margin: 6px 0 0;
   line-height: 1.4;
+}
+
+/* App tabs (Happ / V2RayTun) */
+.guide-app-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.guide-app-tab {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 14px;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.guide-app-tab:active { opacity: 0.7; }
+
+.guide-app-tab--active {
+  background: var(--accent-blue);
+  color: #fff;
 }
 
 .guide-sections {
@@ -535,14 +519,6 @@ html.dark .guide-header__accent {
   border-color: color-mix(in srgb, var(--accent-blue) 20%, transparent);
 }
 
-html.dark .guide-card {
-  background: var(--bg-card);
-  border-color: rgba(255, 255, 255, 0.06);
-}
-
-html.dark .guide-card--open {
-  border-color: color-mix(in srgb, var(--accent-blue) 30%, transparent);
-}
 
 .guide-card__trigger {
   width: 100%;
@@ -574,9 +550,6 @@ html.dark .guide-card--open {
   justify-content: center;
 }
 
-html.dark .guide-card__icon {
-  background: color-mix(in srgb, var(--accent-blue) 15%, transparent);
-}
 
 .guide-card__label {
   flex: 1;
@@ -628,9 +601,6 @@ html.dark .guide-card__icon {
   color: var(--text-secondary);
 }
 
-html.dark .guide-steps li {
-  color: var(--text-secondary);
-}
 
 .guide-steps li:last-child {
   padding-bottom: 0;
@@ -653,9 +623,6 @@ html.dark .guide-steps li {
   line-height: 22px;
 }
 
-html.dark .guide-steps li::before {
-  background: color-mix(in srgb, var(--accent-blue) 18%, transparent);
-}
 
 /* Connecting line between steps */
 .guide-steps li:not(:last-child)::after {
@@ -669,65 +636,7 @@ html.dark .guide-steps li::before {
   border-radius: 1px;
 }
 
-html.dark .guide-steps li:not(:last-child)::after {
-  background: color-mix(in srgb, var(--accent-blue) 14%, transparent);
-}
 
-/* Sub-option title */
-.guide-option-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--accent-blue);
-  margin: 0 0 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.guide-option-title--spaced {
-  margin-top: 18px;
-}
-
-/* Download grid on guide screen */
-.guide-download {
-  margin-top: 28px;
-}
-
-.guide-download__title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 12px;
-}
-
-.guide-download__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.guide-download__item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 0;
-  border-radius: var(--radius-card);
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  border: 1.5px solid transparent;
-}
-
-html.dark .guide-download__item {
-  background: var(--bg-card);
-  border-color: rgba(255, 255, 255, 0.06);
-}
-
-.guide-download__item:active {
-  opacity: 0.7;
-}
 
 /* Support buttons on guide screen */
 .guide-support {
@@ -750,10 +659,6 @@ html.dark .guide-download__item {
   text-align: center;
 }
 
-html.dark .guide-support__btn {
-  background: var(--bg-card);
-  border-color: rgba(255, 255, 255, 0.06);
-}
 
 .guide-support__btn:active {
   opacity: 0.7;
@@ -789,10 +694,6 @@ html.dark .guide-support__btn {
   display: none;
 }
 
-html.dark .payment-sheet {
-  background: #0a0a0a;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
 
 .payment-handle {
   width: 36px;
@@ -843,10 +744,6 @@ html.dark .payment-sheet {
   -webkit-tap-highlight-color: transparent;
 }
 
-html.dark .payment-method {
-  background: var(--bg-card);
-  border-color: rgba(255, 255, 255, 0.04);
-}
 
 .payment-method:active:not(.payment-method--disabled) {
   transform: scale(0.97);
@@ -1007,9 +904,6 @@ html.dark .payment-method {
   color: var(--text-secondary);
   margin-bottom: 4px;
 }
-html.dark .payment-summary {
-  background: var(--bg-card);
-}
 .payment-summary__tariff {
   font-weight: 700;
   color: var(--text-primary);
@@ -1042,16 +936,52 @@ html.dark .payment-summary {
 }
 
 /* ─── Setup flow ─── */
+
+.setup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 8px;
+  flex-shrink: 0;
+}
+
+.setup-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: inherit;
+}
+
+.setup-back-btn:active { opacity: 0.6; }
+
+
 .setup-device-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px 12px;
-  border-radius: var(--radius-card);
-  border: 1.5px solid transparent;
+  gap: 8px;
+  padding: 14px 10px;
+  border-radius: 16px;
+  border: 1.5px solid var(--grid-line);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   font-family: inherit;
+}
+
+.setup-device-btn[data-active] {
+  background: var(--bg-card-active);
+  color: var(--text-on-dark);
+  border-color: color-mix(in srgb, var(--accent-blue) 60%, transparent);
 }
 
 .setup-device-btn:active {
@@ -1059,42 +989,44 @@ html.dark .payment-summary {
 }
 
 .setup-client-chip {
-  padding: 8px 18px;
+  padding: 8px 16px;
   border-radius: var(--radius-pill);
   border: 1.5px solid var(--grid-line);
   background: transparent;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
+}
+
+.setup-client-chip[data-active] {
+  background: transparent;
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
 }
 
 .setup-client-chip:active {
   opacity: 0.7;
 }
 
-.setup-share-btn {
+.setup-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  border-radius: var(--radius-card);
-  background: var(--bg-container);
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bg-card);
   border: none;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
 }
 
-html.dark .setup-share-btn {
-  background: var(--bg-card);
-}
-
-.setup-share-btn:active {
+.setup-action-btn:active {
   opacity: 0.75;
 }
 
@@ -1102,47 +1034,27 @@ html.dark .setup-share-btn {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px;
-  border-radius: var(--radius-card);
+  padding: 14px 16px;
+  border-radius: 16px;
   background: var(--bg-card);
 }
 
 .setup-info-icon {
   flex-shrink: 0;
   color: var(--accent-blue);
-}
-
-.setup-help-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  border-radius: var(--radius-card);
-  background: var(--bg-card);
-  border: none;
-  color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.setup-help-btn:active {
-  opacity: 0.75;
+  margin-top: 1px;
 }
 
 .setup-steps {
   list-style: none;
   padding: 0;
   margin: 0;
-  counter-reset: setup-step;
 }
 
 .setup-steps li {
   position: relative;
-  padding-left: 36px;
-  padding-bottom: 20px;
+  padding-left: 34px;
+  padding-bottom: 18px;
 }
 
 .setup-steps li:last-child {
@@ -1152,28 +1064,27 @@ html.dark .setup-share-btn {
 .setup-step-number {
   position: absolute;
   left: 0;
-  top: 2px;
-  width: 24px;
-  height: 24px;
+  top: 1px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--accent-blue);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Connecting line between steps */
 .setup-steps li:not(:last-child)::after {
   content: "";
   position: absolute;
-  left: 11px;
-  top: 30px;
+  left: 10px;
+  top: 27px;
   bottom: 0;
   width: 2px;
-  background: color-mix(in srgb, var(--accent-blue) 20%, transparent);
+  background: color-mix(in srgb, var(--accent-blue) 15%, transparent);
   border-radius: 1px;
 }
 
@@ -1183,12 +1094,12 @@ html.dark .setup-share-btn {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 12px;
+  padding: 11px;
   border-radius: var(--radius-button);
-  background: var(--bg-card);
+  background: transparent;
   border: 1.5px solid var(--grid-line);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -1204,12 +1115,12 @@ html.dark .setup-share-btn {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px;
+  padding: 11px;
   border-radius: var(--radius-button);
-  background: var(--bg-card);
+  background: transparent;
   border: 1.5px solid var(--grid-line);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
@@ -1217,6 +1128,11 @@ html.dark .setup-share-btn {
 
 .setup-secondary-action:active {
   opacity: 0.75;
+}
+
+.setup-footer {
+  flex-shrink: 0;
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 8px);
 }
 
 /* ─── Scrollbar hide ─── */

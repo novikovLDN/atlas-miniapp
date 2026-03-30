@@ -96,15 +96,6 @@ export default function SubscriptionCard({
       {/* Secondary actions */}
       <button
         type="button"
-        onClick={onOpenSetup}
-        className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
-        style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}
-      >
-        {t.installAndSetup}
-      </button>
-
-      <button
-        type="button"
         onClick={onOpenAddDevice}
         className="mb-2 w-full rounded-[14px] py-3 text-center text-[15px] font-medium"
         style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" }}

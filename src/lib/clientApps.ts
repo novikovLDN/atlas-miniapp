@@ -13,8 +13,39 @@ export type ClientApp = {
 };
 
 // Client apps available per device type
+// Happ first for iOS and macOS
 export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
   ios: [
+    {
+      id: "happ",
+      name: "Happ⚡️",
+      subtitle: "Быстрый клиент для iOS",
+      storeLabel: "App Store",
+      storeUrl: "https://apps.apple.com/app/happ-proxy-utility/id6504287215",
+      deeplink: null,
+      steps: [
+        "Откройте App Store на вашем iPhone или iPad. Найдите приложение «Happ» и нажмите «Загрузить». Дождитесь установки.",
+        "Скопируйте вашу ссылку подписки — она понадобится на следующем шаге.",
+        "Откройте Happ. Нажмите «+» и вставьте скопированную ссылку подписки. Конфигурация будет добавлена автоматически.",
+        "Выберите сервер в списке и нажмите кнопку подключения. При первом подключении iOS попросит разрешить конфигурацию — нажмите «Разрешить».",
+        "Когда в верхней части экрана появится значок подключения — соединение активно. Весь трафик теперь защищён.",
+      ],
+    },
+    {
+      id: "v2raytun",
+      name: "V2RayTun",
+      subtitle: "Простой клиент для iOS",
+      storeLabel: "App Store",
+      storeUrl: "https://apps.apple.com/app/v2raytun/id6476628951",
+      deeplink: (subUrl: string) => `v2raytun://import/${subUrl}`,
+      steps: [
+        "Откройте App Store на вашем iPhone или iPad. Найдите приложение «V2RayTun» и нажмите «Загрузить». Дождитесь установки.",
+        "Скопируйте вашу ссылку подписки — она понадобится на следующем шаге.",
+        "Откройте V2RayTun. На главном экране нажмите «+» или «Импорт», затем выберите «Импорт из буфера обмена». Конфигурация сервера будет добавлена автоматически.",
+        "Выберите добавленный сервер в списке и нажмите кнопку подключения. При первом подключении iOS попросит разрешить конфигурацию — нажмите «Разрешить».",
+        "Когда в верхней части экрана появится значок подключения — соединение активно. Весь трафик теперь защищён.",
+      ],
+    },
     {
       id: "streisand",
       name: "Streisand",
@@ -46,21 +77,6 @@ export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
       ],
     },
     {
-      id: "v2raytun",
-      name: "V2RayTun",
-      subtitle: "Простой клиент для iOS",
-      storeLabel: "App Store",
-      storeUrl: "https://apps.apple.com/app/v2raytun/id6476628951",
-      deeplink: (subUrl: string) => `v2raytun://import/${subUrl}`,
-      steps: [
-        "Откройте App Store на вашем iPhone или iPad. Найдите приложение «V2RayTun» и нажмите «Загрузить». Дождитесь установки.",
-        "Скопируйте вашу ссылку подписки — она понадобится на следующем шаге.",
-        "Откройте V2RayTun. На главном экране нажмите «+» или «Импорт», затем выберите «Импорт из буфера обмена». Конфигурация сервера будет добавлена автоматически.",
-        "Выберите добавленный сервер в списке и нажмите кнопку подключения. При первом подключении iOS попросит разрешить конфигурацию — нажмите «Разрешить».",
-        "Когда в верхней части экрана появится значок подключения — соединение активно. Весь трафик теперь защищён.",
-      ],
-    },
-    {
       id: "shadowrocket",
       name: "Shadowrocket",
       subtitle: "Продвинутый клиент (платный)",
@@ -73,21 +89,6 @@ export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
         "Откройте Shadowrocket. Нажмите «+» в правом верхнем углу, выберите тип «Subscribe» и вставьте скопированную ссылку.",
         "Выберите сервер из списка и включите переключатель подключения. Разрешите VPN-конфигурацию.",
         "Соединение установлено. Весь трафик теперь защищён.",
-      ],
-    },
-    {
-      id: "happ",
-      name: "Happ",
-      subtitle: "Лёгкий клиент",
-      storeLabel: "App Store",
-      storeUrl: "https://apps.apple.com/app/happ-proxy-utility/id6504287215",
-      deeplink: null,
-      steps: [
-        "Откройте App Store и найдите «Happ». Нажмите «Загрузить» и дождитесь установки.",
-        "Скопируйте вашу ссылку подписки — она понадобится на следующем шаге.",
-        "Откройте Happ. Нажмите «+» и вставьте скопированную ссылку подписки.",
-        "Выберите сервер и нажмите кнопку подключения. Разрешите VPN-конфигурацию.",
-        "Готово! Соединение установлено.",
       ],
     },
   ],
@@ -157,6 +158,36 @@ export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
   ],
   macos: [
     {
+      id: "happ",
+      name: "Happ⚡️",
+      subtitle: "Быстрый клиент для macOS",
+      storeLabel: "App Store",
+      storeUrl: "https://apps.apple.com/app/happ-proxy-utility/id6504287215",
+      deeplink: null,
+      steps: [
+        "Откройте App Store и найдите «Happ». Нажмите «Загрузить». Дождитесь установки.",
+        "Скопируйте вашу ссылку подписки.",
+        "Откройте Happ. Нажмите «+» и вставьте скопированную ссылку подписки.",
+        "Выберите сервер и нажмите кнопку подключения.",
+        "Готово! Соединение установлено.",
+      ],
+    },
+    {
+      id: "v2raytun",
+      name: "V2RayTun",
+      subtitle: "Простой клиент",
+      storeLabel: "App Store",
+      storeUrl: "https://apps.apple.com/app/v2raytun/id6476628951",
+      deeplink: (subUrl: string) => `v2raytun://import/${subUrl}`,
+      steps: [
+        "Откройте App Store и найдите «V2RayTun». Нажмите «Загрузить».",
+        "Скопируйте вашу ссылку подписки.",
+        "Откройте V2RayTun. Нажмите «+» → «Импорт из буфера обмена».",
+        "Выберите сервер и нажмите кнопку подключения.",
+        "Готово! Соединение установлено.",
+      ],
+    },
+    {
       id: "streisand",
       name: "Streisand",
       subtitle: "Популярный клиент",
@@ -186,23 +217,23 @@ export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
         "Готово! Соединение установлено.",
       ],
     },
+  ],
+  unknown: [
     {
-      id: "v2raytun",
-      name: "V2RayTun",
-      subtitle: "Простой клиент",
+      id: "happ",
+      name: "Happ⚡️",
+      subtitle: "Быстрый клиент",
       storeLabel: "App Store",
-      storeUrl: "https://apps.apple.com/app/v2raytun/id6476628951",
-      deeplink: (subUrl: string) => `v2raytun://import/${subUrl}`,
+      storeUrl: "https://apps.apple.com/app/happ-proxy-utility/id6504287215",
+      deeplink: null,
       steps: [
-        "Откройте App Store и найдите «V2RayTun». Нажмите «Загрузить».",
+        "Установите Happ из App Store.",
         "Скопируйте вашу ссылку подписки.",
-        "Откройте V2RayTun. Нажмите «+» → «Импорт из буфера обмена».",
+        "Откройте Happ. Нажмите «+» и вставьте ссылку подписки.",
         "Выберите сервер и нажмите кнопку подключения.",
         "Готово! Соединение установлено.",
       ],
     },
-  ],
-  unknown: [
     {
       id: "v2raytun",
       name: "V2RayTun",

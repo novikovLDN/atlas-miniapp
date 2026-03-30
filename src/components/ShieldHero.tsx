@@ -80,6 +80,25 @@ export default function ShieldHero() {
       >
         Atlas Secure
       </span>
+      <a
+        href="https://www.cloudflare.com/application-services/products/cloudflare-spectrum/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontSize: "clamp(13px, 3vw, 16px)",
+          fontWeight: 500,
+          letterSpacing: "0.5px",
+          color: "var(--text-muted)",
+          marginTop: "2px",
+          textDecoration: "none",
+          fontFamily:
+            "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        }}
+      >
+        Spectrum
+      </a>
     </div>
   );
 }

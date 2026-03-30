@@ -72,7 +72,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
       <h1
         className="splash-title"
         style={{
-          fontSize: "28px",
+          fontSize: "clamp(22px, 6vw, 28px)",
           fontWeight: 800,
           color: "#f5f5f7",
           margin: "20px 0 0",
@@ -86,7 +86,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
       <p
         className="splash-subtitle"
         style={{
-          fontSize: "13px",
+          fontSize: "clamp(11px, 3vw, 13px)",
           fontWeight: 500,
           color: "rgba(255,255,255,0.35)",
           margin: "8px 0 0",
@@ -97,7 +97,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
       </p>
       <p
         style={{
-          fontSize: "10px",
+          fontSize: "clamp(9px, 2.5vw, 10px)",
           fontWeight: 400,
           color: "rgba(255,255,255,0.2)",
           margin: "2px 0 0",

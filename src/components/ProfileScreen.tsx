@@ -53,18 +53,18 @@ export default function ProfileScreen({
   };
 
   return (
-    <div className="flex flex-col px-5 pb-4 page-enter">
+    <div className="flex flex-col pb-4 page-enter" style={{ padding: "0 clamp(14px, 4vw, 20px) 16px" }}>
       {/* Avatar + Name */}
       <div className="flex flex-col items-center pt-6 pb-4">
         <div
-          className="flex h-[56px] w-[56px] items-center justify-center rounded-full"
-          style={{ background: "var(--bg-card)" }}
+          className="flex items-center justify-center rounded-full"
+          style={{ width: "clamp(48px, 14vw, 56px)", height: "clamp(48px, 14vw, 56px)", background: "var(--bg-card)" }}
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--text-secondary)">
             <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" />
           </svg>
         </div>
-        <h2 className="mt-3 text-lg font-bold text-[var(--text-primary)]">{name}</h2>
+        <h2 className="mt-3 font-bold text-[var(--text-primary)]" style={{ fontSize: "clamp(16px, 4.5vw, 18px)" }}>{name}</h2>
         <p className="mt-0.5 text-xs text-[var(--text-secondary)]">ID: {telegramId}</p>
       </div>
 

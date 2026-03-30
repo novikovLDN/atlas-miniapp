@@ -36,15 +36,15 @@ export default function SubscriptionCard({
       style={{ background: "var(--bg-card)", color: "var(--text-primary)" }}
     >
       {/* Header */}
-      <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-base font-bold">{name}</span>
-        <span className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
+      <div className="mb-1.5 flex items-center justify-between gap-2" style={{ flexWrap: "wrap" }}>
+        <span className="font-bold" style={{ fontSize: "clamp(14px, 3.8vw, 16px)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</span>
+        <span className="font-medium" style={{ fontSize: "clamp(12px, 3.2vw, 14px)", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
           {t.until} {expiresFormatted ?? "\u2014"}
         </span>
       </div>
 
       {/* Status row */}
-      <div className="mb-4 flex items-center justify-between text-sm">
+      <div className="mb-4 flex items-center justify-between" style={{ fontSize: "clamp(12px, 3.2vw, 14px)", gap: "8px", flexWrap: "wrap" }}>
         <span
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
           style={{

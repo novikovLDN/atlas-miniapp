@@ -295,6 +295,33 @@ export default function HomeClient() {
                 <div className="mt-4">
                   <SupportLinks />
                 </div>
+
+                {/* Website invite */}
+                <div
+                  className="mt-3 rounded-[var(--radius-card)] px-4 py-3.5 text-center"
+                  style={{ background: "var(--bg-card)" }}
+                >
+                  <p
+                    className="text-[13px] leading-snug mb-2.5"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Telegram не работает у друга? Пригласи его через веб-версию — без приложения
+                  </p>
+                  <a
+                    href="https://qodev.dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="glass-button w-full"
+                    style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", textDecoration: "none" }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                    </svg>
+                    Перейти на сайт
+                  </a>
+                </div>
               </div>
             </div>
 

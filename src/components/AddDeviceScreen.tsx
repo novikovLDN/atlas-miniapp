@@ -124,14 +124,22 @@ export default function AddDeviceScreen({
   );
 
   const devCredit = (
-    <p
-      className="mt-6 mb-2 text-center text-[11px] font-medium tracking-wide"
-      style={{ color: "var(--text-muted)", opacity: 0.6 }}
-    >
-      developed by{" "}
-      <span style={{ color: "#00e676", fontWeight: 700, textShadow: "0 0 8px rgba(0,230,118,0.4)" }}>Q</span>
-      <span style={{ color: "var(--text-primary)" }}>oDev</span>
-    </p>
+    <>
+      <p
+        className="mt-6 mb-0.5 text-center text-[11px] font-medium tracking-wide"
+        style={{ color: "var(--text-muted)", opacity: 0.6 }}
+      >
+        developed by{" "}
+        <span style={{ color: "#00e676", fontWeight: 700, textShadow: "0 0 8px rgba(0,230,118,0.4)" }}>Q</span>
+        <span style={{ color: "var(--text-primary)" }}>oDev</span>
+      </p>
+      <p
+        className="mb-2 text-center text-[9px] tracking-wider"
+        style={{ color: "var(--text-muted)", opacity: 0.4 }}
+      >
+        Spectrum
+      </p>
+    </>
   );
 
   if (!hasActiveSubscription) {

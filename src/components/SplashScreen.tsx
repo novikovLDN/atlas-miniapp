@@ -95,6 +95,17 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
       >
         developed by QoDev
       </p>
+      <p
+        style={{
+          fontSize: "10px",
+          fontWeight: 400,
+          color: "rgba(255,255,255,0.2)",
+          margin: "2px 0 0",
+          letterSpacing: "1px",
+        }}
+      >
+        Spectrum
+      </p>
     </div>
   );
 }

@@ -78,7 +78,7 @@ body {
 /* ─── Container ─── */
 .app-container {
   background: var(--bg-container);
-  border-radius: var(--radius-container) var(--radius-container) 0 0;
+  border-radius: 0;
   min-height: 100vh;
   position: relative;
   overflow: hidden;

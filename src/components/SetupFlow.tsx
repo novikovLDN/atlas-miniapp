@@ -41,7 +41,7 @@ export default function SetupFlow({
   deviceType: deviceTypeProp,
 }: SetupFlowProps) {
   const { t } = useI18n();
-  const [deviceType, setDeviceType] = useState<DeviceType>(deviceTypeProp ?? "unknown");
+  const [, setDeviceType] = useState<DeviceType>(deviceTypeProp ?? "unknown");
   const [selectedDevice, setSelectedDevice] = useState<DeviceType | "tv" | null>(null);
   const [selectedClient, setSelectedClient] = useState<ClientApp | null>(null);
   const [view, setView] = useState<ViewState>("devices");
@@ -107,7 +107,7 @@ export default function SetupFlow({
 
   const handleBack = () => {
     if (view === "instructions") {
-      const actualDevice = selectedDevice === "tv" ? "android" : (selectedDevice ?? deviceType);
+      const actualDevice = selectedDevice === "tv" ? "android" : (selectedDevice ?? "unknown");
       const clients = CLIENT_APPS[actualDevice];
       if (clients.length > 1) {
         setSelectedClient(null);
@@ -124,45 +124,42 @@ export default function SetupFlow({
     }
   };
 
-  const actualDeviceForClients = selectedDevice === "tv" ? "android" : (selectedDevice ?? deviceType);
+  const actualDeviceForClients = selectedDevice === "tv" ? "android" : (selectedDevice ?? "unknown");
   const availableClients = CLIENT_APPS[actualDeviceForClients] ?? CLIENT_APPS.unknown;
 
-  /* ── Reusable device grid ── */
-  const renderDeviceGrid = (highlightKey: "detected" | "selected") => {
-    const activeId = highlightKey === "detected" ? deviceType : selectedDevice;
-    return (
-      <>
-        <div className="grid grid-cols-2 gap-2.5">
-          {DEVICES.slice(0, 4).map(({ id, label, Icon }) => {
-            const isActive = id === activeId;
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => handleSelectDevice(id)}
-                className="setup-device-btn"
-                data-active={isActive || undefined}
-              >
-                <Icon size={20} />
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          onClick={() => handleSelectDevice("tv")}
-          className="setup-device-btn w-full mt-2.5"
-          data-active={(activeId === "tv") || undefined}
-        >
-          <TvDeviceIcon size={20} />
-          <span>{DEVICES[4].label}</span>
-        </button>
-      </>
-    );
-  };
+  /* ── Device grid ── */
+  const renderDeviceGrid = () => (
+    <>
+      <div className="grid grid-cols-2 gap-2.5">
+        {DEVICES.slice(0, 4).map(({ id, label, Icon }) => {
+          const isActive = id === selectedDevice;
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => handleSelectDevice(id)}
+              className="setup-device-btn"
+              data-active={isActive || undefined}
+            >
+              <Icon size={20} />
+              <span>{label}</span>
+            </button>
+          );
+        })}
+      </div>
+      <button
+        type="button"
+        onClick={() => handleSelectDevice("tv")}
+        className="setup-device-btn w-full mt-2.5"
+        data-active={(selectedDevice === "tv") || undefined}
+      >
+        <TvDeviceIcon size={20} />
+        <span>{DEVICES[4].label}</span>
+      </button>
+    </>
+  );
 
-  /* ── Reusable bottom section ── */
+  /* ── Bottom section ── */
   const renderBottomSection = () => (
     <>
       <button
@@ -231,12 +228,9 @@ export default function SetupFlow({
   );
 
   return (
-    <div style={{ background: "var(--bg-dark)", minHeight: "100vh" }}>
-      <div
-        className="app-container"
-        style={{ minHeight: "100vh", display: "flex", flexDirection: "column", overflow: "visible" }}
-      >
-        {/* Header */}
+    <div style={{ background: "var(--bg-container)", minHeight: "100vh" }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        {/* Header — back only, no X */}
         <div className="setup-header">
           <button type="button" onClick={handleBack} className="setup-back-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -244,18 +238,10 @@ export default function SetupFlow({
             </svg>
             {t.back}
           </button>
-          <button type="button" onClick={onClose} className="setup-notify-btn" aria-label={t.close}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 01-3.46 0" />
-            </svg>
-          </button>
         </div>
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-4 pb-6" style={{ WebkitOverflowScrolling: "touch" }}>
-
-          {/* Title */}
           <h1 className="text-[22px] font-bold mt-1 mb-1" style={{ color: "var(--text-primary)" }}>
             {t.deviceSelectTitle}
           </h1>
@@ -266,20 +252,14 @@ export default function SetupFlow({
             </p>
           )}
 
-          {/* Device grid (always visible) */}
-          {renderDeviceGrid(view === "devices" ? "detected" : "selected")}
+          {renderDeviceGrid()}
 
-          {/* Client chips (visible on clients + instructions views) */}
           {(view === "clients" || view === "instructions") && (
-            <div className="mt-3">
-              {renderClientChips()}
-            </div>
+            <div className="mt-3">{renderClientChips()}</div>
           )}
 
-          {/* Instruction card */}
           {view === "instructions" && selectedClient && (
             <div className="glass-card p-4 mt-3">
-              {/* Client header */}
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
@@ -300,7 +280,6 @@ export default function SetupFlow({
                 </a>
               </div>
 
-              {/* Steps */}
               <ol className="setup-steps">
                 {selectedClient.steps.map((stepText, i) => (
                   <li key={i}>
@@ -358,7 +337,6 @@ export default function SetupFlow({
                 ))}
               </ol>
 
-              {/* QR code */}
               <div className="mt-3">
                 <button
                   type="button"
@@ -401,20 +379,7 @@ export default function SetupFlow({
             </div>
           )}
 
-          {/* Bottom section */}
           {renderBottomSection()}
-        </div>
-
-        {/* Footer */}
-        <div className="setup-footer">
-          <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-0.5 text-[11px]" style={{ color: "var(--text-muted)" }}>
-            <span>Все услуги и тарифы</span>
-            <span>Условия предоставления услуг</span>
-          </div>
-          <div className="flex items-center justify-center gap-4 text-[11px]" style={{ color: "var(--text-muted)" }}>
-            <span>Политика конфиденциальности</span>
-          </div>
-          <p className="text-[10px] text-center mt-0.5" style={{ color: "var(--text-muted)", opacity: 0.4 }}>Atlas Secure Service</p>
         </div>
       </div>
     </div>

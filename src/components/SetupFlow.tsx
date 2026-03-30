@@ -241,13 +241,13 @@ export default function SetupFlow({
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-4 pb-6" style={{ WebkitOverflowScrolling: "touch" }}>
-          <h1 className="text-[22px] font-bold mt-1 mb-1" style={{ color: "var(--text-primary)" }}>
+        <div className="flex-1 overflow-y-auto pb-6" style={{ padding: "0 clamp(12px, 4vw, 16px)", paddingBottom: "24px", WebkitOverflowScrolling: "touch" }}>
+          <h1 className="font-bold mt-1 mb-1" style={{ fontSize: "clamp(18px, 5vw, 22px)", color: "var(--text-primary)" }}>
             {t.deviceSelectTitle}
           </h1>
 
           {view === "devices" && (
-            <p className="text-[13px] mb-4" style={{ color: "var(--text-secondary)" }}>
+            <p className="mb-4" style={{ fontSize: "clamp(12px, 3.2vw, 13px)", color: "var(--text-secondary)" }}>
               {t.deviceSelectSubtitle}
             </p>
           )}
@@ -367,7 +367,7 @@ export default function SetupFlow({
                     </p>
                     {qrDataUrl && (
                       <div className="flex justify-center mb-3">
-                        <img src={qrDataUrl} alt="QR" width={180} height={180} className="rounded-xl" />
+                        <img src={qrDataUrl} alt="QR" className="rounded-xl" style={{ width: "clamp(140px, 45vw, 180px)", height: "clamp(140px, 45vw, 180px)" }} />
                       </div>
                     )}
                     <p className="text-[11px] text-center" style={{ color: "var(--text-muted)" }}>

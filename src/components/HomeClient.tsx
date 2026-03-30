@@ -269,7 +269,7 @@ export default function HomeClient() {
               }}
             >
               <Suspense fallback={<div style={{ height: 200 }} />}><ShieldHero /></Suspense>
-              <div className="px-5 pb-4">
+              <div style={{ padding: "0 clamp(14px, 4vw, 20px) 16px" }}>
                 {telegramId !== null && (
                   <SubscriptionCard
                     name={name}

@@ -3,9 +3,8 @@
 export default function ShieldHero() {
   return (
     <div
-      className="relative flex w-full flex-shrink-0 flex-col items-center justify-center"
-      style={{ height: "clamp(140px, 26vh, 200px)", overflow: "hidden" }}
-      aria-hidden
+      className="relative flex w-full flex-shrink-0 flex-col"
+      style={{ height: "clamp(170px, 30vh, 240px)", overflow: "hidden" }}
     >
       {/* Grid pattern with dots at intersections */}
       <svg
@@ -26,79 +25,64 @@ export default function ShieldHero() {
         <rect width="100%" height="100%" fill="url(#hero-grid)" />
       </svg>
 
-      {/* Logo icon — 4 arrows expanding outward */}
-      <div style={{ position: "relative", zIndex: 1, marginBottom: "10px" }}>
+      {/* Top-left: Atlas Secure + Spectrum */}
+      <div style={{ position: "relative", zIndex: 1, padding: "16px 20px 0" }}>
         <div
           style={{
-            width: "clamp(56px, 12vw, 72px)",
-            height: "clamp(56px, 12vw, 72px)",
-            borderRadius: "clamp(14px, 3vw, 18px)",
-            background: "linear-gradient(145deg, #2a2d5e, #1a1d3e)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)",
+            fontSize: "clamp(18px, 4.5vw, 22px)",
+            fontWeight: 800,
+            letterSpacing: "-0.3px",
+            color: "var(--text-primary)",
+            lineHeight: 1.2,
+            fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           }}
         >
-          <svg
-            width="clamp(28px, 6vw, 36px)"
-            height="clamp(28px, 6vw, 36px)"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            {/* Top-left arrow */}
-            <path d="M3 10V3h7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M3 3l5.5 5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-
-            {/* Top-right arrow */}
-            <path d="M14 3h7v7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M21 3l-5.5 5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-
-            {/* Bottom-left arrow */}
-            <path d="M3 14v7h7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M3 21l5.5-5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-
-            {/* Bottom-right arrow */}
-            <path d="M14 21h7v-7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M21 21l-5.5-5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          Atlas Secure
+        </div>
+        <div
+          style={{
+            fontSize: "clamp(11px, 2.5vw, 13px)",
+            fontWeight: 500,
+            letterSpacing: "0.5px",
+            color: "var(--text-muted)",
+            marginTop: "1px",
+          }}
+        >
+          Spectrum
         </div>
       </div>
 
-      {/* Text */}
-      <span
+      {/* Center: animated logo */}
+      <div
         style={{
           position: "relative",
           zIndex: 1,
-          fontSize: "clamp(22px, 5vw, 30px)",
-          fontWeight: 800,
-          letterSpacing: "-0.5px",
-          color: "var(--text-primary)",
-          fontFamily:
-            "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        Atlas Secure
-      </span>
-      <a
-        href="https://www.cloudflare.com/application-services/products/cloudflare-spectrum/"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          position: "relative",
-          zIndex: 1,
-          fontSize: "clamp(13px, 3vw, 16px)",
-          fontWeight: 500,
-          letterSpacing: "0.5px",
-          color: "var(--text-muted)",
-          marginTop: "2px",
-          textDecoration: "none",
-          fontFamily:
-            "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        }}
-      >
-        Spectrum
-      </a>
+        <div className="hero-logo-pulse">
+          <div className="hero-logo-icon">
+            <svg
+              width="clamp(32px, 7vw, 40px)"
+              height="clamp(32px, 7vw, 40px)"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path d="M3 10V3h7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 3l5.5 5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M14 3h7v7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M21 3l-5.5 5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 14v7h7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3 21l5.5-5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M14 21h7v-7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M21 21l-5.5-5.5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

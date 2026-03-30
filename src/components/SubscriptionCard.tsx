@@ -14,6 +14,7 @@ type SubscriptionCardProps = {
   onOpenSupport: () => void;
   onOpenAddDevice: () => void;
   onOpenPayment: () => void;
+  onOpenGuide: () => void;
 };
 
 export default function SubscriptionCard({
@@ -22,18 +23,12 @@ export default function SubscriptionCard({
   tariff,
   expiresFormatted,
   daysLeft = 0,
-  buySubscriptionUrl,
-  subUrl,
   onOpenSetup,
-  onOpenSupport,
   onOpenAddDevice,
   onOpenPayment,
+  onOpenGuide,
 }: SubscriptionCardProps) {
   const { t } = useI18n();
-
-  const handleConnectVPN = () => {
-    onOpenSetup();
-  };
 
   return (
     <div
@@ -77,7 +72,7 @@ export default function SubscriptionCard({
       {isActive ? (
         <button
           type="button"
-          onClick={handleConnectVPN}
+          onClick={onOpenSetup}
           className="btn-accent mb-2 w-full"
         >
           {t.connectVPN}
@@ -108,14 +103,14 @@ export default function SubscriptionCard({
 
       <button
         type="button"
-        onClick={onOpenSupport}
+        onClick={onOpenGuide}
         className="w-full rounded-[14px] py-3 text-center text-[14px] font-medium"
         style={{
           background: "var(--bg-container)",
           color: "var(--text-secondary)",
         }}
       >
-        {t.support}
+        {t.tabGuide}
       </button>
     </div>
   );

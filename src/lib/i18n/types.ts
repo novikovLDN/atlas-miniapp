@@ -94,10 +94,9 @@ export type Translations = {
   addDeviceTitle: string;
   activeSubscriptionRequired: string;
   copyAndPasteLink: string;
-  addDeviceStep1: string;
-  addDeviceStep2: string;
-  addDeviceStep3: string;
   addDeviceOnSecondDevice: string;
+  addDeviceChooseApp: string;
+  addDeviceInstructionTitle: (appName: string) => string;
   linkAfterActivation: string;
   linkCopied: string;
   copiedCheck: string;

@@ -289,10 +289,17 @@ export default function HomeClient() {
                     onOpenSupport={openSupport}
                     onOpenAddDevice={() => setView("add_device")}
                     onOpenPayment={() => setShowPayment(true)}
+                    onOpenGuide={() => switchTab("guide")}
                   />
                 )}
 
-                <div className="mt-4">
+                {/* System status */}
+                <div className="system-status mt-3">
+                  <span className="system-status__dot" />
+                  System Status: Active Protect
+                </div>
+
+                <div className="mt-3">
                   <SupportLinks />
                 </div>
 

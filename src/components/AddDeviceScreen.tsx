@@ -86,8 +86,9 @@ export default function AddDeviceScreen({
 
   useEffect(() => {
     if (!subscriptionUrl || !canvasRef.current) return;
+    const qrSize = Math.min(180, window.innerWidth * 0.45);
     QRCode.toCanvas(canvasRef.current, subscriptionUrl, {
-      width: 180,
+      width: qrSize,
       margin: 2,
       color: { dark: "#000000", light: "#ffffff" },
     });
@@ -207,7 +208,7 @@ export default function AddDeviceScreen({
           </button>
         </div>
 
-        <div className="px-5 pb-6">
+        <div style={{ padding: "0 clamp(14px, 4vw, 20px) 24px" }}>
         {/* Title */}
         <div className="flex flex-col items-center text-center">
           <h2 className="text-xl font-bold text-[var(--text-primary)]">

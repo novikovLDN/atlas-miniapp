@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useI18n } from "@/lib/i18n";
 import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
-import { CLIENT_APPS, type ClientApp, getHappCryptoLink } from "@/lib/clientApps";
+import { CLIENT_APPS, type ClientApp } from "@/lib/clientApps";
 import type { DeviceType } from "@/lib/detectDevice";
 
 type AppTab = "v2raytun" | "happ" | "hiddify" | "streisand";
@@ -119,8 +119,6 @@ export default function GuideScreen({
   const [activeApp, setActiveApp] = useState<AppTab>("v2raytun");
   const [openDevice, setOpenDevice] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [autoSetupLoading, setAutoSetupLoading] = useState<string | null>(null);
-
   const guides = getFilteredDevices(activeApp);
 
   const toggleDevice = (id: string) => {
@@ -139,22 +137,9 @@ export default function GuideScreen({
   }, [subUrl]);
 
   const handleAutoSetup = useCallback(
-    async (app: ClientApp, deviceId: string) => {
-      if (!subUrl) return;
-
-      if (app.asyncDeeplink) {
-        setAutoSetupLoading(deviceId);
-        const link = await getHappCryptoLink(subUrl);
-        setAutoSetupLoading(null);
-        if (link) {
-          window.location.href = link;
-        }
-        return;
-      }
-
-      if (app.deeplink) {
-        window.location.href = app.deeplink(subUrl);
-      }
+    (app: ClientApp) => {
+      if (!subUrl || !app.deeplink) return;
+      window.location.href = app.deeplink(subUrl);
     },
     [subUrl]
   );
@@ -239,19 +224,14 @@ export default function GuideScreen({
                 </ol>
 
                 {/* Auto-setup button */}
-                {subUrl && (app.deeplink || app.asyncDeeplink) && (
+                {subUrl && app.deeplink && (
                   <button
                     type="button"
                     className="guide-action-btn guide-action-btn--auto"
-                    onClick={() => handleAutoSetup(app, id)}
-                    disabled={autoSetupLoading === id}
+                    onClick={() => handleAutoSetup(app)}
                   >
-                    {autoSetupLoading === id ? (
-                      <span className="animate-pulse">{"\u23F3"}</span>
-                    ) : (
-                      <AutoSetupIcon />
-                    )}
-                    {autoSetupLoading === id ? "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430..." : t.setupAutomatically}
+                    <AutoSetupIcon />
+                    {t.setupAutomatically}
                   </button>
                 )}
 

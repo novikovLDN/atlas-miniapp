@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { openTelegramLink } from "@/lib/openTelegramLink";
 import { useI18n } from "@/lib/i18n";
-import { getHappCryptoLink } from "@/lib/clientApps";
 import { openDeepLink } from "@/lib/openDeepLink";
 import QRCode from "qrcode";
 
@@ -22,15 +21,13 @@ type AppInfo = {
   name: string;
   steps: string[];
   deeplink: ((subUrl: string) => string) | null;
-  asyncDeeplink?: boolean;
 };
 
 const APPS: AppInfo[] = [
   {
     id: "happ",
     name: "Happ\u26A1\uFE0F",
-    deeplink: null,
-    asyncDeeplink: true,
+    deeplink: (subUrl: string) => `https://api.atlassecure.ru/open/happ?url=${encodeURIComponent(subUrl)}`,
     steps: [
       "Установите Happ из App Store на другом устройстве (iPhone, iPad, Mac).",
       "Отсканируйте QR-код выше камерой устройства или скопируйте ссылку подписки.",
@@ -83,7 +80,6 @@ export default function AddDeviceScreen({
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppId | null>(null);
-  const [autoSetupLoading, setAutoSetupLoading] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const subscriptionUrl = hasActiveSubscription && subUrl ? subUrl : "";
@@ -120,20 +116,9 @@ export default function AddDeviceScreen({
   };
 
   const handleAutoSetup = useCallback(
-    async (app: AppInfo) => {
-      if (!subscriptionUrl) return;
-
-      if (app.asyncDeeplink) {
-        setAutoSetupLoading(true);
-        const link = await getHappCryptoLink(subscriptionUrl);
-        setAutoSetupLoading(false);
-        if (link) openDeepLink(link);
-        return;
-      }
-
-      if (app.deeplink) {
-        openDeepLink(app.deeplink(subscriptionUrl));
-      }
+    (app: AppInfo) => {
+      if (!subscriptionUrl || !app.deeplink) return;
+      openDeepLink(app.deeplink(subscriptionUrl));
     },
     [subscriptionUrl]
   );
@@ -306,21 +291,16 @@ export default function AddDeviceScreen({
             </ol>
 
             {/* Auto-setup button */}
-            {subscriptionUrl && (currentApp.deeplink || currentApp.asyncDeeplink) && (
+            {subscriptionUrl && currentApp.deeplink && (
               <button
                 type="button"
                 onClick={() => handleAutoSetup(currentApp)}
-                disabled={autoSetupLoading}
-                className="btn-accent w-full mt-3 disabled:opacity-50"
+                className="btn-accent w-full mt-3"
               >
-                {autoSetupLoading ? (
-                  <span className="animate-pulse">&#x23F3;</span>
-                ) : (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                  </svg>
-                )}
-                {autoSetupLoading ? t.loading : t.setupAutomatically}
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                {t.setupAutomatically}
               </button>
             )}
           </div>

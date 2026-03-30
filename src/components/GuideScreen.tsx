@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useI18n } from "@/lib/i18n";
 import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
-import { CLIENT_APPS, type ClientApp } from "@/lib/clientApps";
+import { CLIENT_APPS, type ClientApp, getHappCryptoLink } from "@/lib/clientApps";
 import type { DeviceType } from "@/lib/detectDevice";
 
 type AppTab = "happ" | "v2raytun";
@@ -105,6 +105,7 @@ export default function GuideScreen({
   const [activeApp, setActiveApp] = useState<AppTab>("happ");
   const [openDevice, setOpenDevice] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [autoSetupLoading, setAutoSetupLoading] = useState<string | null>(null);
 
   const guides = getFilteredDevices(activeApp);
 
@@ -124,10 +125,23 @@ export default function GuideScreen({
   }, [subUrl]);
 
   const handleAutoSetup = useCallback(
-    (app: ClientApp) => {
-      if (!subUrl || !app.deeplink) return;
-      const url = app.deeplink(subUrl);
-      window.location.href = url;
+    async (app: ClientApp, deviceId: string) => {
+      if (!subUrl) return;
+
+      // Happ uses async crypto deep link
+      if (app.asyncDeeplink) {
+        setAutoSetupLoading(deviceId);
+        const link = await getHappCryptoLink(subUrl);
+        setAutoSetupLoading(null);
+        if (link) {
+          window.location.href = link;
+        }
+        return;
+      }
+
+      if (app.deeplink) {
+        window.location.href = app.deeplink(subUrl);
+      }
     },
     [subUrl]
   );
@@ -221,14 +235,19 @@ export default function GuideScreen({
                   </ol>
 
                   {/* Auto-setup button (deep link) */}
-                  {subUrl && app.deeplink && (
+                  {subUrl && (app.deeplink || app.asyncDeeplink) && (
                     <button
                       type="button"
                       className="guide-action-btn guide-action-btn--auto"
-                      onClick={() => handleAutoSetup(app)}
+                      onClick={() => handleAutoSetup(app, id)}
+                      disabled={autoSetupLoading === id}
                     >
-                      <AutoSetupIcon />
-                      {t.setupAutomatically}
+                      {autoSetupLoading === id ? (
+                        <span className="animate-pulse">⏳</span>
+                      ) : (
+                        <AutoSetupIcon />
+                      )}
+                      {autoSetupLoading === id ? "Загрузка..." : t.setupAutomatically}
                     </button>
                   )}
 

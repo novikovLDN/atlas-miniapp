@@ -9,8 +9,38 @@ export type ClientApp = {
   storeLabel: string;
   storeUrl: string;
   deeplink: ((subUrl: string) => string) | null;
+  /** If true, use getHappCryptoLink() for async deep link generation */
+  asyncDeeplink?: boolean;
   steps: string[];
 };
+
+/**
+ * Fetch encrypted deep link for Happ via crypto.happ.su API.
+ * Returns a `happ://crypt4/...` link that auto-imports the subscription.
+ */
+export async function getHappCryptoLink(subUrl: string): Promise<string | null> {
+  try {
+    const res = await fetch("https://crypto.happ.su/api-v2.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: subUrl }),
+    });
+    if (!res.ok) return null;
+    const data = await res.text();
+    // API returns the encrypted link directly or as JSON
+    const trimmed = data.trim();
+    if (trimmed.startsWith("happ://")) return trimmed;
+    // Try parsing as JSON
+    try {
+      const json = JSON.parse(trimmed);
+      return json.link || json.url || json.deeplink || null;
+    } catch {
+      return null;
+    }
+  } catch {
+    return null;
+  }
+}
 
 // Client apps available per device type
 // Happ first for iOS and macOS
@@ -23,6 +53,7 @@ export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
       storeLabel: "App Store",
       storeUrl: "https://apps.apple.com/app/happ-proxy-utility/id6504287215",
       deeplink: null,
+      asyncDeeplink: true,
       steps: [
         "Откройте App Store на вашем iPhone или iPad. Найдите приложение «Happ» и нажмите «Загрузить». Дождитесь установки.",
         "Скопируйте вашу ссылку подписки — она понадобится на следующем шаге.",
@@ -164,6 +195,7 @@ export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
       storeLabel: "App Store",
       storeUrl: "https://apps.apple.com/app/happ-proxy-utility/id6504287215",
       deeplink: null,
+      asyncDeeplink: true,
       steps: [
         "Откройте App Store и найдите «Happ». Нажмите «Загрузить». Дождитесь установки.",
         "Скопируйте вашу ссылку подписки.",
@@ -226,6 +258,7 @@ export const CLIENT_APPS: Record<DeviceType, ClientApp[]> = {
       storeLabel: "App Store",
       storeUrl: "https://apps.apple.com/app/happ-proxy-utility/id6504287215",
       deeplink: null,
+      asyncDeeplink: true,
       steps: [
         "Установите Happ из App Store.",
         "Скопируйте вашу ссылку подписки.",

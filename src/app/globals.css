@@ -22,10 +22,6 @@
   --grid-line: rgba(0, 0, 0, 0.06);
   --grid-dot: rgba(0, 0, 0, 0.12);
 
-  /* Shield colors */
-  --shield-top: #2c2c2e;
-  --shield-bottom: #000000;
-  --shield-lock: rgba(255, 255, 255, 0.9);
 
 }
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { openDeepLink } from "@/lib/openDeepLink";
 import { detectDevice, type DeviceType } from "@/lib/detectDevice";
 import { useI18n } from "@/lib/i18n";
-import { CLIENT_APPS, type ClientApp, getHappCryptoLink } from "@/lib/clientApps";
+import { CLIENT_APPS, type ClientApp } from "@/lib/clientApps";
 import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
 
 type SetupFlowProps = {
@@ -73,26 +73,10 @@ export default function SetupFlow({
     });
   };
 
-  const [autoSetupLoading, setAutoSetupLoading] = useState(false);
-
-  const handleAutoSetup = useCallback(async () => {
-    if (!subUrl || !selectedClient) return;
-
-    // Happ uses async crypto deep link
-    if (selectedClient.asyncDeeplink) {
-      setAutoSetupLoading(true);
-      const link = await getHappCryptoLink(subUrl);
-      setAutoSetupLoading(false);
-      if (link) {
-        openDeepLink(link);
-      }
-      return;
-    }
-
-    if (selectedClient.deeplink) {
-      openDeepLink(selectedClient.deeplink(subUrl));
-    }
-  }, [subUrl, selectedClient]);
+  const handleAutoSetup = () => {
+    if (!selectedClient?.deeplink || !subUrl) return;
+    openDeepLink(selectedClient.deeplink(subUrl));
+  };
 
   const handleShareSubscription = () => {
     if (!subUrl) return;
@@ -322,21 +306,17 @@ export default function SetupFlow({
 
                     {i === 1 && (
                       <div className="mt-2.5 space-y-2">
-                        {(selectedClient.deeplink || selectedClient.asyncDeeplink) && (
+                        {selectedClient.deeplink && (
                           <button
                             type="button"
                             onClick={handleAutoSetup}
-                            disabled={!subUrl || autoSetupLoading}
+                            disabled={!subUrl}
                             className="btn-accent w-full disabled:opacity-50"
                           >
-                            {autoSetupLoading ? (
-                              <span className="animate-pulse">⏳</span>
-                            ) : (
-                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                              </svg>
-                            )}
-                            {autoSetupLoading ? "Загрузка..." : t.setupAutomatically}
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                              <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                            {t.setupAutomatically}
                           </button>
                         )}
                         <button

@@ -80,6 +80,21 @@ export default function ShieldHero() {
       >
         Atlas Secure
       </span>
+      <span
+        style={{
+          position: "relative",
+          zIndex: 1,
+          fontSize: "clamp(13px, 3vw, 16px)",
+          fontWeight: 500,
+          letterSpacing: "0.5px",
+          color: "var(--text-muted)",
+          marginTop: "2px",
+          fontFamily:
+            "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        }}
+      >
+        Spectrum
+      </span>
     </div>
   );
 }

@@ -203,8 +203,19 @@ export default function AddDeviceScreen({
       style={{ background: "var(--bg-dark)", minHeight: "100dvh" }}
       className="overflow-y-auto"
     >
-      <div className="app-container flex min-h-[100dvh] flex-col px-5 py-6 page-fade">
-        {/* Header */}
+      <div className="app-container flex min-h-[100dvh] flex-col page-fade">
+        {/* Header — back in top-left */}
+        <div className="setup-header">
+          <button type="button" onClick={onBack} className="setup-back-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            {t.back}
+          </button>
+        </div>
+
+        <div className="px-5 pb-6">
+        {/* Title */}
         <div className="flex flex-col items-center text-center">
           <h2 className="text-xl font-bold text-[var(--text-primary)]">
             {t.addDeviceTitle}
@@ -331,11 +342,8 @@ export default function AddDeviceScreen({
           {subscriptionUrl || t.linkAfterActivation}
         </button>
 
-        {/* Actions */}
-        <div className="mt-4 w-full space-y-2">
-          <button type="button" onClick={onBack} className="glass-button-secondary w-full">
-            {t.backArrow}
-          </button>
+        {/* Support */}
+        <div className="mt-4 w-full">
           <button
             type="button"
             onClick={onOpenSupport}
@@ -348,6 +356,7 @@ export default function AddDeviceScreen({
         {/* Spacer + credit */}
         <div className="flex-1" />
         {devCredit}
+        </div>
       </div>
 
       {copied && (

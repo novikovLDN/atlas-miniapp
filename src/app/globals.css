@@ -472,25 +472,31 @@ button:active, a:active, .device-card:active {
   line-height: 1.4;
 }
 
-/* App tabs (Happ / V2RayTun) */
+/* App tabs */
 .guide-app-tabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.guide-app-tabs::-webkit-scrollbar { display: none; }
 
 .guide-app-tab {
-  flex: 1;
-  padding: 10px 0;
-  border-radius: 14px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 9px 4px;
+  border-radius: 12px;
   border: none;
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   text-align: center;
   font-family: inherit;
+  white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
 }
 

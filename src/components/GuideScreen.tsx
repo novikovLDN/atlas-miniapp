@@ -6,13 +6,20 @@ import { DEVICE_ICON_MAP } from "@/components/DeviceIcons";
 import { CLIENT_APPS, type ClientApp, getHappCryptoLink } from "@/lib/clientApps";
 import type { DeviceType } from "@/lib/detectDevice";
 
-type AppTab = "happ" | "v2raytun";
+type AppTab = "v2raytun" | "happ" | "hiddify" | "streisand";
+
+const APP_TABS: { id: AppTab; label: string }[] = [
+  { id: "v2raytun", label: "V2RayTun" },
+  { id: "happ", label: "Happ\u26A1\uFE0F" },
+  { id: "hiddify", label: "Hiddify" },
+  { id: "streisand", label: "Streisand" },
+];
 
 type DeviceGuide = {
   id: string;
   label: string;
   Icon: React.FC<{ size?: number }>;
-  apps: ClientApp[];
+  app: ClientApp;
 };
 
 const TvIcon = ({ size = 24 }: { size?: number }) => (
@@ -23,52 +30,59 @@ const TvIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const DEVICE_GUIDES: { id: DeviceType | "tv"; label: string; iconKey: string }[] = [
+const DEVICE_LIST: { id: DeviceType | "tv"; label: string; iconKey: string }[] = [
   { id: "ios", label: "iPhone / iPad", iconKey: "ios" },
   { id: "android", label: "Android", iconKey: "android" },
   { id: "macos", label: "macOS", iconKey: "macos" },
   { id: "windows", label: "Windows", iconKey: "windows" },
 ];
 
-function getFilteredDevices(app: AppTab): DeviceGuide[] {
+function getFilteredDevices(appId: AppTab): DeviceGuide[] {
   const result: DeviceGuide[] = [];
 
-  for (const dg of DEVICE_GUIDES) {
+  for (const dg of DEVICE_LIST) {
     const deviceType = dg.id as DeviceType;
     const deviceApps = CLIENT_APPS[deviceType] || [];
-    const matchingApps = deviceApps.filter((a) =>
-      app === "happ" ? a.id === "happ" : a.id === "v2raytun"
-    );
+    const match = deviceApps.find((a) => a.id === appId);
 
-    if (matchingApps.length > 0) {
+    if (match) {
       result.push({
         id: dg.id,
         label: dg.label,
-        Icon: DEVICE_ICON_MAP[dg.iconKey as keyof typeof DEVICE_ICON_MAP],
-        apps: matchingApps,
+        Icon: dg.id === "tv"
+          ? TvIcon
+          : DEVICE_ICON_MAP[dg.iconKey as keyof typeof DEVICE_ICON_MAP],
+        app: match,
       });
     }
   }
 
-  // Add TV for V2RayTun only
-  if (app === "v2raytun") {
+  // TV — only for V2RayTun and Hiddify
+  if (appId === "v2raytun" || appId === "hiddify") {
     const androidApps = CLIENT_APPS.android || [];
-    const v2raytunApp = androidApps.find((a) => a.id === "v2raytun");
-    if (v2raytunApp) {
+    const tvApp = androidApps.find((a) => a.id === appId);
+    if (tvApp) {
+      const tvSteps =
+        appId === "v2raytun"
+          ? [
+              "На телевизоре откройте магазин приложений и найдите «V2RayTun». Установите приложение.",
+              "На телефоне установите V2RayTun и добавьте подписку Atlas (скопируйте ссылку подписки и импортируйте).",
+              "Откройте V2RayTun на телевизоре и нажмите «Добавить по QR-коду».",
+              "На телефоне в V2RayTun нажмите «+» → «Сканировать QR» и отсканируйте код с экрана ТВ.",
+              "Подписка добавится автоматически. Выберите сервер и подключитесь.",
+            ]
+          : [
+              "На телевизоре откройте магазин приложений и найдите «Hiddify». Установите приложение.",
+              "На телефоне установите Hiddify и добавьте подписку Atlas (скопируйте ссылку подписки и импортируйте).",
+              "На телевизоре откройте Hiddify и создайте QR-код для импорта.",
+              "На телефоне отсканируйте QR-код с экрана ТВ — подписка добавится автоматически.",
+              "Выберите сервер и нажмите круглую кнопку подключения.",
+            ];
       result.push({
         id: "tv",
         label: "Android/Google TV",
         Icon: TvIcon,
-        apps: [{
-          ...v2raytunApp,
-          steps: [
-            "На телевизоре откройте магазин приложений и найдите «V2RayTun». Установите приложение.",
-            "На телефоне установите V2RayTun и добавьте подписку Atlas (скопируйте ссылку подписки и импортируйте).",
-            "Откройте V2RayTun на телевизоре и нажмите «Добавить по QR-коду».",
-            "На телефоне в V2RayTun нажмите «+» → «Сканировать QR» и отсканируйте код с экрана ТВ.",
-            "Подписка добавится автоматически. Выберите сервер и подключитесь.",
-          ],
-        }],
+        app: { ...tvApp, steps: tvSteps },
       });
     }
   }
@@ -102,7 +116,7 @@ export default function GuideScreen({
   subUrl?: string;
 }) {
   const { t } = useI18n();
-  const [activeApp, setActiveApp] = useState<AppTab>("happ");
+  const [activeApp, setActiveApp] = useState<AppTab>("v2raytun");
   const [openDevice, setOpenDevice] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [autoSetupLoading, setAutoSetupLoading] = useState<string | null>(null);
@@ -128,7 +142,6 @@ export default function GuideScreen({
     async (app: ClientApp, deviceId: string) => {
       if (!subUrl) return;
 
-      // Happ uses async crypto deep link
       if (app.asyncDeeplink) {
         setAutoSetupLoading(deviceId);
         const link = await getHappCryptoLink(subUrl);
@@ -160,112 +173,102 @@ export default function GuideScreen({
 
       {/* App tabs */}
       <div className="guide-app-tabs">
-        <button
-          type="button"
-          className={`guide-app-tab ${activeApp === "happ" ? "guide-app-tab--active" : ""}`}
-          onClick={() => {
-            setActiveApp("happ");
-            setOpenDevice(null);
-          }}
-        >
-          Happ⚡️
-        </button>
-        <button
-          type="button"
-          className={`guide-app-tab ${activeApp === "v2raytun" ? "guide-app-tab--active" : ""}`}
-          onClick={() => {
-            setActiveApp("v2raytun");
-            setOpenDevice(null);
-          }}
-        >
-          V2RayTun
-        </button>
+        {APP_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`guide-app-tab ${activeApp === tab.id ? "guide-app-tab--active" : ""}`}
+            onClick={() => {
+              setActiveApp(tab.id);
+              setOpenDevice(null);
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Device sections */}
       <div className="guide-sections">
-        {guides.map(({ id, label, Icon, apps }) => {
-          const app = apps[0];
-          return (
-            <div
-              key={id}
-              className={`guide-card ${openDevice === id ? "guide-card--open" : ""}`}
+        {guides.map(({ id, label, Icon, app }) => (
+          <div
+            key={id}
+            className={`guide-card ${openDevice === id ? "guide-card--open" : ""}`}
+          >
+            <button
+              type="button"
+              className="guide-card__trigger"
+              onClick={() => toggleDevice(id)}
             >
-              <button
-                type="button"
-                className="guide-card__trigger"
-                onClick={() => toggleDevice(id)}
-              >
-                <span className="guide-card__icon">
-                  <Icon size={24} />
-                </span>
-                <span className="guide-card__label">{label}</span>
-                <span className="guide-card__chevron">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
+              <span className="guide-card__icon">
+                <Icon size={24} />
+              </span>
+              <span className="guide-card__label">{label}</span>
+              <span className="guide-card__chevron">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </button>
+            <div className="guide-card__body">
+              <div>
+                {/* Download button */}
+                <a
+                  href={app.storeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="guide-action-btn guide-action-btn--download"
+                >
+                  <DownloadIcon />
+                  {t.downloadApp(app.name)} — {app.storeLabel}
+                </a>
+
+                {/* Steps */}
+                <ol className="guide-steps">
+                  {app.steps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+
+                {/* Auto-setup button */}
+                {subUrl && (app.deeplink || app.asyncDeeplink) && (
+                  <button
+                    type="button"
+                    className="guide-action-btn guide-action-btn--auto"
+                    onClick={() => handleAutoSetup(app, id)}
+                    disabled={autoSetupLoading === id}
                   >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </span>
-              </button>
-              <div className="guide-card__body">
-                <div>
-                  {/* Download button */}
-                  <a
-                    href={app.storeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="guide-action-btn guide-action-btn--download"
+                    {autoSetupLoading === id ? (
+                      <span className="animate-pulse">{"\u23F3"}</span>
+                    ) : (
+                      <AutoSetupIcon />
+                    )}
+                    {autoSetupLoading === id ? "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430..." : t.setupAutomatically}
+                  </button>
+                )}
+
+                {/* Copy key button */}
+                {subUrl && (
+                  <button
+                    type="button"
+                    className="guide-action-btn guide-action-btn--copy"
+                    onClick={handleCopyKey}
                   >
-                    <DownloadIcon />
-                    {t.downloadApp(app.name)} — {app.storeLabel}
-                  </a>
-
-                  {/* Steps */}
-                  <ol className="guide-steps">
-                    {app.steps.map((step, i) => (
-                      <li key={i}>{step}</li>
-                    ))}
-                  </ol>
-
-                  {/* Auto-setup button (deep link) */}
-                  {subUrl && (app.deeplink || app.asyncDeeplink) && (
-                    <button
-                      type="button"
-                      className="guide-action-btn guide-action-btn--auto"
-                      onClick={() => handleAutoSetup(app, id)}
-                      disabled={autoSetupLoading === id}
-                    >
-                      {autoSetupLoading === id ? (
-                        <span className="animate-pulse">⏳</span>
-                      ) : (
-                        <AutoSetupIcon />
-                      )}
-                      {autoSetupLoading === id ? "Загрузка..." : t.setupAutomatically}
-                    </button>
-                  )}
-
-                  {/* Copy key button */}
-                  {subUrl && (
-                    <button
-                      type="button"
-                      className="guide-action-btn guide-action-btn--copy"
-                      onClick={handleCopyKey}
-                    >
-                      {copied ? t.copiedCheck : t.copyKeyManually}
-                    </button>
-                  )}
-                </div>
+                    {copied ? t.copiedCheck : t.copyKeyManually}
+                  </button>
+                )}
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       {/* Setup button */}

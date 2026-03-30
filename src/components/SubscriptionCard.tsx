@@ -45,20 +45,38 @@ export default function SubscriptionCard({
 
       {/* Status row */}
       <div className="mb-4 flex items-center justify-between text-sm">
-        <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
-          style={{
-            background: isActive ? "rgba(52,199,89,0.12)" : "rgba(255,59,48,0.1)",
-            color: isActive ? "#22c55e" : "#ef4444",
-          }}
-        >
+        {isActive ? (
+          <span className={`badge-glow badge-glow--${tariff || "basic"}`}>
+            <span
+              className="badge-glow__inner inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold"
+              style={{
+                background: "rgba(52,199,89,0.12)",
+                color: "#22c55e",
+              }}
+            >
+              <span
+                className="inline-block h-[7px] w-[7px] rounded-full"
+                style={{ background: "#22c55e" }}
+              />
+              {t.active}
+              {tariff && ` \u00B7 ${tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic"}`}
+            </span>
+          </span>
+        ) : (
           <span
-            className="inline-block h-[7px] w-[7px] rounded-full"
-            style={{ background: isActive ? "#22c55e" : "#ef4444" }}
-          />
-          {isActive ? t.active : t.inactive}
-          {isActive && tariff && ` \u00B7 ${tariff === "business" ? "Business" : tariff === "plus" ? "Plus" : "Basic"}`}
-        </span>
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
+            style={{
+              background: "rgba(255,59,48,0.1)",
+              color: "#ef4444",
+            }}
+          >
+            <span
+              className="inline-block h-[7px] w-[7px] rounded-full"
+              style={{ background: "#ef4444" }}
+            />
+            {t.inactive}
+          </span>
+        )}
         {isActive ? (
           <span className="font-semibold" style={{ color: "#22c55e" }}>
             {daysLeft} {t.days}

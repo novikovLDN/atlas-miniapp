@@ -40,6 +40,61 @@
 }
 
 /* Hero logo animation */
+/* Badge glow runner */
+@property --badge-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.badge-glow {
+  position: relative;
+  padding: 1.5px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.badge-glow::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(
+    from var(--badge-angle),
+    transparent 0%,
+    var(--badge-c1) 8%,
+    var(--badge-c2) 16%,
+    transparent 28%,
+    transparent 100%
+  );
+  animation: badgeRotate 3s linear infinite;
+}
+
+@keyframes badgeRotate {
+  to { --badge-angle: 360deg; }
+}
+
+.badge-glow__inner {
+  position: relative;
+  z-index: 1;
+  border-radius: 9999px;
+}
+
+/* Tariff color schemes */
+.badge-glow--basic {
+  --badge-c1: rgba(180, 180, 190, 0.9);
+  --badge-c2: rgba(255, 255, 255, 0.7);
+}
+
+.badge-glow--plus {
+  --badge-c1: #a855f7;
+  --badge-c2: #ec4899;
+}
+
+.badge-glow--business {
+  --badge-c1: #f59e0b;
+  --badge-c2: #ef4444;
+}
+
 .hero-logo-icon {
   width: clamp(64px, 14vw, 80px);
   height: clamp(64px, 14vw, 80px);

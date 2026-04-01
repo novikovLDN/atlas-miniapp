@@ -98,7 +98,7 @@ export async function GET(
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
       "subscription-userinfo": `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`,
-      "profile-update-interval": "8",
+      "profile-update-interval": "3",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };
     if (appUrl) {

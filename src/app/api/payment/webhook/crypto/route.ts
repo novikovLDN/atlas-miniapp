@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { randomUUID } from "crypto";
 import { pool } from "@/lib/db";
 
 /**
@@ -51,12 +52,15 @@ export async function POST(request: NextRequest) {
 
     // Extend or create subscription
     const safeMonths = Math.min(Math.max(1, Number(months) || 1), 12);
+    const uuid = randomUUID();
+    const defaultVpnKey = `vless://${uuid}@0.0.0.0:0?security=reality#default`;
     await pool.query(
-      `UPDATE subscriptions
-       SET expires_at = GREATEST(expires_at, NOW()) + make_interval(months => $3),
-           subscription_type = $2
-       WHERE telegram_id = $1`,
-      [userId, tariff, safeMonths],
+      `INSERT INTO subscriptions (telegram_id, subscription_type, expires_at, vpn_key)
+       VALUES ($1, $2, NOW() + make_interval(months => $3), $4)
+       ON CONFLICT (telegram_id) DO UPDATE
+       SET expires_at = GREATEST(subscriptions.expires_at, NOW()) + make_interval(months => $3),
+           subscription_type = $2`,
+      [userId, tariff, safeMonths, defaultVpnKey],
     );
 
     console.log(`CryptoBot payment: user ${userId} → ${tariff} ${safeMonths}mo subscription extended`);

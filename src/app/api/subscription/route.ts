@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { pool } from "@/lib/db";
 import { sanitizeName } from "@/lib/sanitizeName";
-import { getSubBaseUrl } from "@/lib/subDomain";
+import { resolveSubDomain } from "@/lib/subDomain";
 
 type TelegramUser = { id: number; first_name?: string; username?: string };
 
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const { rows } = await pool.query(
-      `SELECT expires_at, subscription_type
+      `SELECT expires_at, subscription_type, sub_domain
        FROM subscriptions
        WHERE telegram_id = $1 AND expires_at > NOW()
        ORDER BY expires_at DESC LIMIT 1`,
@@ -119,8 +119,8 @@ export async function GET(request: NextRequest) {
       .digest("base64url")
       .substring(0, 32);
 
-    const appUrl = await getSubBaseUrl();
-    const subUrl = appUrl ? `${appUrl}/api/sub/${subToken}?id=${telegramId}` : undefined;
+    const appUrl = resolveSubDomain(row.sub_domain);
+    const subUrl = `${appUrl}/api/sub/${subToken}?id=${telegramId}`;
 
     return NextResponse.json({
       is_active: true,

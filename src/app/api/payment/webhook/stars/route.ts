@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { pool } from "@/lib/db";
+import { DEFAULT_SUB_DOMAIN } from "@/lib/subDomain";
 
 /**
  * Telegram Stars webhook handler.
@@ -60,12 +61,12 @@ export async function POST(request: NextRequest) {
     const uuid = randomUUID();
     const defaultVpnKey = `vless://${uuid}@0.0.0.0:0?security=reality#default`;
     await pool.query(
-      `INSERT INTO subscriptions (telegram_id, subscription_type, expires_at, vpn_key)
-       VALUES ($1, $2, NOW() + make_interval(months => $3), $4)
+      `INSERT INTO subscriptions (telegram_id, subscription_type, expires_at, vpn_key, sub_domain)
+       VALUES ($1, $2, NOW() + make_interval(months => $3), $4, $5)
        ON CONFLICT (telegram_id) DO UPDATE
        SET expires_at = GREATEST(subscriptions.expires_at, NOW()) + make_interval(months => $3),
            subscription_type = $2`,
-      [userId, tariff, safeMonths, defaultVpnKey],
+      [userId, tariff, safeMonths, defaultVpnKey, DEFAULT_SUB_DOMAIN],
     );
 
     console.log(`Stars payment: user ${userId} → ${tariff} ${months}mo subscription extended`);

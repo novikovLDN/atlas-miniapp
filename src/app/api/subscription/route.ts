@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { pool } from "@/lib/db";
 import { sanitizeName } from "@/lib/sanitizeName";
+import { getSubBaseUrl } from "@/lib/subDomain";
 
 type TelegramUser = { id: number; first_name?: string; username?: string };
 
@@ -118,7 +119,7 @@ export async function GET(request: NextRequest) {
       .digest("base64url")
       .substring(0, 32);
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    const appUrl = await getSubBaseUrl();
     const subUrl = appUrl ? `${appUrl}/api/sub/${subToken}?id=${telegramId}` : undefined;
 
     return NextResponse.json({

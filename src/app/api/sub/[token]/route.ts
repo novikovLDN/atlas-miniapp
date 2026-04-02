@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import crypto from "crypto";
 import { pool } from "@/lib/db";
+import { getSubBaseUrl } from "@/lib/subDomain";
 
 type ServerConfig = {
   ip: string;
@@ -90,7 +91,7 @@ export async function GET(
     const keys = buildKeys((row.vpn_key ?? "").trim(), row.subscription_type ?? "basic");
 
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    const appUrl = await getSubBaseUrl();
 
     const headers: Record<string, string> = {
       "Content-Type": "text/plain; charset=utf-8",

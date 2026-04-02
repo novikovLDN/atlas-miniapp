@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import crypto from "crypto";
 import { pool } from "@/lib/db";
-import { resolveSubDomain } from "@/lib/subDomain";
+import { getSubBaseUrl } from "@/lib/subDomain";
 
 type ServerConfig = {
   ip: string;
@@ -76,7 +76,7 @@ export async function GET(
 
   try {
     const { rows } = await pool.query(
-      `SELECT expires_at, subscription_type, vpn_key, sub_domain
+      `SELECT expires_at, subscription_type, vpn_key
        FROM subscriptions
        WHERE telegram_id = $1 AND expires_at > NOW()
        ORDER BY expires_at DESC LIMIT 1`,
@@ -91,7 +91,7 @@ export async function GET(
     const keys = buildKeys((row.vpn_key ?? "").trim(), row.subscription_type ?? "basic");
 
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
-    const appUrl = resolveSubDomain(row.sub_domain);
+    const appUrl = await getSubBaseUrl();
 
     const headers: Record<string, string> = {
       "Content-Type": "text/plain; charset=utf-8",

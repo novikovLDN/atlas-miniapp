@@ -69,18 +69,6 @@ function buildSingboxConfig(uuid: string, configs: ServerConfig[]) {
       final: "dns-proxy",
       independent_cache: true,
     },
-    inbounds: [
-      {
-        type: "tun",
-        tag: "tun-in",
-        inet4_address: "172.19.0.1/30",
-        auto_route: true,
-        strict_route: true,
-        stack: "mixed",
-        sniff: true,
-        sniff_override_destination: true,
-      },
-    ],
     outbounds: [
       { type: "selector", tag: "proxy", outbounds: ["auto", ...proxyTags], default: "auto" },
       { type: "urltest", tag: "auto", outbounds: proxyTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },

@@ -27,25 +27,76 @@ const BASIC_CONFIGS: ServerConfig[] = [
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];
 
-function buildKeys(vpnKey: string, subscriptionType: string): string {
+function buildVlessOutbound(uuid: string, c: ServerConfig, tag: string) {
+  return {
+    tag,
+    protocol: "vless" as const,
+    settings: {
+      vnext: [{
+        address: c.ip,
+        port: c.port,
+        users: [{
+          id: uuid,
+          encryption: "none",
+          ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
+        }],
+      }],
+    },
+    streamSettings: {
+      network: c.type === "xhttp" ? "xhttp" : "tcp",
+      security: "reality",
+      realitySettings: {
+        serverName: c.sni,
+        fingerprint: c.fp,
+        publicKey: c.pbk,
+        shortId: c.sid,
+      },
+      ...(c.type === "xhttp" ? { xhttpSettings: { path: c.path || "/xhttp" } } : {}),
+    },
+  };
+}
+
+function buildConfig(vpnKey: string, subscriptionType: string): string {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
-  if (!match) return vpnKey;
+  if (!match) return Buffer.from(vpnKey).toString("base64");
 
   const uuid = match[1];
   const configs = subscriptionType === "plus"
     ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
     : BASIC_CONFIGS;
 
-  return configs
-    .map((c) => {
-      let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
-      if (c.flow) params += "&flow=xtls-rprx-vision";
-      params += c.type === "xhttp"
-        ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
-        : "&type=tcp";
-      return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
-    })
-    .join("\n");
+  const proxyOutbounds = configs.map((c, i) => {
+    const tag = i === 0 ? "proxy" : `proxy-${i}`;
+    return buildVlessOutbound(uuid, c, tag);
+  });
+
+  const config = {
+    dns: {
+      servers: [
+        { address: "77.88.8.8", port: 53, domains: ["geosite:category-ru"] },
+        { address: "https://8.8.8.8/dns-query" },
+      ],
+      queryStrategy: "UseIPv4",
+    },
+    outbounds: [
+      ...proxyOutbounds,
+      { tag: "direct", protocol: "freedom", settings: {} },
+      { tag: "block", protocol: "blackhole", settings: { response: { type: "http" } } },
+      { tag: "dns-out", protocol: "dns" },
+    ],
+    routing: {
+      domainStrategy: "IPIfNonMatch",
+      rules: [
+        { type: "field", port: 53, outboundTag: "dns-out" },
+        { type: "field", protocol: ["bittorrent"], outboundTag: "block" },
+        { type: "field", network: "udp", port: 443, outboundTag: "block" },
+        { type: "field", domain: ["geosite:category-ru", "geosite:apple", "geosite:private"], outboundTag: "direct" },
+        { type: "field", ip: ["geoip:ru", "geoip:private"], outboundTag: "direct" },
+      ],
+    },
+  };
+
+  return Buffer.from(JSON.stringify(config)).toString("base64");
 }
 
 export async function GET(
@@ -88,7 +139,7 @@ export async function GET(
     }
 
     const row = rows[0];
-    const keys = buildKeys((row.vpn_key ?? "").trim(), row.subscription_type ?? "basic");
+    const configBase64 = buildConfig((row.vpn_key ?? "").trim(), row.subscription_type ?? "basic");
 
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
     const appUrl = await getSubBaseUrl();
@@ -106,7 +157,7 @@ export async function GET(
       headers["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;
     }
 
-    return new Response(keys, { status: 200, headers });
+    return new Response(configBase64, { status: 200, headers });
   } catch (err) {
     console.error("sub API error:", err);
     return new Response("Server error", { status: 500 });

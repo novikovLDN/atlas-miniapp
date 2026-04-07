@@ -32,9 +32,7 @@ const SINGBOX_UA = /sing-box|sfi|sfa|hiddify|streisand|happ|v2raytun/i;
 const RULE_SETS = [
   { tag: "geosite-category-ru", type: "remote", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ru.srs", download_detour: "direct" },
   { tag: "geosite-apple",       type: "remote", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-apple.srs",       download_detour: "direct" },
-  { tag: "geosite-private",     type: "remote", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-private.srs",     download_detour: "direct" },
   { tag: "geoip-ru",            type: "remote", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-ru.srs",              download_detour: "direct" },
-  { tag: "geoip-private",       type: "remote", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-private.srs",         download_detour: "direct" },
 ] as const;
 
 function buildSingboxConfig(uuid: string, configs: ServerConfig[]) {
@@ -59,19 +57,31 @@ function buildSingboxConfig(uuid: string, configs: ServerConfig[]) {
     log: { level: "warn" },
     dns: {
       servers: [
-        { tag: "dns-proxy", address: "https://8.8.8.8/dns-query", address_resolver: "dns-direct", detour: "proxy" },
-        { tag: "dns-direct", address: "77.88.8.8", detour: "direct" },
+        { tag: "dns-remote", address: "https://8.8.8.8/dns-query", address_resolver: "dns-local", detour: "proxy" },
+        { tag: "dns-local", address: "77.88.8.8", detour: "direct" },
       ],
       rules: [
-        { outbound: "any", server: "dns-direct" },
-        { rule_set: "geosite-category-ru", server: "dns-direct" },
+        { outbound: "any", server: "dns-local" },
+        { rule_set: "geosite-category-ru", server: "dns-local" },
       ],
-      final: "dns-proxy",
-      independent_cache: true,
+      final: "dns-remote",
+      strategy: "prefer_ipv4",
     },
+    inbounds: [
+      {
+        type: "tun",
+        tag: "tun-in",
+        interface_name: "sing-tun",
+        address: ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
+        auto_route: true,
+        route_exclude_address: ["192.168.0.0/16", "fc00::/7"],
+        sniff: true,
+        domain_strategy: "prefer_ipv4",
+      },
+    ],
     outbounds: [
-      { type: "selector", tag: "proxy", outbounds: ["auto", ...proxyTags], default: "auto" },
-      { type: "urltest", tag: "auto", outbounds: proxyTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },
+      { type: "selector", tag: "proxy", outbounds: ["auto", ...proxyTags], interrupt_exist_connections: true },
+      { type: "urltest", tag: "auto", outbounds: proxyTags },
       ...proxyOutbounds,
       { type: "direct", tag: "direct" },
       { type: "block", tag: "block" },
@@ -80,14 +90,19 @@ function buildSingboxConfig(uuid: string, configs: ServerConfig[]) {
     route: {
       rules: [
         { protocol: "dns", outbound: "dns-out" },
+        { ip_is_private: true, outbound: "direct" },
         { protocol: "bittorrent", outbound: "block" },
         { network: "udp", port: 443, outbound: "block" },
-        { rule_set: ["geosite-category-ru", "geosite-apple", "geosite-private"], outbound: "direct" },
-        { rule_set: ["geoip-ru", "geoip-private"], outbound: "direct" },
+        { rule_set: ["geosite-category-ru", "geosite-apple"], outbound: "direct" },
+        { rule_set: ["geoip-ru"], outbound: "direct" },
       ],
       rule_set: [...RULE_SETS],
       final: "proxy",
       auto_detect_interface: true,
+      override_android_vpn: true,
+    },
+    experimental: {
+      cache_file: { enabled: true, store_rdrc: true },
     },
   };
 }

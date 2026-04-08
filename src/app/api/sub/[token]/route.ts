@@ -149,7 +149,33 @@ function buildXrayConfig(uuid: string, c: ServerConfig) {
   };
 }
 
-function buildSubscription(vpnKey: string, subscriptionType: string): string {
+function buildVlessUris(vpnKey: string, subscriptionType: string): string {
+  const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
+  if (!match) return vpnKey;
+
+  const uuid = match[1];
+  const configs =
+    subscriptionType === "plus"
+      ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
+      : BASIC_CONFIGS;
+
+  return configs
+    .map((c) => {
+      let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
+      if (c.flow) params += "&flow=xtls-rprx-vision";
+      params +=
+        c.type === "xhttp"
+          ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
+          : "&type=tcp";
+      return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
+    })
+    .join("\n");
+}
+
+function buildXraySubscription(
+  vpnKey: string,
+  subscriptionType: string,
+): string {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return vpnKey;
 
@@ -210,10 +236,14 @@ export async function GET(
     }
 
     const row = rows[0];
-    const body = buildSubscription(
-      (row.vpn_key ?? "").trim(),
-      row.subscription_type ?? "basic",
-    );
+    const vpnKey = (row.vpn_key ?? "").trim();
+    const subType = row.subscription_type ?? "basic";
+    const format = request.nextUrl.searchParams.get("format");
+
+    const body =
+      format === "xray"
+        ? buildXraySubscription(vpnKey, subType)
+        : buildVlessUris(vpnKey, subType);
 
     const expiresAt =
       row.expires_at instanceof Date

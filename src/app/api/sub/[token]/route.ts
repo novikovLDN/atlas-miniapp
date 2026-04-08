@@ -24,6 +24,62 @@ const BASIC_CONFIGS: ServerConfig[] = [
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];
 
+function buildSingboxOutbound(uuid: string, c: ServerConfig) {
+  return {
+    type: "vless" as const,
+    tag: c.name,
+    server: c.ip,
+    server_port: c.port,
+    uuid,
+    ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
+    tls: {
+      enabled: true,
+      server_name: c.sni,
+      utls: { enabled: true, fingerprint: c.fp },
+      reality: { enabled: true, public_key: c.pbk, short_id: c.sid },
+    },
+  };
+}
+
+function buildSingboxConfig(uuid: string, configs: ServerConfig[]) {
+  const outbounds = configs.map((c) => buildSingboxOutbound(uuid, c));
+  const proxyTags = configs.map((c) => c.name);
+
+  return {
+    log: { level: "warn" },
+    dns: {
+      servers: [
+        { tag: "dns-proxy", address: "https://8.8.8.8/dns-query", address_resolver: "dns-direct", detour: proxyTags[0] },
+        { tag: "dns-direct", address: "77.88.8.8", detour: "direct" },
+      ],
+      rules: [
+        { outbound: "any", server: "dns-direct" },
+        { geosite: "category-ru", server: "dns-direct" },
+      ],
+      final: "dns-proxy",
+      strategy: "prefer_ipv4",
+    },
+    outbounds: [
+      ...outbounds,
+      { type: "direct", tag: "direct" },
+      { type: "block", tag: "block" },
+      { type: "dns", tag: "dns-out" },
+    ],
+    route: {
+      rules: [
+        { protocol: "dns", outbound: "dns-out" },
+        { geoip: "private", outbound: "direct" },
+        { geosite: "category-ru", outbound: "direct" },
+        { geoip: "ru", outbound: "direct" },
+        { geosite: "apple", outbound: "direct" },
+        { protocol: "bittorrent", outbound: "block" },
+      ],
+      auto_detect_interface: true,
+      final: proxyTags[0],
+    },
+  };
+}
+
 function buildKeys(vpnKey: string, subscriptionType: string): string {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return vpnKey;
@@ -85,25 +141,48 @@ export async function GET(
     }
 
     const row = rows[0];
-    const keys = buildKeys((row.vpn_key ?? "").trim(), row.subscription_type ?? "basic");
+    const vpnKey = (row.vpn_key ?? "").trim();
+    const subType = row.subscription_type ?? "basic";
+    const format = request.nextUrl.searchParams.get("format");
 
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
     const appUrl = await getSubBaseUrl();
 
-    const headers: Record<string, string> = {
-      "Content-Type": "text/plain; charset=utf-8",
+    const baseHeaders: Record<string, string> = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
       "subscription-userinfo": `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`,
       "profile-update-interval": "3",
-      "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };
     if (appUrl) {
-      headers["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;
+      baseHeaders["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;
     }
 
-    return new Response(keys, { status: 200, headers });
+    if (format === "singbox") {
+      const uuidMatch = vpnKey.match(/vless:\/\/([^@]+)@/);
+      if (!uuidMatch) {
+        return new Response("Invalid key", { status: 500 });
+      }
+      const configs = subType === "plus"
+        ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
+        : BASIC_CONFIGS;
+      const singbox = buildSingboxConfig(uuidMatch[1], configs);
+      return new Response(JSON.stringify(singbox, null, 2), {
+        status: 200,
+        headers: { ...baseHeaders, "Content-Type": "application/json; charset=utf-8" },
+      });
+    }
+
+    const keys = buildKeys(vpnKey, subType);
+    return new Response(keys, {
+      status: 200,
+      headers: {
+        ...baseHeaders,
+        "Content-Type": "text/plain; charset=utf-8",
+        "content-disposition": 'attachment; filename="Atlas Secure.txt"',
+      },
+    });
   } catch (err) {
     console.error("sub API error:", err);
     return new Response("Server error", { status: 500 });

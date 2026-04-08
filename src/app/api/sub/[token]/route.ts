@@ -24,171 +24,23 @@ const BASIC_CONFIGS: ServerConfig[] = [
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];
 
-function buildXrayConfig(uuid: string, c: ServerConfig) {
-  return {
-    dns: {
-      queryStrategy: "UseIPv4",
-      servers: [
-        {
-          address: "77.88.8.8",
-          detour: "direct",
-          domains: ["geosite:category-ru"],
-        },
-        {
-          address: "https://8.8.8.8/dns-query",
-          detour: "proxy",
-        },
-      ],
-      tag: "dns-inbound",
-    },
-    inbounds: [
-      {
-        listen: "127.0.0.1",
-        port: 10808,
-        protocol: "socks",
-        settings: { auth: "noauth", udp: true },
-        sniffing: {
-          destOverride: ["http", "tls", "fakedns"],
-          domainsExcluded: [
-            "courier.push.apple.com",
-            "push.apple.com",
-            "api.push.apple.com",
-          ],
-          enabled: true,
-          routeOnly: true,
-        },
-        tag: "socks",
-      },
-      {
-        listen: "127.0.0.1",
-        port: 10809,
-        protocol: "http",
-        settings: { allowTransparent: false },
-        sniffing: {
-          destOverride: ["http", "tls", "fakedns"],
-          domainsExcluded: [
-            "courier.push.apple.com",
-            "push.apple.com",
-            "api.push.apple.com",
-          ],
-          enabled: true,
-          routeOnly: true,
-        },
-        tag: "http",
-      },
-    ],
-    outbounds: [
-      {
-        protocol: "vless",
-        settings: {
-          vnext: [
-            {
-              address: c.ip,
-              port: c.port,
-              users: [
-                {
-                  encryption: "none",
-                  id: uuid,
-                  ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
-                },
-              ],
-            },
-          ],
-        },
-        streamSettings: {
-          network: c.type === "xhttp" ? "xhttp" : "tcp",
-          security: "reality",
-          realitySettings: {
-            fingerprint: c.fp,
-            publicKey: c.pbk,
-            serverName: c.sni,
-            shortId: c.sid,
-            show: false,
-          },
-          ...(c.type === "xhttp"
-            ? { xhttpSettings: { path: c.path || "/xhttp" } }
-            : {}),
-        },
-        tag: "proxy",
-      },
-      { protocol: "freedom", tag: "direct" },
-      { protocol: "blackhole", tag: "block" },
-      { protocol: "dns", tag: "dns-out" },
-    ],
-    routing: {
-      domainStrategy: "IPIfNonMatch",
-      rules: [
-        { inboundTag: ["dns-inbound"], outboundTag: "proxy", type: "field" },
-        { outboundTag: "dns-out", port: "53", type: "field" },
-        { outboundTag: "block", protocol: ["bittorrent"], type: "field" },
-        { network: "udp", outboundTag: "block", port: "443", type: "field" },
-        {
-          ip: ["8.8.8.8", "8.8.4.4", "1.1.1.1", "1.0.0.1"],
-          outboundTag: "proxy",
-          type: "field",
-        },
-        {
-          domain: [
-            "geosite:private",
-            "geosite:apple",
-            "geosite:apple-pki",
-            "geosite:category-ru",
-            "geosite:category-android-app-download",
-          ],
-          outboundTag: "direct",
-          type: "field",
-        },
-        {
-          ip: ["geoip:ru", "geoip:private"],
-          outboundTag: "direct",
-          type: "field",
-        },
-        { outboundTag: "proxy", port: "0-65535", type: "field" },
-      ],
-    },
-  };
-}
-
-function buildVlessUris(vpnKey: string, subscriptionType: string): string {
+function buildKeys(vpnKey: string, subscriptionType: string): string {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return vpnKey;
 
   const uuid = match[1];
-  const configs =
-    subscriptionType === "plus"
-      ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
-      : BASIC_CONFIGS;
+  const configs = subscriptionType === "plus"
+    ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
+    : BASIC_CONFIGS;
 
   return configs
     .map((c) => {
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      params +=
-        c.type === "xhttp"
-          ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
-          : "&type=tcp";
+      params += c.type === "xhttp"
+        ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
+        : "&type=tcp";
       return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
-    })
-    .join("\n");
-}
-
-function buildXraySubscription(
-  vpnKey: string,
-  subscriptionType: string,
-): string {
-  const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
-  if (!match) return vpnKey;
-
-  const uuid = match[1];
-  const configs =
-    subscriptionType === "plus"
-      ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
-      : BASIC_CONFIGS;
-
-  return configs
-    .map((c) => {
-      const json = JSON.stringify(buildXrayConfig(uuid, c));
-      return Buffer.from(json).toString("base64");
     })
     .join("\n");
 }
@@ -198,10 +50,7 @@ export async function GET(
   { params }: { params: Promise<{ token: string }> },
 ) {
   const { token } = await params;
-  const telegramId = parseInt(
-    request.nextUrl.searchParams.get("id") ?? "",
-    10,
-  );
+  const telegramId = parseInt(request.nextUrl.searchParams.get("id") ?? "", 10);
 
   if (!token || !telegramId || !Number.isInteger(telegramId)) {
     return new Response("Unauthorized", { status: 401 });
@@ -236,19 +85,9 @@ export async function GET(
     }
 
     const row = rows[0];
-    const vpnKey = (row.vpn_key ?? "").trim();
-    const subType = row.subscription_type ?? "basic";
-    const format = request.nextUrl.searchParams.get("format");
+    const keys = buildKeys((row.vpn_key ?? "").trim(), row.subscription_type ?? "basic");
 
-    const body =
-      format === "xray"
-        ? buildXraySubscription(vpnKey, subType)
-        : buildVlessUris(vpnKey, subType);
-
-    const expiresAt =
-      row.expires_at instanceof Date
-        ? row.expires_at
-        : new Date(row.expires_at);
+    const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
     const appUrl = await getSubBaseUrl();
 
     const headers: Record<string, string> = {
@@ -257,14 +96,14 @@ export async function GET(
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
       "subscription-userinfo": `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`,
-      "profile-update-interval": "24",
+      "profile-update-interval": "3",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };
     if (appUrl) {
       headers["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;
     }
 
-    return new Response(body, { status: 200, headers });
+    return new Response(keys, { status: 200, headers });
   } catch (err) {
     console.error("sub API error:", err);
     return new Response("Server error", { status: 500 });

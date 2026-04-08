@@ -1,6 +1,6 @@
 ===== BASIC_CONFIGS =====
 
---- 1. 🇳🇱 Atlas Fast #1 ---
+--- 1. 🇳🇱 Atlas Fast #1 Тех. Обслуживание🚧 ---
 IP:    159.195.20.201
 Port:  4443
 SNI:   myvpncloud.net

@@ -45,6 +45,108 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     .join("\n");
 }
 
+function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | null {
+  const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
+  if (!match) return null;
+  const uuid = match[1];
+
+  const configs = subscriptionType === "plus"
+    ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
+    : BASIC_CONFIGS;
+
+  const outbounds: object[] = configs.map((c) => {
+    const ob: Record<string, unknown> = {
+      type: "vless",
+      tag: c.name,
+      server: c.ip,
+      server_port: c.port,
+      uuid,
+      tls: {
+        enabled: true,
+        server_name: c.sni,
+        utls: { enabled: true, fingerprint: c.fp },
+        reality: { enabled: true, public_key: c.pbk, short_id: c.sid },
+      },
+      packet_encoding: "xudp",
+    };
+    if (c.flow) ob.flow = "xtls-rprx-vision";
+    if (c.type === "xhttp") ob.transport = { type: "http", path: c.path || "/xhttp" };
+    return ob;
+  });
+
+  const proxyTags = configs.map((c) => c.name);
+
+  return {
+    dns: {
+      servers: [
+        { tag: "dns-proxy", address: "tls://1.1.1.1", detour: proxyTags[0] },
+        { tag: "dns-direct", address: "udp://77.88.8.8", detour: "direct" },
+      ],
+      rules: [
+        {
+          domain_suffix: [
+            "ru", "su", "рф",
+            "yandex.com", "yandex.net",
+            "ya.ru", "yastatic.net",
+            "vk.com", "vk.me", "vkontakte.ru", "vkuserid.com", "vkuser.net", "userapi.com",
+            "mail.ru", "mycdn.me", "imgsmail.ru",
+            "sberbank.ru",
+            "gosuslugi.ru", "mos.ru",
+            "wildberries.ru", "wb.ru",
+            "ozon.ru", "ozon.st",
+            "avito.ru",
+            "kinopoisk.ru", "ivi.ru", "okko.tv",
+          ],
+          server: "dns-direct",
+        },
+      ],
+      final: "dns-proxy",
+      strategy: "prefer_ipv4",
+    },
+    outbounds: [
+      { type: "urltest", tag: "auto", outbounds: proxyTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },
+      ...outbounds,
+      { type: "direct", tag: "direct" },
+      { type: "block", tag: "block" },
+      { type: "dns", tag: "dns-out" },
+    ],
+    route: {
+      rules: [
+        { protocol: "dns", outbound: "dns-out" },
+        { ip_is_private: true, outbound: "direct" },
+        {
+          domain_suffix: [
+            "ru", "su", "рф",
+            "yandex.com", "yandex.net",
+            "ya.ru", "yastatic.net",
+            "vk.com", "vk.me", "vkontakte.ru", "vkuserid.com", "vkuser.net", "userapi.com",
+            "mail.ru", "mycdn.me", "imgsmail.ru",
+            "sberbank.ru",
+            "gosuslugi.ru", "mos.ru",
+            "wildberries.ru", "wb.ru",
+            "ozon.ru", "ozon.st",
+            "avito.ru",
+            "kinopoisk.ru", "ivi.ru", "okko.tv",
+          ],
+          outbound: "direct",
+        },
+        {
+          ip_cidr: [
+            "77.88.0.0/18", "87.250.224.0/19", "93.158.134.0/23", "213.180.192.0/19",
+            "5.45.192.0/18", "5.255.192.0/18",
+            "77.75.152.0/21", "87.240.128.0/18", "93.186.224.0/20",
+            "95.142.192.0/20", "95.213.0.0/18",
+            "185.32.185.0/24", "185.16.148.0/22",
+          ],
+          outbound: "direct",
+        },
+      ],
+      auto_detect_interface: true,
+      final: "auto",
+    },
+  };
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ token: string }> },
@@ -88,16 +190,34 @@ export async function GET(
     const vpnKey = (row.vpn_key ?? "").trim();
     const subType = row.subscription_type ?? "basic";
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
-    const appUrl = await getSubBaseUrl();
+    const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
+    const format = request.nextUrl.searchParams.get("format");
+
+    if (format === "singbox") {
+      const config = buildSingboxConfig(vpnKey, subType);
+      if (config) {
+        return new Response(JSON.stringify(config, null, 2), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "profile-title": "Atlas Secure",
+            "subscription-userinfo": userInfo,
+            "profile-update-interval": "3",
+          },
+        });
+      }
+    }
 
     const keys = buildKeys(vpnKey, subType);
+    const appUrl = await getSubBaseUrl();
 
     const headers: Record<string, string> = {
       "Content-Type": "text/plain; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
-      "subscription-userinfo": `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`,
+      "subscription-userinfo": userInfo,
       "profile-update-interval": "3",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };

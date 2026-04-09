@@ -77,10 +77,12 @@ function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | 
   const proxyTags = configs.map((c) => c.name);
 
   return {
+    log: { level: "warn" },
     dns: {
       servers: [
-        { tag: "dns-proxy", address: "tls://1.1.1.1", detour: proxyTags[0] },
-        { tag: "dns-direct", address: "udp://77.88.8.8", detour: "direct" },
+        { tag: "dns-proxy", address: "https://1.1.1.1/dns-query", address_resolver: "dns-resolver", detour: proxyTags[0] },
+        { tag: "dns-direct", address: "https://77.88.8.8/dns-query", address_resolver: "dns-resolver", detour: "direct" },
+        { tag: "dns-resolver", address: "77.88.8.8", detour: "direct" },
       ],
       rules: [
         {
@@ -113,7 +115,7 @@ function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | 
     route: {
       rules: [
         { protocol: "dns", outbound: "dns-out" },
-        { ip_is_private: true, outbound: "direct" },
+        { ip_cidr: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8"], outbound: "direct" },
         {
           domain_suffix: [
             "ru", "su", "рф",

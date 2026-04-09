@@ -45,69 +45,6 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     .join("\n");
 }
 
-function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | null {
-  const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
-  if (!match) return null;
-  const uuid = match[1];
-
-  const configs = subscriptionType === "plus"
-    ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
-    : BASIC_CONFIGS;
-
-  const outbounds = configs.map((c) => ({
-    type: "vless" as const,
-    tag: c.name,
-    server: c.ip,
-    server_port: c.port,
-    uuid,
-    ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
-    tls: {
-      enabled: true,
-      server_name: c.sni,
-      utls: { enabled: true, fingerprint: c.fp },
-      reality: { enabled: true, public_key: c.pbk, short_id: c.sid },
-    },
-    ...(c.type === "xhttp" ? { transport: { type: "http", path: c.path || "/xhttp" } } : {}),
-    packet_encoding: "xudp",
-  }));
-
-  const proxyTags = outbounds.map((o) => o.tag);
-
-  return {
-    log: { level: "warn" },
-    dns: {
-      servers: [
-        { tag: "dns-proxy", address: "https://8.8.8.8/dns-query", address_resolver: "dns-direct", detour: proxyTags[0] },
-        { tag: "dns-direct", address: "77.88.8.8", detour: "direct" },
-      ],
-      rules: [
-        { outbound: "any", server: "dns-direct" },
-        { geosite: "category-ru", server: "dns-direct" },
-      ],
-      final: "dns-proxy",
-      strategy: "prefer_ipv4",
-    },
-    outbounds: [
-      ...outbounds,
-      { type: "urltest", tag: "auto", outbounds: proxyTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },
-      { type: "direct", tag: "direct" },
-      { type: "block", tag: "block" },
-      { type: "dns", tag: "dns-out" },
-    ],
-    route: {
-      rules: [
-        { protocol: "dns", outbound: "dns-out" },
-        { geoip: "private", outbound: "direct" },
-        { geosite: "category-ru", outbound: "direct" },
-        { geoip: "ru", outbound: "direct" },
-        { geosite: "apple", outbound: "direct" },
-      ],
-      auto_detect_interface: true,
-      final: "auto",
-    },
-  };
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ token: string }> },
@@ -151,37 +88,16 @@ export async function GET(
     const vpnKey = (row.vpn_key ?? "").trim();
     const subType = row.subscription_type ?? "basic";
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
-    const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
-
-    const ua = request.headers.get("user-agent") ?? "";
-    const format = request.nextUrl.searchParams.get("format");
-    const wantSingbox = format === "singbox" || /sing-?box|happ/i.test(ua);
-
-    if (wantSingbox) {
-      const config = buildSingboxConfig(vpnKey, subType);
-      if (config) {
-        return new Response(JSON.stringify(config, null, 2), {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Access-Control-Allow-Origin": "*",
-            "profile-title": "Atlas Secure",
-            "subscription-userinfo": userInfo,
-            "profile-update-interval": "3",
-          },
-        });
-      }
-    }
+    const appUrl = await getSubBaseUrl();
 
     const keys = buildKeys(vpnKey, subType);
-    const appUrl = await getSubBaseUrl();
 
     const headers: Record<string, string> = {
       "Content-Type": "text/plain; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
-      "subscription-userinfo": userInfo,
+      "subscription-userinfo": `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`,
       "profile-update-interval": "3",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };

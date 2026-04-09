@@ -46,7 +46,7 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 }
 
 const RU_DOMAINS = [
-  "domain:.ru", "domain:.su", "domain:.рф",
+  "domain:ru", "domain:su", "domain:xn--p1ai",
   "domain:yandex.com", "domain:yandex.net", "domain:ya.ru", "domain:yastatic.net",
   "domain:vk.com", "domain:vk.me", "domain:vkontakte.ru", "domain:vkuserid.com", "domain:vkuser.net", "domain:userapi.com",
   "domain:mail.ru", "domain:mycdn.me", "domain:imgsmail.ru",
@@ -102,26 +102,15 @@ function buildXrayConfig(vpnKey: string, subscriptionType: string): object | nul
   const proxyTags = configs.map((_, i) => `proxy-${i}`);
 
   return {
+    log: { loglevel: "warning" },
     dns: {
-      servers: [
-        { address: "https://1.1.1.1/dns-query", domains: ["geosite:!cn"] },
-        { address: "77.88.8.8", domains: RU_DOMAINS },
-      ],
+      servers: ["1.1.1.1", "8.8.8.8"],
     },
     outbounds: [
       ...outbounds,
       { tag: "direct", protocol: "freedom", settings: {} },
       { tag: "block", protocol: "blackhole", settings: {} },
     ],
-    routing: {
-      domainStrategy: "IPIfNonMatch",
-      rules: [
-        { type: "field", domain: RU_DOMAINS, outboundTag: "direct" },
-        { type: "field", ip: RU_IPS, outboundTag: "direct" },
-        { type: "field", ip: ["geoip:private"], outboundTag: "direct" },
-        { type: "field", network: "tcp,udp", outboundTag: proxyTags[0] },
-      ],
-    },
   };
 }
 

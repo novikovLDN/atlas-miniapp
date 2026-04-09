@@ -102,26 +102,15 @@ function buildXrayConfig(vpnKey: string, subscriptionType: string): object | nul
   const proxyTags = configs.map((_, i) => `proxy-${i}`);
 
   return {
+    log: { loglevel: "warning" },
     dns: {
-      servers: [
-        "1.1.1.1",
-        { address: "77.88.8.8", domains: RU_DOMAINS },
-      ],
+      servers: ["1.1.1.1", "8.8.8.8"],
     },
     outbounds: [
       ...outbounds,
       { tag: "direct", protocol: "freedom", settings: {} },
       { tag: "block", protocol: "blackhole", settings: {} },
     ],
-    routing: {
-      domainStrategy: "IPIfNonMatch",
-      rules: [
-        { type: "field", domain: RU_DOMAINS, outboundTag: "direct" },
-        { type: "field", ip: RU_IPS, outboundTag: "direct" },
-        { type: "field", ip: ["geoip:private"], outboundTag: "direct" },
-        { type: "field", network: "tcp,udp", outboundTag: proxyTags[0] },
-      ],
-    },
   };
 }
 

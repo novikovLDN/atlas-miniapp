@@ -72,45 +72,68 @@ function buildXrayConfig(vpnKey: string, subscriptionType: string): object | nul
     ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
     : BASIC_CONFIGS;
 
-  const outbounds: object[] = configs.map((c, i) => ({
-    tag: `proxy-${i}`,
-    protocol: "vless",
-    settings: {
-      vnext: [{
-        address: c.ip,
-        port: c.port,
-        users: [{
-          id: uuid,
-          encryption: "none",
-          ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
-        }],
-      }],
-    },
-    streamSettings: {
-      network: c.type === "xhttp" ? "xhttp" : "tcp",
-      security: "reality",
-      realitySettings: {
-        serverName: c.sni,
-        fingerprint: c.fp,
-        publicKey: c.pbk,
-        shortId: c.sid,
-      },
-      ...(c.type === "xhttp" ? { xhttpSettings: { path: c.path || "/xhttp" } } : {}),
-    },
-  }));
-
-  const proxyTags = configs.map((_, i) => `proxy-${i}`);
+  const sniffing = {
+    enabled: true,
+    destOverride: ["http", "tls", "fakedns"],
+    routeOnly: true,
+  };
 
   return {
-    log: { loglevel: "warning" },
+    remarks: "Atlas Secure",
     dns: {
-      servers: ["1.1.1.1", "8.8.8.8"],
+      queryStrategy: "UseIPv4",
+      servers: [
+        { address: "77.88.8.8", detour: "direct", domains: ["geosite:category-ru"] },
+        { address: "https://8.8.8.8/dns-query", detour: "proxy" },
+      ],
+      tag: "dns-inbound",
     },
-    outbounds: [
-      ...outbounds,
-      { tag: "direct", protocol: "freedom", settings: {} },
-      { tag: "block", protocol: "blackhole", settings: {} },
+    inbounds: [
+      { tag: "socks", listen: "127.0.0.1", port: 10808, protocol: "socks", settings: { auth: "noauth", udp: true }, sniffing },
+      { tag: "http", listen: "127.0.0.1", port: 10809, protocol: "http", settings: { allowTransparent: false }, sniffing },
     ],
+    outbounds: [
+      ...configs.map((c, i) => ({
+        tag: i === 0 ? "proxy" : `proxy-${i}`,
+        protocol: "vless",
+        settings: {
+          vnext: [{
+            address: c.ip,
+            port: c.port,
+            users: [{ id: uuid, encryption: "none", ...(c.flow ? { flow: "xtls-rprx-vision" } : {}) }],
+          }],
+        },
+        streamSettings: {
+          network: c.type === "xhttp" ? "xhttp" : "tcp",
+          security: "reality",
+          realitySettings: {
+            serverName: c.sni,
+            fingerprint: c.fp,
+            publicKey: c.pbk,
+            shortId: c.sid,
+            show: false,
+          },
+          ...(c.type === "tcp" ? { tcpSettings: {} } : {}),
+          ...(c.type === "xhttp" ? { xhttpSettings: { path: c.path || "/xhttp" } } : {}),
+        },
+      })),
+      { protocol: "freedom", tag: "direct" },
+      { protocol: "blackhole", tag: "block" },
+      { protocol: "dns", tag: "dns-out" },
+    ],
+    routing: {
+      domainStrategy: "IPIfNonMatch",
+      rules: [
+        { type: "field", inboundTag: ["dns-inbound"], outboundTag: "proxy", ruleTag: "dns-to-proxy" },
+        { type: "field", port: "53", outboundTag: "dns-out", ruleTag: "dns-hijack" },
+        { type: "field", protocol: ["bittorrent"], outboundTag: "block" },
+        { type: "field", network: "udp", port: "443", outboundTag: "block" },
+        { type: "field", ip: ["8.8.8.8", "8.8.4.4", "1.1.1.1", "1.0.0.1"], outboundTag: "proxy" },
+        { type: "field", domain: ["geosite:private", "geosite:apple", "geosite:category-ru"], outboundTag: "direct" },
+        { type: "field", ip: ["geoip:ru", "geoip:private"], outboundTag: "direct" },
+        { type: "field", port: "0-65535", outboundTag: "proxy" },
+      ],
+    },
   };
 }
 

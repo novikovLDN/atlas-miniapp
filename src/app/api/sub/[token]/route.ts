@@ -46,7 +46,7 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 }
 
 const RU_DOMAINS = [
-  "domain:.ru", "domain:.su", "domain:.рф",
+  "domain:ru", "domain:su", "domain:xn--p1ai",
   "domain:yandex.com", "domain:yandex.net", "domain:ya.ru", "domain:yastatic.net",
   "domain:vk.com", "domain:vk.me", "domain:vkontakte.ru", "domain:vkuserid.com", "domain:vkuser.net", "domain:userapi.com",
   "domain:mail.ru", "domain:mycdn.me", "domain:imgsmail.ru",
@@ -104,7 +104,7 @@ function buildXrayConfig(vpnKey: string, subscriptionType: string): object | nul
   return {
     dns: {
       servers: [
-        { address: "https://1.1.1.1/dns-query", domains: ["geosite:!cn"] },
+        "1.1.1.1",
         { address: "77.88.8.8", domains: RU_DOMAINS },
       ],
     },

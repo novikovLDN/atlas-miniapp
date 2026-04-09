@@ -63,7 +63,7 @@ const RU_IPS = [
   "185.32.185.0/24", "185.16.148.0/22",
 ];
 
-function buildXrayConfig(vpnKey: string, subscriptionType: string): object | null {
+function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | null {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return null;
   const uuid = match[1];
@@ -78,23 +78,41 @@ function buildXrayConfig(vpnKey: string, subscriptionType: string): object | nul
     routeOnly: true,
   };
 
-  return {
-    remarks: "Atlas Secure",
-    dns: {
-      queryStrategy: "UseIPv4",
-      servers: [
-        { address: "77.88.8.8", detour: "direct", domains: ["geosite:category-ru"] },
-        { address: "https://8.8.8.8/dns-query", detour: "proxy" },
-      ],
-      tag: "dns-inbound",
-    },
-    inbounds: [
-      { tag: "socks", listen: "127.0.0.1", port: 10808, protocol: "socks", settings: { auth: "noauth", udp: true }, sniffing },
-      { tag: "http", listen: "127.0.0.1", port: 10809, protocol: "http", settings: { allowTransparent: false }, sniffing },
+  const dns = {
+    queryStrategy: "UseIPv4",
+    servers: [
+      { address: "77.88.8.8", detour: "direct", domains: ["geosite:category-ru"] },
+      { address: "https://8.8.8.8/dns-query", detour: "proxy" },
     ],
+    tag: "dns-inbound",
+  };
+
+  const inbounds = [
+    { tag: "socks", listen: "127.0.0.1", port: 10808, protocol: "socks", settings: { auth: "noauth", udp: true }, sniffing },
+    { tag: "http", listen: "127.0.0.1", port: 10809, protocol: "http", settings: { allowTransparent: false }, sniffing },
+  ];
+
+  const routing = {
+    domainStrategy: "IPIfNonMatch",
+    rules: [
+      { type: "field", inboundTag: ["dns-inbound"], outboundTag: "proxy", ruleTag: "dns-to-proxy" },
+      { type: "field", port: "53", outboundTag: "dns-out", ruleTag: "dns-hijack" },
+      { type: "field", protocol: ["bittorrent"], outboundTag: "block" },
+      { type: "field", network: "udp", port: "443", outboundTag: "block" },
+      { type: "field", ip: ["8.8.8.8", "8.8.4.4", "1.1.1.1", "1.0.0.1"], outboundTag: "proxy" },
+      { type: "field", domain: ["geosite:private", "geosite:apple", "geosite:category-ru"], outboundTag: "direct" },
+      { type: "field", ip: ["geoip:ru", "geoip:private"], outboundTag: "direct" },
+      { type: "field", port: "0-65535", outboundTag: "proxy" },
+    ],
+  };
+
+  return configs.map((c) => ({
+    remarks: c.name,
+    dns,
+    inbounds,
     outbounds: [
-      ...configs.map((c, i) => ({
-        tag: i === 0 ? "proxy" : `proxy-${i}`,
+      {
+        tag: "proxy",
         protocol: "vless",
         settings: {
           vnext: [{
@@ -116,25 +134,13 @@ function buildXrayConfig(vpnKey: string, subscriptionType: string): object | nul
           ...(c.type === "tcp" ? { tcpSettings: {} } : {}),
           ...(c.type === "xhttp" ? { xhttpSettings: { path: c.path || "/xhttp" } } : {}),
         },
-      })),
+      },
       { protocol: "freedom", tag: "direct" },
       { protocol: "blackhole", tag: "block" },
       { protocol: "dns", tag: "dns-out" },
     ],
-    routing: {
-      domainStrategy: "IPIfNonMatch",
-      rules: [
-        { type: "field", inboundTag: ["dns-inbound"], outboundTag: "proxy", ruleTag: "dns-to-proxy" },
-        { type: "field", port: "53", outboundTag: "dns-out", ruleTag: "dns-hijack" },
-        { type: "field", protocol: ["bittorrent"], outboundTag: "block" },
-        { type: "field", network: "udp", port: "443", outboundTag: "block" },
-        { type: "field", ip: ["8.8.8.8", "8.8.4.4", "1.1.1.1", "1.0.0.1"], outboundTag: "proxy" },
-        { type: "field", domain: ["geosite:private", "geosite:apple", "geosite:category-ru"], outboundTag: "direct" },
-        { type: "field", ip: ["geoip:ru", "geoip:private"], outboundTag: "direct" },
-        { type: "field", port: "0-65535", outboundTag: "proxy" },
-      ],
-    },
-  };
+    routing,
+  }));
 }
 
 export async function GET(
@@ -184,9 +190,9 @@ export async function GET(
     const format = request.nextUrl.searchParams.get("format");
 
     if (format === "json") {
-      const config = buildXrayConfig(vpnKey, subType);
-      if (config) {
-        return new Response(JSON.stringify(config, null, 2), {
+      const configs = buildXrayConfigs(vpnKey, subType);
+      if (configs) {
+        return new Response(JSON.stringify(configs, null, 2), {
           status: 200,
           headers: {
             "Content-Type": "application/json; charset=utf-8",

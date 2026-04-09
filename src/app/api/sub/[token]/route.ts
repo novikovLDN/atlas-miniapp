@@ -24,62 +24,6 @@ const BASIC_CONFIGS: ServerConfig[] = [
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];
 
-function buildSingboxOutbound(uuid: string, c: ServerConfig) {
-  return {
-    type: "vless" as const,
-    tag: c.name,
-    server: c.ip,
-    server_port: c.port,
-    uuid,
-    ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
-    tls: {
-      enabled: true,
-      server_name: c.sni,
-      utls: { enabled: true, fingerprint: c.fp },
-      reality: { enabled: true, public_key: c.pbk, short_id: c.sid },
-    },
-  };
-}
-
-function buildSingboxConfig(uuid: string, configs: ServerConfig[]) {
-  const outbounds = configs.map((c) => buildSingboxOutbound(uuid, c));
-  const proxyTags = configs.map((c) => c.name);
-
-  return {
-    log: { level: "warn" },
-    dns: {
-      servers: [
-        { tag: "dns-proxy", address: "https://8.8.8.8/dns-query", address_resolver: "dns-direct", detour: proxyTags[0] },
-        { tag: "dns-direct", address: "77.88.8.8", detour: "direct" },
-      ],
-      rules: [
-        { outbound: "any", server: "dns-direct" },
-        { geosite: "category-ru", server: "dns-direct" },
-      ],
-      final: "dns-proxy",
-      strategy: "prefer_ipv4",
-    },
-    outbounds: [
-      ...outbounds,
-      { type: "direct", tag: "direct" },
-      { type: "block", tag: "block" },
-      { type: "dns", tag: "dns-out" },
-    ],
-    route: {
-      rules: [
-        { protocol: "dns", outbound: "dns-out" },
-        { geoip: "private", outbound: "direct" },
-        { geosite: "category-ru", outbound: "direct" },
-        { geoip: "ru", outbound: "direct" },
-        { geosite: "apple", outbound: "direct" },
-        { protocol: "bittorrent", outbound: "block" },
-      ],
-      auto_detect_interface: true,
-      final: proxyTags[0],
-    },
-  };
-}
-
 function buildKeys(vpnKey: string, subscriptionType: string): string {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return vpnKey;
@@ -99,6 +43,80 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
       return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");
+}
+
+function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | null {
+  const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
+  if (!match) return null;
+  const uuid = match[1];
+
+  const configs = subscriptionType === "plus"
+    ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
+    : BASIC_CONFIGS;
+
+  const outbounds = configs.map((c) => ({
+    type: "vless" as const,
+    tag: c.name,
+    server: c.ip,
+    server_port: c.port,
+    uuid,
+    ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
+    tls: {
+      enabled: true,
+      server_name: c.sni,
+      utls: { enabled: true, fingerprint: c.fp },
+      reality: { enabled: true, public_key: c.pbk, short_id: c.sid },
+    },
+    ...(c.type === "xhttp" ? { transport: { type: "http", path: c.path || "/xhttp" } } : {}),
+    packet_encoding: "xudp",
+  }));
+
+  const outboundTags = outbounds.map((o) => o.tag);
+
+  return {
+    log: { level: "info" },
+    dns: {
+      servers: [
+        { tag: "dns-remote", address: "https://1.1.1.1/dns-query", detour: outboundTags[0] },
+        { tag: "dns-direct", address: "https://77.88.8.8/dns-query", detour: "direct" },
+        { tag: "dns-block", address: "rcode://refused" },
+      ],
+      rules: [
+        { rule_set: "geosite-category-ads-all", server: "dns-block", disable_cache: true },
+        { rule_set: ["geosite-ru", "geosite-yandex", "geosite-vk", "geosite-mailru"], server: "dns-direct" },
+      ],
+    },
+    inbounds: [
+      { type: "tun", tag: "tun-in", inet4_address: "172.19.0.1/30", inet6_address: "fdfe:dcba:9876::1/126", auto_route: true, strict_route: true, sniff: true, sniff_override_destination: false },
+    ],
+    outbounds: [
+      ...outbounds,
+      { type: "urltest", tag: "auto", outbounds: outboundTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },
+      { type: "direct", tag: "direct" },
+      { type: "block", tag: "block" },
+      { type: "dns", tag: "dns-out" },
+    ],
+    route: {
+      rules: [
+        { protocol: "dns", outbound: "dns-out" },
+        { rule_set: "geosite-category-ads-all", outbound: "block" },
+        { rule_set: ["geosite-ru", "geosite-yandex", "geosite-vk", "geosite-mailru"], outbound: "direct" },
+        { rule_set: ["geoip-ru"], outbound: "direct" },
+        { ip_cidr: ["77.88.0.0/18", "87.250.224.0/19", "93.158.134.0/23", "213.180.192.0/19", "5.45.192.0/18", "5.255.192.0/18", "77.75.152.0/21", "87.240.128.0/18", "93.186.224.0/20", "95.142.192.0/20", "95.213.0.0/18", "185.32.185.0/24", "185.16.148.0/22"], outbound: "direct" },
+      ],
+      rule_set: [
+        { type: "remote", tag: "geosite-ru", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ru.srs" },
+        { type: "remote", tag: "geosite-yandex", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-yandex.srs" },
+        { type: "remote", tag: "geosite-vk", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-vk.srs" },
+        { type: "remote", tag: "geosite-mailru", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-mailru.srs" },
+        { type: "remote", tag: "geoip-ru", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-ru.srs" },
+        { type: "remote", tag: "geosite-category-ads-all", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs" },
+      ],
+      auto_detect_interface: true,
+      final: "auto",
+    },
+    experimental: { cache_file: { enabled: true } },
+  };
 }
 
 export async function GET(
@@ -143,46 +161,46 @@ export async function GET(
     const row = rows[0];
     const vpnKey = (row.vpn_key ?? "").trim();
     const subType = row.subscription_type ?? "basic";
-    const format = request.nextUrl.searchParams.get("format");
-
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
-    const appUrl = await getSubBaseUrl();
+    const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
 
-    const baseHeaders: Record<string, string> = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET",
-      "profile-title": "Atlas Secure",
-      "subscription-userinfo": `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`,
-      "profile-update-interval": "3",
-    };
-    if (appUrl) {
-      baseHeaders["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;
-    }
+    const ua = request.headers.get("user-agent") ?? "";
+    const format = request.nextUrl.searchParams.get("format");
+    const wantSingbox = format === "singbox" || /sing-?box|happ/i.test(ua);
 
-    if (format === "singbox") {
-      const uuidMatch = vpnKey.match(/vless:\/\/([^@]+)@/);
-      if (!uuidMatch) {
-        return new Response("Invalid key", { status: 500 });
+    if (wantSingbox) {
+      const config = buildSingboxConfig(vpnKey, subType);
+      if (config) {
+        return new Response(JSON.stringify(config, null, 2), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "profile-title": "Atlas Secure",
+            "subscription-userinfo": userInfo,
+            "profile-update-interval": "3",
+          },
+        });
       }
-      const configs = subType === "plus"
-        ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
-        : BASIC_CONFIGS;
-      const singbox = buildSingboxConfig(uuidMatch[1], configs);
-      return new Response(JSON.stringify(singbox, null, 2), {
-        status: 200,
-        headers: { ...baseHeaders, "Content-Type": "application/json; charset=utf-8" },
-      });
     }
 
     const keys = buildKeys(vpnKey, subType);
-    return new Response(keys, {
-      status: 200,
-      headers: {
-        ...baseHeaders,
-        "Content-Type": "text/plain; charset=utf-8",
-        "content-disposition": 'attachment; filename="Atlas Secure.txt"',
-      },
-    });
+    const appUrl = await getSubBaseUrl();
+
+    const headers: Record<string, string> = {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "profile-title": "Atlas Secure",
+      "subscription-userinfo": userInfo,
+      "profile-update-interval": "3",
+      "content-disposition": 'attachment; filename="Atlas Secure.txt"',
+    };
+    if (appUrl) {
+      headers["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;
+    }
+
+    return new Response(keys, { status: 200, headers });
   } catch (err) {
     console.error("sub API error:", err);
     return new Response("Server error", { status: 500 });

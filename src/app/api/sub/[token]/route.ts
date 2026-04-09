@@ -45,7 +45,25 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     .join("\n");
 }
 
-function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | null {
+const RU_DOMAINS = [
+  "domain:.ru", "domain:.su", "domain:.рф",
+  "domain:yandex.com", "domain:yandex.net", "domain:ya.ru", "domain:yastatic.net",
+  "domain:vk.com", "domain:vk.me", "domain:vkontakte.ru", "domain:vkuserid.com", "domain:vkuser.net", "domain:userapi.com",
+  "domain:mail.ru", "domain:mycdn.me", "domain:imgsmail.ru",
+  "domain:sberbank.ru", "domain:gosuslugi.ru", "domain:mos.ru",
+  "domain:wildberries.ru", "domain:wb.ru", "domain:ozon.ru", "domain:ozon.st",
+  "domain:avito.ru", "domain:kinopoisk.ru", "domain:ivi.ru", "domain:okko.tv",
+];
+
+const RU_IPS = [
+  "77.88.0.0/18", "87.250.224.0/19", "93.158.134.0/23", "213.180.192.0/19",
+  "5.45.192.0/18", "5.255.192.0/18",
+  "77.75.152.0/21", "87.240.128.0/18", "93.186.224.0/20",
+  "95.142.192.0/20", "95.213.0.0/18",
+  "185.32.185.0/24", "185.16.148.0/22",
+];
+
+function buildXrayConfig(vpnKey: string, subscriptionType: string): object | null {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return null;
   const uuid = match[1];
@@ -54,97 +72,55 @@ function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | 
     ? [...BASIC_CONFIGS, ...PLUS_EXTRA_CONFIGS]
     : BASIC_CONFIGS;
 
-  const outbounds: object[] = configs.map((c) => {
-    const ob: Record<string, unknown> = {
-      type: "vless",
-      tag: c.name,
-      server: c.ip,
-      server_port: c.port,
-      uuid,
-      tls: {
-        enabled: true,
-        server_name: c.sni,
-        utls: { enabled: true, fingerprint: c.fp },
-        reality: { enabled: true, public_key: c.pbk, short_id: c.sid },
+  const outbounds: object[] = configs.map((c, i) => ({
+    tag: `proxy-${i}`,
+    protocol: "vless",
+    settings: {
+      vnext: [{
+        address: c.ip,
+        port: c.port,
+        users: [{
+          id: uuid,
+          encryption: "none",
+          ...(c.flow ? { flow: "xtls-rprx-vision" } : {}),
+        }],
+      }],
+    },
+    streamSettings: {
+      network: c.type === "xhttp" ? "xhttp" : "tcp",
+      security: "reality",
+      realitySettings: {
+        serverName: c.sni,
+        fingerprint: c.fp,
+        publicKey: c.pbk,
+        shortId: c.sid,
       },
-      packet_encoding: "xudp",
-    };
-    if (c.flow) ob.flow = "xtls-rprx-vision";
-    if (c.type === "xhttp") ob.transport = { type: "http", path: c.path || "/xhttp" };
-    return ob;
-  });
+      ...(c.type === "xhttp" ? { xhttpSettings: { path: c.path || "/xhttp" } } : {}),
+    },
+  }));
 
-  const proxyTags = configs.map((c) => c.name);
+  const proxyTags = configs.map((_, i) => `proxy-${i}`);
 
   return {
-    log: { level: "warn" },
     dns: {
       servers: [
-        { tag: "dns-proxy", address: "https://1.1.1.1/dns-query", address_resolver: "dns-resolver", detour: proxyTags[0] },
-        { tag: "dns-direct", address: "https://77.88.8.8/dns-query", address_resolver: "dns-resolver", detour: "direct" },
-        { tag: "dns-resolver", address: "77.88.8.8", detour: "direct" },
+        { address: "https://1.1.1.1/dns-query", domains: ["geosite:!cn"] },
+        { address: "77.88.8.8", domains: RU_DOMAINS },
       ],
-      rules: [
-        {
-          domain_suffix: [
-            "ru", "su", "рф",
-            "yandex.com", "yandex.net",
-            "ya.ru", "yastatic.net",
-            "vk.com", "vk.me", "vkontakte.ru", "vkuserid.com", "vkuser.net", "userapi.com",
-            "mail.ru", "mycdn.me", "imgsmail.ru",
-            "sberbank.ru",
-            "gosuslugi.ru", "mos.ru",
-            "wildberries.ru", "wb.ru",
-            "ozon.ru", "ozon.st",
-            "avito.ru",
-            "kinopoisk.ru", "ivi.ru", "okko.tv",
-          ],
-          server: "dns-direct",
-        },
-      ],
-      final: "dns-proxy",
-      strategy: "prefer_ipv4",
     },
     outbounds: [
-      { type: "urltest", tag: "auto", outbounds: proxyTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },
       ...outbounds,
-      { type: "direct", tag: "direct" },
-      { type: "block", tag: "block" },
-      { type: "dns", tag: "dns-out" },
+      { tag: "direct", protocol: "freedom", settings: {} },
+      { tag: "block", protocol: "blackhole", settings: {} },
     ],
-    route: {
+    routing: {
+      domainStrategy: "IPIfNonMatch",
       rules: [
-        { protocol: "dns", outbound: "dns-out" },
-        { ip_cidr: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8"], outbound: "direct" },
-        {
-          domain_suffix: [
-            "ru", "su", "рф",
-            "yandex.com", "yandex.net",
-            "ya.ru", "yastatic.net",
-            "vk.com", "vk.me", "vkontakte.ru", "vkuserid.com", "vkuser.net", "userapi.com",
-            "mail.ru", "mycdn.me", "imgsmail.ru",
-            "sberbank.ru",
-            "gosuslugi.ru", "mos.ru",
-            "wildberries.ru", "wb.ru",
-            "ozon.ru", "ozon.st",
-            "avito.ru",
-            "kinopoisk.ru", "ivi.ru", "okko.tv",
-          ],
-          outbound: "direct",
-        },
-        {
-          ip_cidr: [
-            "77.88.0.0/18", "87.250.224.0/19", "93.158.134.0/23", "213.180.192.0/19",
-            "5.45.192.0/18", "5.255.192.0/18",
-            "77.75.152.0/21", "87.240.128.0/18", "93.186.224.0/20",
-            "95.142.192.0/20", "95.213.0.0/18",
-            "185.32.185.0/24", "185.16.148.0/22",
-          ],
-          outbound: "direct",
-        },
+        { type: "field", domain: RU_DOMAINS, outboundTag: "direct" },
+        { type: "field", ip: RU_IPS, outboundTag: "direct" },
+        { type: "field", ip: ["geoip:private"], outboundTag: "direct" },
+        { type: "field", network: "tcp,udp", outboundTag: proxyTags[0] },
       ],
-      auto_detect_interface: true,
-      final: "auto",
     },
   };
 }
@@ -195,8 +171,8 @@ export async function GET(
     const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
     const format = request.nextUrl.searchParams.get("format");
 
-    if (format === "singbox") {
-      const config = buildSingboxConfig(vpnKey, subType);
+    if (format === "json") {
+      const config = buildXrayConfig(vpnKey, subType);
       if (config) {
         return new Response(JSON.stringify(config, null, 2), {
           status: 200,

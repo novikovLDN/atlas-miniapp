@@ -71,27 +71,25 @@ function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | 
     packet_encoding: "xudp",
   }));
 
-  const outboundTags = outbounds.map((o) => o.tag);
+  const proxyTags = outbounds.map((o) => o.tag);
 
   return {
-    log: { level: "info" },
+    log: { level: "warn" },
     dns: {
       servers: [
-        { tag: "dns-remote", address: "https://1.1.1.1/dns-query", detour: outboundTags[0] },
-        { tag: "dns-direct", address: "https://77.88.8.8/dns-query", detour: "direct" },
-        { tag: "dns-block", address: "rcode://refused" },
+        { tag: "dns-proxy", address: "https://8.8.8.8/dns-query", address_resolver: "dns-direct", detour: proxyTags[0] },
+        { tag: "dns-direct", address: "77.88.8.8", detour: "direct" },
       ],
       rules: [
-        { rule_set: "geosite-category-ads-all", server: "dns-block", disable_cache: true },
-        { rule_set: ["geosite-ru", "geosite-yandex", "geosite-vk", "geosite-mailru"], server: "dns-direct" },
+        { outbound: "any", server: "dns-direct" },
+        { geosite: "category-ru", server: "dns-direct" },
       ],
+      final: "dns-proxy",
+      strategy: "prefer_ipv4",
     },
-    inbounds: [
-      { type: "tun", tag: "tun-in", inet4_address: "172.19.0.1/30", inet6_address: "fdfe:dcba:9876::1/126", auto_route: true, strict_route: true, sniff: true, sniff_override_destination: false },
-    ],
     outbounds: [
       ...outbounds,
-      { type: "urltest", tag: "auto", outbounds: outboundTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },
+      { type: "urltest", tag: "auto", outbounds: proxyTags, url: "https://www.gstatic.com/generate_204", interval: "5m" },
       { type: "direct", tag: "direct" },
       { type: "block", tag: "block" },
       { type: "dns", tag: "dns-out" },
@@ -99,23 +97,14 @@ function buildSingboxConfig(vpnKey: string, subscriptionType: string): object | 
     route: {
       rules: [
         { protocol: "dns", outbound: "dns-out" },
-        { rule_set: "geosite-category-ads-all", outbound: "block" },
-        { rule_set: ["geosite-ru", "geosite-yandex", "geosite-vk", "geosite-mailru"], outbound: "direct" },
-        { rule_set: ["geoip-ru"], outbound: "direct" },
-        { ip_cidr: ["77.88.0.0/18", "87.250.224.0/19", "93.158.134.0/23", "213.180.192.0/19", "5.45.192.0/18", "5.255.192.0/18", "77.75.152.0/21", "87.240.128.0/18", "93.186.224.0/20", "95.142.192.0/20", "95.213.0.0/18", "185.32.185.0/24", "185.16.148.0/22"], outbound: "direct" },
-      ],
-      rule_set: [
-        { type: "remote", tag: "geosite-ru", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ru.srs" },
-        { type: "remote", tag: "geosite-yandex", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-yandex.srs" },
-        { type: "remote", tag: "geosite-vk", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-vk.srs" },
-        { type: "remote", tag: "geosite-mailru", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-mailru.srs" },
-        { type: "remote", tag: "geoip-ru", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-ru.srs" },
-        { type: "remote", tag: "geosite-category-ads-all", format: "binary", url: "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs" },
+        { geoip: "private", outbound: "direct" },
+        { geosite: "category-ru", outbound: "direct" },
+        { geoip: "ru", outbound: "direct" },
+        { geosite: "apple", outbound: "direct" },
       ],
       auto_detect_interface: true,
       final: "auto",
     },
-    experimental: { cache_file: { enabled: true } },
   };
 }
 

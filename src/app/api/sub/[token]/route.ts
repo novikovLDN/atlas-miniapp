@@ -296,7 +296,7 @@ export async function GET(
     const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
     const ua = request.headers.get("user-agent") ?? "";
     const format = request.nextUrl.searchParams.get("format");
-    const wantJson = format === "json" || /^(Happ|Shadowrocket)\//i.test(ua);
+    const wantJson = format === "json" || /^Happ\//i.test(ua);
 
     if (wantJson) {
       const configs = buildXrayConfigs(vpnKey, subType);

@@ -308,7 +308,7 @@ export async function GET(
             "Access-Control-Allow-Origin": "*",
             "profile-title": "Atlas Secure",
             "subscription-userinfo": userInfo,
-            "profile-update-interval": "3",
+            "profile-update-interval": "1",
           },
         });
       }
@@ -323,7 +323,7 @@ export async function GET(
       "Access-Control-Allow-Methods": "GET",
       "profile-title": "Atlas Secure",
       "subscription-userinfo": userInfo,
-      "profile-update-interval": "3",
+      "profile-update-interval": "1",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
     };
     if (appUrl) {

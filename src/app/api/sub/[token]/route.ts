@@ -296,10 +296,9 @@ export async function GET(
     const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
     const ua = request.headers.get("user-agent") ?? "";
     const format = request.nextUrl.searchParams.get("format");
+    const wantJson = format === "json" || /^Happ\//i.test(ua);
 
-    console.log(`[sub] id=${telegramId} ua="${ua}" format=${format}`);
-
-    if (format === "json") {
+    if (wantJson) {
       const configs = buildXrayConfigs(vpnKey, subType);
       if (configs) {
         return new Response(JSON.stringify(configs, null, 2), {

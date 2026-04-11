@@ -100,7 +100,7 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
       { type: "field", protocol: ["bittorrent"], outboundTag: "block" },
       { type: "field", network: "udp", port: "443", outboundTag: "block" },
       { type: "field", ip: ["8.8.8.8", "8.8.4.4", "1.1.1.1", "1.0.0.1"], outboundTag: "proxy" },
-      { type: "field", domain: ["domain:atlassecure.ru", "domain:rmnw.atlassecure.ru", "domain:sub.atlassecure.ru"], outboundTag: "proxy" },
+      { type: "field", domain: ["domain:atlassecure.ru", "domain:api.atlassecure.ru", "domain:sub.atlassecure.ru", "domain:rmnw.atlassecure.ru"], outboundTag: "proxy" },
       {
         type: "field",
         domain: [
@@ -294,7 +294,10 @@ export async function GET(
     const subType = row.subscription_type ?? "basic";
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
     const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
+    const ua = request.headers.get("user-agent") ?? "";
     const format = request.nextUrl.searchParams.get("format");
+
+    console.log(`[sub] id=${telegramId} ua="${ua}" format=${format}`);
 
     if (format === "json") {
       const configs = buildXrayConfigs(vpnKey, subType);

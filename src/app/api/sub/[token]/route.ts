@@ -294,7 +294,10 @@ export async function GET(
     const subType = row.subscription_type ?? "basic";
     const expiresAt = row.expires_at instanceof Date ? row.expires_at : new Date(row.expires_at);
     const userInfo = `upload=0; download=0; total=0; expire=${Math.floor(expiresAt.getTime() / 1000)}`;
+    const ua = request.headers.get("user-agent") ?? "";
     const format = request.nextUrl.searchParams.get("format");
+
+    console.log(`[sub] id=${telegramId} ua="${ua}" format=${format}`);
 
     if (format === "json") {
       const configs = buildXrayConfigs(vpnKey, subType);

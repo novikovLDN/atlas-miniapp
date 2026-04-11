@@ -100,7 +100,7 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
       { type: "field", protocol: ["bittorrent"], outboundTag: "block" },
       { type: "field", network: "udp", port: "443", outboundTag: "block" },
       { type: "field", ip: ["8.8.8.8", "8.8.4.4", "1.1.1.1", "1.0.0.1"], outboundTag: "proxy" },
-      { type: "field", domain: ["domain:atlassecure.ru", "domain:api.atlassecure.ru", "domain:sub.atlassecure.ru", "domain:rmnw.atlassecure.ru"], outboundTag: "proxy" },
+      { type: "field", domain: ["domain:atlassecure.ru", "domain:api.atlassecure.ru", "domain:sub.atlassecure.ru", "domain:rmnw.atlassecure.ru", "domain:yookassa.ru", "domain:yoomoney.ru"], outboundTag: "proxy" },
       {
         type: "field",
         domain: [

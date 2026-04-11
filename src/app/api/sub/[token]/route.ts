@@ -106,8 +106,6 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
         domain: [
           "geosite:category-ru",
           "geosite:apple",
-          "geosite:yandex",
-          "geosite:mailru",
           // Сбер (все сервисы)
           "domain:sber.ru", "domain:sberbank.ru", "domain:sberbank.com", "domain:sbermarket.ru",
           "domain:online.sberbank.ru", "domain:api.sberbank.ru", "domain:api.developer.sber.ru",

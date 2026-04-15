@@ -190,7 +190,8 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
           // Телеком
           "domain:ttktv.ru", "domain:ttk.ru", "domain:domru.ru",
           "domain:rt.ru", "domain:rostelecom.ru",
-          "domain:mts.ru", "domain:megafon.ru", "domain:beeline.ru", "domain:tele2.ru", "domain:yota.ru",
+          "domain:mts.ru", "domain:moskva.mts.ru", "domain:login.mts.ru", "domain:api.mts.ru", "domain:mts.kion.ru",
+          "domain:megafon.ru", "domain:beeline.ru", "domain:tele2.ru", "domain:yota.ru",
           // Работа
           "domain:hh.ru", "domain:superjob.ru", "domain:rabota.ru", "domain:trudvsem.ru",
           // Ритейл

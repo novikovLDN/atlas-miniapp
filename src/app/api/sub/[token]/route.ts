@@ -303,7 +303,7 @@ export async function GET(
     const format = request.nextUrl.searchParams.get("format");
     const wantJson = format === "json" || /^Happ\//i.test(ua);
 
-    const happTheme = JSON.stringify({
+    const happThemeJson = JSON.stringify({
       backgroundGradientRotationAngle: 0,
       backgroundGradientColorIntensity: 1,
       backgroundColors: ["#000000FF", "#0A0A0AFF", "#111111FF"],
@@ -331,6 +331,7 @@ export async function GET(
       supportIconColor: "#FFFFFFFF",
       profileWebPageIconColor: "#FFFFFFFF",
     });
+    const happTheme = "base64:" + Buffer.from(happThemeJson, "utf-8").toString("base64");
 
     if (wantJson) {
       const configs = buildXrayConfigs(vpnKey, subType);

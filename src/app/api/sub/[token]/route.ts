@@ -303,36 +303,6 @@ export async function GET(
     const format = request.nextUrl.searchParams.get("format");
     const wantJson = format === "json" || /^Happ\//i.test(ua);
 
-    const happThemeJson = JSON.stringify({
-      backgroundGradientRotationAngle: 0,
-      backgroundGradientColorIntensity: 1,
-      backgroundColors: ["#000000FF", "#0A0A0AFF", "#111111FF"],
-      backgroundImageType: "none",
-      buttonColor: "#FFFFFFFF",
-      buttonTextColor: "#000000FF",
-      buttonTimerColor: "#000000FF",
-      buttonImageType: "dark",
-      powerIconColor: "#1A1A1AFF",
-      elipseColors: ["#333333FF", "#444444FF", "#555555FF"],
-      serverRowBackgroundColor: "#1A1A1A99",
-      serverRowTitleTextColor: "#FFFFFFFF",
-      serverRowSubTitleTextColor: "#999999FF",
-      serverRowChevronColor: "#FFFFFFFF",
-      selectedServerRowColor: "#2A2A2AFF",
-      subsHeaderColor: "#1A1A1AFF",
-      disclosureHeaderTextColor: "#FFFFFFFF",
-      disclosureSubHeaderTextColor: "#999999FF",
-      subscriptionInfoBackgroundColor: "#1A1A1AFF",
-      subscriptionInfoTextColor: "#FFFFFFFF",
-      subscriptionTrafficBackgroundColor: "#333333FF",
-      topBarButtonsColor: "#FFFFFFFF",
-      additionalOptionsButtonColor: "#FFFFFFCC",
-      subHeaderButtonColor: "#FFFFFFFF",
-      supportIconColor: "#FFFFFFFF",
-      profileWebPageIconColor: "#FFFFFFFF",
-    });
-    const happTheme = "base64:" + Buffer.from(happThemeJson, "utf-8").toString("base64");
-
     if (wantJson) {
       const configs = buildXrayConfigs(vpnKey, subType);
       if (configs) {
@@ -344,7 +314,6 @@ export async function GET(
             "profile-title": "Atlas Secure",
             "subscription-userinfo": userInfo,
             "profile-update-interval": "1",
-            "color-profile": happTheme,
           },
         });
       }
@@ -361,7 +330,6 @@ export async function GET(
       "subscription-userinfo": userInfo,
       "profile-update-interval": "1",
       "content-disposition": 'attachment; filename="Atlas Secure.txt"',
-      "color-profile": happTheme,
     };
     if (appUrl) {
       headers["profile-web-page-url"] = `${appUrl}/api/sub/${token}?id=${telegramId}`;

@@ -114,10 +114,12 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
           "domain:sberzvuk.ru", "domain:sberlogistics.ru", "domain:sbermegamarket.ru",
           "domain:sberfood.ru", "domain:sberclass.ru", "domain:sberinsur.ru",
           "domain:sbolbank.ru", "domain:salute.sber.ru", "domain:smartmarket.sber.ru",
-          // Банки
+          // Банки (приложения и API)
           "domain:tbank.ru", "domain:tinkoff.com", "domain:tinkoff.ru", "domain:tinkoff.business", "domain:tcsbank.ru",
+          "domain:tinkoff.id", "domain:cdn-tinkoff.ru",
           "domain:alfabank.ru", "domain:alfaclick.ru", "domain:alfabank.com", "domain:alfadirect.ru",
-          "domain:vtb.ru", "domain:vtb24.ru", "domain:vtbbo.ru",
+          "domain:alfa.me", "domain:alfaid.ru",
+          "domain:vtb.ru", "domain:vtb24.ru", "domain:vtbbo.ru", "domain:vtb-id.ru",
           "domain:gazprombank.ru", "domain:psbank.ru", "domain:raiffeisen.ru", "domain:rshb.ru",
           "domain:open.ru", "domain:openbroker.ru", "domain:sovcombank.ru", "domain:halvacard.ru",
           "domain:uralsib.ru", "domain:mkb.ru", "domain:rosbank.ru", "domain:unicreditbank.ru",
@@ -127,10 +129,14 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
           "domain:centrinvest.ru", "domain:domrfbank.ru", "domain:svoi.ru", "domain:mtsbank.ru",
           "domain:rnkb.ru", "domain:primbank.ru",
           "domain:finam.ru", "domain:bcs.ru", "domain:broker.ru", "domain:moex.com",
-          // Госсервисы
+          "domain:ybankir.ru", "domain:life-pay.ru", "domain:cloudpayments.ru",
+          "domain:paykeeper.ru", "domain:robokassa.ru", "domain:unitpay.ru",
+          // Госсервисы и приложения
           "domain:nalog.gov.ru", "domain:nalog.ru", "domain:lknpd.nalog.ru", "domain:fns.ru",
+          "domain:npd.nalog.ru", "domain:api-lknpd.nalog.ru", "domain:lkfl2.nalog.ru", "domain:lkip2.nalog.ru",
           "domain:gosuslugi.ru", "domain:esia.gosuslugi.ru", "domain:pos.gosuslugi.ru", "domain:dom.gosuslugi.ru",
-          "domain:mos.ru", "domain:emias.info", "domain:emias.mos.ru",
+          "domain:api.gosuslugi.ru", "domain:mp.gosuslugi.ru", "domain:lk.gosuslugi.ru",
+          "domain:mos.ru", "domain:emias.info", "domain:emias.mos.ru", "domain:ag.mos.ru",
           "domain:pfr.gov.ru", "domain:sfr.gov.ru", "domain:fss.ru", "domain:cbr.ru",
           "domain:rosreestr.gov.ru", "domain:rosreestr.ru",
           "domain:mvd.gov.ru", "domain:gibdd.ru", "domain:fssp.gov.ru", "domain:fsin.gov.ru",

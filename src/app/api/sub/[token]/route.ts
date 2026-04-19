@@ -313,6 +313,8 @@ export async function GET(
       "sub-expire": "1",
       "sub-expire-button-link": "https://t.me/atlassecure_bot?start=buy",
       "hide-settings": "1",
+      "per-app-proxy-mode": "bypass",
+      "per-app-proxy-list": "ru.roskazna.gosuslugi,ru.roskazna.gosuslugimy,com.vkontakte.client,com.vk.im,ru.sberbankmobile,com.idamob.tinkoff.android,ru.alfabank.mobile.android,ru.vtb24.mobilebanking.android,ru.mts.mymts,ru.nalog.lknpd,ru.gosuslugi.pos",
     };
 
     if (wantJson) {

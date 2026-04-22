@@ -206,10 +206,13 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
           "domain:letoile.ru", "domain:goldapple.ru", "domain:detmir.ru",
           "domain:litres.ru",
           // Еда и продукты
-          "domain:magnit.ru", "domain:lenta.com", "domain:perekrestok.ru",
+          "domain:magnit.ru", "domain:magnit-delivery.ru", "domain:magnitcosmetic.ru", "domain:magnit-apteki.ru",
+          "domain:lenta.com", "domain:perekrestok.ru",
           "domain:samokat.ru", "domain:dodo.ru", "domain:dodopizza.ru",
           "domain:delivery-club.ru", "domain:vkusvill.ru",
-          "domain:pyaterochka.ru", "domain:dixy.ru", "domain:metro-cc.ru", "domain:globus.ru"
+          "domain:pyaterochka.ru", "domain:dixy.ru", "domain:metro-cc.ru", "domain:globus.ru",
+          // MAX и стриминг
+          "domain:max.ru", "domain:max.stream", "domain:mts-max.ru",
         ],
         outboundTag: "direct",
       },

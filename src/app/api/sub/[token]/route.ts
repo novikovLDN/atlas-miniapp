@@ -20,6 +20,7 @@ const BASIC_CONFIGS: ServerConfig[] = [
   { ip: "77.221.156.97",   port: 4443, sni: "api-maps.yandex.ru",     fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "🇩🇪 Atlas Fast #1 ⚡️" },
   { ip: "45.144.55.159",  port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #2 ⚡️" },
   { ip: "84.23.52.66", port: 8444, sni: "eh.vk.com", fp: "chrome",  type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "AD3iu5zxfDZWeMEHSWTH5JuiokSv3ohQEg1Y_aUxzgA", name: "Для Обхода: в боте /white команда" },
+  { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "🇷🇺 YouTube | Без рекламы" },
 ];
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];

@@ -17,9 +17,10 @@ type ServerConfig = {
 };
 
 const BASIC_CONFIGS: ServerConfig[] = [
-  { ip: "89.169.55.75",   port: 4443, sni: "google.com",     fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "🇩🇪 Atlas Fast #1 ⚡️" },
-  { ip: "45.144.55.159",  port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #2 ⚡️" },
-  { ip: "5.255.126.237", port: 443, sni: "www.apple.com", fp: "chrome", type: "tcp", flow: true, sid: "3f9fa000", pbk: "pWt4oLKF9VOzHfjpYfJwlIHqAXJawVXX6mvtrGYw5AI", name: "🇳🇱 Atlas Fast #3 ⚡️" },
+  { ip: "89.169.55.75",   port: 4443, sni: "google.com",     fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "Atlas Secure Platinum 💎" },
+  { ip: "5.255.126.237",  port: 8443, sni: "www.kinopoisk.ru", fp: "chrome", type: "xhttp", flow: false, sid: "bd7a4d15", pbk: "jyC5CoZoYlCJyvXEXlzpklJt8nikiIHoHrd8G7H3GyA", name: "Atlas Secure Platinum #2 💎", path: "/kZyTyW4F8QREWP" },
+  { ip: "45.144.55.159",  port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #3 ⚡️" },
+  { ip: "5.255.126.237",  port: 443, sni: "www.apple.com", fp: "chrome", type: "tcp", flow: true, sid: "3f9fa000", pbk: "pWt4oLKF9VOzHfjpYfJwlIHqAXJawVXX6mvtrGYw5AI", name: "🇳🇱 Atlas Fast #4 ⚡️" },
   { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "🇷🇺 YouTube | Без рекламы" },
 ];
 
@@ -39,7 +40,7 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
       params += c.type === "xhttp"
-        ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
+        ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}&host=${c.sni}&mode=auto`
         : "&type=tcp";
       return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })

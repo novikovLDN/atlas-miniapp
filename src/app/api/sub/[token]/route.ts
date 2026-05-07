@@ -9,8 +9,7 @@ type ServerConfig = {
   sni: string;
   fp: string;
   pbk: string;
-  sid?: string;
-  sids?: string[];
+  sid: string;
   flow: boolean;
   type: "tcp" | "xhttp";
   name: string;
@@ -18,36 +17,17 @@ type ServerConfig = {
 };
 
 const BASIC_CONFIGS: ServerConfig[] = [
-  { ip: "5.255.126.237", port: 443, sni: "www.apple.com", fp: "chrome", type: "tcp", flow: true, sid: "3f9fa000", pbk: "pWt4oLKF9VOzHfjpYfJwlIHqAXJawVXX6mvtrGYw5AI", name: "🇳🇱 Atlas Secure Platinum 💎" },
-  { ip: "5.255.126.237", port: 8443, sni: "www.kinopoisk.ru", fp: "chrome", type: "xhttp", flow: false, sid: "bd7a4d15", pbk: "jyC5CoZoYlCJyvXEXlzpklJt8nikiIHoHrd8G7H3GyA", path: "/kZyTyW4F8QREWP", name: "🇳🇱 Atlas Secure Platinum #2 💎" },
-  { ip: "77.221.156.97", port: 4443, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "🇩🇪 Atlas Fast #3 ⚡️" },
-  { ip: "45.144.55.159", port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #4 ⚡️" },
+  { ip: "5.255.126.237", port: 443, sni: "www.apple.com", fp: "chrome", type: "tcp", flow: true, sid: "3f9fa000", pbk: "pWt4oLKF9VOzHfjpYfJwlIHqAXJawVXX6mvtrGYw5AI", name: "🇳🇱 Atlas Fast #1 ⚡️" },
+  { ip: "77.221.156.97", port: 4443, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "🇩🇪 Atlas Fast #2 ⚡️" },
+  { ip: "45.144.55.159", port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #3 ⚡️" },
   { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "🇷🇺 YouTube | Без рекламы" },
-  { ip: "185.35.139.195", port: 4443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "fe6cccae", pbk: "0vnUxsBSJO7Id1bbOcRH5RRNGJ1-Es1liVeBFLfBN0s", name: "🇳🇱 Atlas Fast #5 ⚡️" },
-  {
-    ip: "5.255.126.237", port: 8443, sni: "ign.com", fp: "firefox", type: "xhttp", flow: false,
-    pbk: "g-MdRhBmgUIXBvtbxDbb-6OuvHKSZStkKpELrNaEcDk",
-    sids: [
-      "75c72fb73639b286", "d712b788e778687e", "35a11cd0f5732e81", "dfd262391844d862",
-      "e9bdcf64136bcb15", "5d6adcc67c9341e4", "9e2021bc6ccfdb6e", "579f7bd6a08aa7bf",
-      "ce0b9a0243dc9b7f", "3b483679578c8168", "8bdc74667aa56d89", "1909b43e8362caea",
-      "48b842c04f895ef2", "34a0cdc80667e515", "0a2b61738ab47505", "9245e97f523d6714",
-    ],
-    path: "/api", name: "🇳🇱 Atlas Dev",
-  },
+  { ip: "185.35.139.195", port: 4443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "fe6cccae", pbk: "0vnUxsBSJO7Id1bbOcRH5RRNGJ1-Es1liVeBFLfBN0s", name: "🇳🇱 Atlas Fast #4 ⚡️" },
+  { ip: "5.255.126.237", port: 8443, sni: "ign.com", fp: "firefox", type: "xhttp", flow: false, sid: "75c72fb73639b286", pbk: "g-MdRhBmgUIXBvtbxDbb-6OuvHKSZStkKpELrNaEcDk", path: "/api", name: "🇳🇱 Atlas Dev" },
 ];
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];
 
-function pickShortId(c: ServerConfig, telegramId: number): string {
-  if (c.sids && c.sids.length > 0) {
-    const digest = crypto.createHash("sha256").update(String(telegramId)).digest();
-    return c.sids[digest.readUInt32BE(0) % c.sids.length];
-  }
-  return c.sid ?? "";
-}
-
-function buildKeys(vpnKey: string, subscriptionType: string, telegramId: number): string {
+function buildKeys(vpnKey: string, subscriptionType: string): string {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return vpnKey;
 
@@ -58,8 +38,7 @@ function buildKeys(vpnKey: string, subscriptionType: string, telegramId: number)
 
   return configs
     .map((c) => {
-      const sid = pickShortId(c, telegramId);
-      let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${sid}`;
+      let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
       params += c.type === "xhttp"
         ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
@@ -87,7 +66,7 @@ const RU_IPS = [
   "185.32.185.0/24", "185.16.148.0/22",
 ];
 
-function buildXrayConfigs(vpnKey: string, subscriptionType: string, telegramId: number): object[] | null {
+function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | null {
   const match = vpnKey.match(/vless:\/\/([^@]+)@([^:]+):/);
   if (!match) return null;
   const uuid = match[1];
@@ -267,7 +246,7 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string, telegramId: 
             serverName: c.sni,
             fingerprint: c.fp,
             publicKey: c.pbk,
-            shortId: pickShortId(c, telegramId),
+            shortId: c.sid,
             show: false,
           },
           ...(c.type === "tcp" ? { tcpSettings: {} } : {}),
@@ -345,7 +324,7 @@ export async function GET(
     };
 
     if (wantJson) {
-      const configs = buildXrayConfigs(vpnKey, subType, telegramId);
+      const configs = buildXrayConfigs(vpnKey, subType);
       if (configs) {
         return new Response(JSON.stringify(configs, null, 2), {
           status: 200,
@@ -361,7 +340,7 @@ export async function GET(
       }
     }
 
-    const keys = buildKeys(vpnKey, subType, telegramId);
+    const keys = buildKeys(vpnKey, subType);
     const appUrl = await getSubBaseUrl();
 
     const headers: Record<string, string> = {

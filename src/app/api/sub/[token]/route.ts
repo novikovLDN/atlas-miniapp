@@ -22,6 +22,7 @@ const BASIC_CONFIGS: ServerConfig[] = [
   { ip: "45.144.55.159", port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #3 ⚡️" },
   { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "🇷🇺 YouTube | Без рекламы" },
   { ip: "us1.atlassecure.uk", port: 443, sni: "www.netflix.com", fp: "chrome", type: "tcp", flow: true, sid: "af819b4bfd529732", pbk: "teH1wJW96tJosjZBhjCIb2u2v9cLUS9aj9mJA_blUVE", name: "🇺🇸 Atlas USA ⚡️" },
+  { ip: "es1.atlassecure.uk", port: 443, sni: "e-estonia.com", fp: "chrome", type: "tcp", flow: true, sid: "6b49d21ebeb946e9", pbk: "H4D8yC4-7KP30cQJVo_28OCPgPWNnvMEUaKY3RWXAHA", name: "🇪🇪 Atlas Estonia ⚡️" },
   { ip: "185.35.139.195", port: 4443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "fe6cccae", pbk: "0vnUxsBSJO7Id1bbOcRH5RRNGJ1-Es1liVeBFLfBN0s", name: "🇳🇱 Atlas Fast #4 ⚡️" },
   { ip: "5.255.126.237", port: 8443, sni: "ign.com", fp: "firefox", type: "xhttp", flow: false, sid: "75c72fb73639b286", pbk: "g-MdRhBmgUIXBvtbxDbb-6OuvHKSZStkKpELrNaEcDk", path: "/api", name: "🇳🇱 Atlas Dev" },
 ];

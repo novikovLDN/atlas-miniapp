@@ -8,16 +8,12 @@ type ServerConfig = {
   port: number;
   sni: string;
   fp: string;
-  pbk?: string;
-  sid?: string;
+  pbk: string;
+  sid: string;
   flow: boolean;
   type: "tcp" | "xhttp";
   name: string;
   path?: string;
-  security?: "reality" | "tls";
-  alpn?: string;
-  host?: string;
-  mode?: string;
 };
 
 const BASIC_CONFIGS: ServerConfig[] = [
@@ -27,7 +23,7 @@ const BASIC_CONFIGS: ServerConfig[] = [
   { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "🇷🇺 YouTube | Без рекламы" },
   { ip: "185.35.139.195", port: 4443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "fe6cccae", pbk: "0vnUxsBSJO7Id1bbOcRH5RRNGJ1-Es1liVeBFLfBN0s", name: "🇳🇱 Atlas Fast #4 ⚡️" },
   { ip: "5.255.126.237", port: 8443, sni: "ign.com", fp: "firefox", type: "xhttp", flow: false, sid: "75c72fb73639b286", pbk: "g-MdRhBmgUIXBvtbxDbb-6OuvHKSZStkKpELrNaEcDk", path: "/api", name: "🇳🇱 Atlas Dev" },
-  { ip: "us1.atlassecure.uk", port: 443, sni: "us1.atlassecure.uk", fp: "chrome", type: "xhttp", flow: false, security: "tls", alpn: "h2", host: "us1.atlassecure.uk", mode: "auto", path: "/api/v2/b9c2e2e0", name: "🇺🇸 Atlas USA ⚡️" },
+  { ip: "us1.atlassecure.uk", port: 443, sni: "www.netflix.com", fp: "chrome", type: "tcp", flow: true, sid: "af819b4bfd529732", pbk: "teH1wJW96tJosjZBhjCIb2u2v9cLUS9aj9mJA_blUVE", name: "🇺🇸 Atlas USA ⚡️" },
 ];
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];
@@ -43,18 +39,11 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
 
   return configs
     .map((c) => {
-      const security = c.security ?? "reality";
-      let params = `encryption=none&security=${security}&sni=${c.sni}&fp=${c.fp}`;
-      if (security === "reality") params += `&pbk=${c.pbk}&sid=${c.sid}`;
-      if (c.alpn) params += `&alpn=${encodeURIComponent(c.alpn)}`;
+      let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      if (c.type === "xhttp") {
-        params += `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`;
-        if (c.host) params += `&host=${encodeURIComponent(c.host)}`;
-        if (c.mode) params += `&mode=${c.mode}`;
-      } else {
-        params += "&type=tcp";
-      }
+      params += c.type === "xhttp"
+        ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
+        : "&type=tcp";
       return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");
@@ -253,34 +242,16 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
         },
         streamSettings: {
           network: c.type === "xhttp" ? "xhttp" : "tcp",
-          security: c.security ?? "reality",
-          ...((c.security ?? "reality") === "reality"
-            ? {
-                realitySettings: {
-                  serverName: c.sni,
-                  fingerprint: c.fp,
-                  publicKey: c.pbk,
-                  shortId: c.sid,
-                  show: false,
-                },
-              }
-            : {
-                tlsSettings: {
-                  serverName: c.sni,
-                  fingerprint: c.fp,
-                  ...(c.alpn ? { alpn: c.alpn.split(",") } : {}),
-                },
-              }),
+          security: "reality",
+          realitySettings: {
+            serverName: c.sni,
+            fingerprint: c.fp,
+            publicKey: c.pbk,
+            shortId: c.sid,
+            show: false,
+          },
           ...(c.type === "tcp" ? { tcpSettings: {} } : {}),
-          ...(c.type === "xhttp"
-            ? {
-                xhttpSettings: {
-                  path: c.path || "/xhttp",
-                  ...(c.host ? { host: c.host } : {}),
-                  ...(c.mode ? { mode: c.mode } : {}),
-                },
-              }
-            : {}),
+          ...(c.type === "xhttp" ? { xhttpSettings: { path: c.path || "/xhttp" } } : {}),
         },
       },
       { protocol: "freedom", tag: "direct" },

@@ -138,8 +138,9 @@ vless://<uuid>@<ip|domain>:<port>?
        &pbk=<reality public key>
        &sid=<short id>
        [&flow=xtls-rprx-vision]   # если flow=true
-       &type=tcp                   # либо
-       &type=xhttp&path=<urlenc>   # для XHTTP
+       &type=tcp                                          # либо
+       &type=xhttp&path=<urlenc>                          # XHTTP, либо
+       &type=grpc&serviceName=<urlenc>[&mode=gun|multi]   # gRPC
         #<URL-encoded имя>
 ```
 
@@ -158,7 +159,7 @@ vless://<uuid>@<ip|domain>:<port>?
         "network": "tcp"|"xhttp",
         "security": "reality",
         "realitySettings": { serverName, fingerprint, publicKey, shortId },
-        "tcpSettings"|"xhttpSettings": { … }
+        "tcpSettings"|"xhttpSettings"|"grpcSettings": { … }
       } },
     { "protocol":"freedom",   "tag":"direct"  },
     { "protocol":"blackhole", "tag":"block"   },
@@ -239,18 +240,19 @@ v2raytun://install?url=<base64(vless://...)>
 
 `BASIC_CONFIGS` в `src/app/api/sub/[token]/route.ts:23-32` — это hardcoded TS-массив. БД не содержит список серверов; там только UUID юзера + срок + тариф. Изменение состава серверов = деплой.
 
-Текущий состав (8 шт., все `vless+reality+chrome` если не указано):
+Текущий состав (9 шт., все `vless+reality+chrome` если не указано):
 
 | # | Имя | Address:Port | Network | SNI | FP | shortId |
 |---|-----|--------------|---------|-----|----|---------|
 | 1 | 🇳🇱 Atlas Fast #1 ⚡️ | `5.255.126.237:443` | tcp + flow | `www.apple.com` | chrome | `3f9fa000` |
 | 2 | 🇩🇪 Atlas Fast #2 ⚡️ | `77.221.156.97:4443` | tcp + flow | `api-maps.yandex.ru` | chrome | `a1b2c3d4` |
-| 3 | 🇩🇪 Atlas Fast #3 ⚡️ | `45.144.55.159:4443` | tcp + flow | `flowgrocery.com` | chrome | `a1b2c3d4` |
-| 4 | 🇷🇺 YouTube \| Без рекламы | `92.255.76.7:443` | tcp + flow | `max.ru` | chrome | `d4a09544` |
-| 5 | 🇺🇸 Atlas USA ⚡️ | `us1.atlassecure.uk:443` | tcp + flow | `www.netflix.com` | chrome | `af819b4bfd529732` |
-| 6 | 🇪🇪 Atlas Estonia ⚡️ | `es1.atlassecure.uk:443` | tcp + flow | `e-estonia.com` | chrome | `6b49d21ebeb946e9` |
-| 7 | 🇳🇱 Atlas Fast #4 ⚡️ | `185.35.139.195:4443` | tcp + flow | `max.ru` | chrome | `fe6cccae` |
-| 8 | 🇳🇱 Atlas Dev | `5.255.126.237:8443` | xhttp `/api` | `ign.com` | firefox | `75c72fb73639b286` |
+| 3 | 🇳🇱 Atlas Fast \| Новые блокировки ⚡️ | `5.255.126.237:4443` | grpc `67dfb5c91893` (mode=gun, multiMode) | `cloud.google.com` | chrome | `baf8f64e79f48f20` |
+| 4 | 🇩🇪 Atlas Fast #3 ⚡️ | `45.144.55.159:4443` | tcp + flow | `flowgrocery.com` | chrome | `a1b2c3d4` |
+| 5 | 🇷🇺 YouTube \| Без рекламы | `92.255.76.7:443` | tcp + flow | `max.ru` | chrome | `d4a09544` |
+| 6 | 🇺🇸 Atlas USA ⚡️ | `us1.atlassecure.uk:443` | tcp + flow | `www.netflix.com` | chrome | `af819b4bfd529732` |
+| 7 | 🇪🇪 Atlas Estonia ⚡️ | `es1.atlassecure.uk:443` | tcp + flow | `e-estonia.com` | chrome | `6b49d21ebeb946e9` |
+| 8 | 🇳🇱 Atlas Fast #4 ⚡️ | `185.35.139.195:4443` | tcp + flow | `max.ru` | chrome | `fe6cccae` |
+| 9 | 🇳🇱 Atlas Dev | `5.255.126.237:8443` | xhttp `/api` | `ign.com` | firefox | `75c72fb73639b286` |
 
 Все они **используют один и тот же UUID** юзера — тот, что в `vpn_key` в БД. То есть UUID, выданный изначально RemnaWave, валиден на всех серверах: на каждом VLESS-инбаунде должен быть прописан этот UUID (или общий пул через Remnawave-sync).
 

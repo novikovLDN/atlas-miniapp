@@ -11,14 +11,18 @@ type ServerConfig = {
   pbk: string;
   sid: string;
   flow: boolean;
-  type: "tcp" | "xhttp";
+  type: "tcp" | "xhttp" | "grpc";
   name: string;
   path?: string;
+  serviceName?: string;
+  mode?: string;
+  multiMode?: boolean;
 };
 
 const BASIC_CONFIGS: ServerConfig[] = [
   { ip: "5.255.126.237", port: 443, sni: "www.apple.com", fp: "chrome", type: "tcp", flow: true, sid: "3f9fa000", pbk: "pWt4oLKF9VOzHfjpYfJwlIHqAXJawVXX6mvtrGYw5AI", name: "🇳🇱 Atlas Fast #1 ⚡️" },
   { ip: "77.221.156.97", port: 4443, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "🇩🇪 Atlas Fast #2 ⚡️" },
+  { ip: "5.255.126.237", port: 4443, sni: "cloud.google.com", fp: "chrome", type: "grpc", flow: false, sid: "baf8f64e79f48f20", pbk: "IqEWCxU-micaCyO4ebs3VM8HAfc__Xo_HXXlhGorR2A", serviceName: "67dfb5c91893", mode: "gun", multiMode: true, name: "🇳🇱 Atlas Fast | Новые блокировки ⚡️" },
   { ip: "45.144.55.159", port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #3 ⚡️" },
   { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "🇷🇺 YouTube | Без рекламы" },
   { ip: "us1.atlassecure.uk", port: 443, sni: "www.netflix.com", fp: "chrome", type: "tcp", flow: true, sid: "af819b4bfd529732", pbk: "teH1wJW96tJosjZBhjCIb2u2v9cLUS9aj9mJA_blUVE", name: "🇺🇸 Atlas USA ⚡️" },
@@ -42,9 +46,14 @@ function buildKeys(vpnKey: string, subscriptionType: string): string {
     .map((c) => {
       let params = `encryption=none&security=reality&sni=${c.sni}&fp=${c.fp}&pbk=${c.pbk}&sid=${c.sid}`;
       if (c.flow) params += "&flow=xtls-rprx-vision";
-      params += c.type === "xhttp"
-        ? `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`
-        : "&type=tcp";
+      if (c.type === "xhttp") {
+        params += `&type=xhttp&path=${encodeURIComponent(c.path || "/xhttp")}`;
+      } else if (c.type === "grpc") {
+        params += `&type=grpc&serviceName=${encodeURIComponent(c.serviceName ?? "")}`;
+        if (c.mode) params += `&mode=${c.mode}`;
+      } else {
+        params += "&type=tcp";
+      }
       return `vless://${uuid}@${c.ip}:${c.port}?${params}#${encodeURIComponent(c.name)}`;
     })
     .join("\n");
@@ -242,7 +251,7 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
           }],
         },
         streamSettings: {
-          network: c.type === "xhttp" ? "xhttp" : "tcp",
+          network: c.type,
           security: "reality",
           realitySettings: {
             serverName: c.sni,
@@ -253,6 +262,14 @@ function buildXrayConfigs(vpnKey: string, subscriptionType: string): object[] | 
           },
           ...(c.type === "tcp" ? { tcpSettings: {} } : {}),
           ...(c.type === "xhttp" ? { xhttpSettings: { path: c.path || "/xhttp" } } : {}),
+          ...(c.type === "grpc"
+            ? {
+                grpcSettings: {
+                  serviceName: c.serviceName ?? "",
+                  ...(c.multiMode ? { multiMode: true } : {}),
+                },
+              }
+            : {}),
         },
       },
       { protocol: "freedom", tag: "direct" },

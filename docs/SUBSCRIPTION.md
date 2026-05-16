@@ -244,9 +244,9 @@ v2raytun://install?url=<base64(vless://...)>
 
 | # | Имя | Address:Port | Network | SNI | FP | shortId |
 |---|-----|--------------|---------|-----|----|---------|
-| 1 | 🇳🇱 Atlas Fast #1 ⚡️ | `5.255.126.237:443` | tcp + flow | `www.apple.com` | chrome | `3f9fa000` |
-| 2 | 🇩🇪 Atlas Fast #2 ⚡️ | `77.221.156.97:4443` | tcp + flow | `api-maps.yandex.ru` | chrome | `a1b2c3d4` |
-| 3 | 🇳🇱 Atlas Fast \| Новые блокировки ⚡️ | `5.255.126.237:4443` | grpc `67dfb5c91893` (mode=gun, multiMode) | `cloud.google.com` | chrome | `baf8f64e79f48f20` |
+| 1 | Обновите ключ в боте | `5.255.126.237:443` | tcp + flow | `www.apple.com` | chrome | `3f9fa000` |
+| 2 | Бот: | `77.221.156.97:4443` | tcp + flow | `api-maps.yandex.ru` | chrome | `a1b2c3d4` |
+| 3 | @AtlasSecure_bot | `5.255.126.237:4443` | grpc `67dfb5c91893` (mode=gun, multiMode) | `cloud.google.com` | chrome | `baf8f64e79f48f20` |
 | 4 | 🇩🇪 Atlas Fast #3 ⚡️ | `45.144.55.159:4443` | tcp + flow | `flowgrocery.com` | chrome | `a1b2c3d4` |
 | 5 | 🇷🇺 YouTube \| Без рекламы | `92.255.76.7:443` | tcp + flow | `max.ru` | chrome | `d4a09544` |
 | 6 | 🇺🇸 Atlas USA ⚡️ | `us1.atlassecure.uk:443` | tcp + flow | `www.netflix.com` | chrome | `af819b4bfd529732` |

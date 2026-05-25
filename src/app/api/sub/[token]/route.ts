@@ -20,15 +20,15 @@ type ServerConfig = {
 };
 
 const BASIC_CONFIGS: ServerConfig[] = [
-  { ip: "5.255.126.237", port: 443, sni: "www.apple.com", fp: "chrome", type: "tcp", flow: true, sid: "3f9fa000", pbk: "pWt4oLKF9VOzHfjpYfJwlIHqAXJawVXX6mvtrGYw5AI", name: "Обновите ключ в боте" },
-  { ip: "77.221.156.97", port: 4443, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "Бот:" },
-  { ip: "5.255.126.237", port: 4443, sni: "cloud.google.com", fp: "chrome", type: "grpc", flow: false, sid: "baf8f64e79f48f20", pbk: "IqEWCxU-micaCyO4ebs3VM8HAfc__Xo_HXXlhGorR2A", serviceName: "67dfb5c91893", mode: "gun", multiMode: true, name: "@AtlasSecure_bot" },
-  { ip: "45.144.55.159", port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "🇩🇪 Atlas Fast #3 ⚡️" },
-  { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "🇷🇺 YouTube | Без рекламы" },
-  { ip: "us1.atlassecure.uk", port: 443, sni: "www.netflix.com", fp: "chrome", type: "tcp", flow: true, sid: "af819b4bfd529732", pbk: "teH1wJW96tJosjZBhjCIb2u2v9cLUS9aj9mJA_blUVE", name: "🇺🇸 Atlas USA ⚡️" },
-  { ip: "es1.atlassecure.uk", port: 443, sni: "e-estonia.com", fp: "chrome", type: "tcp", flow: true, sid: "6b49d21ebeb946e9", pbk: "H4D8yC4-7KP30cQJVo_28OCPgPWNnvMEUaKY3RWXAHA", name: "🇪🇪 Atlas Estonia ⚡️" },
-  { ip: "185.35.139.195", port: 4443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "fe6cccae", pbk: "0vnUxsBSJO7Id1bbOcRH5RRNGJ1-Es1liVeBFLfBN0s", name: "🇳🇱 Atlas Fast #4 ⚡️" },
-  { ip: "5.255.126.237", port: 8443, sni: "ign.com", fp: "firefox", type: "xhttp", flow: false, sid: "75c72fb73639b286", pbk: "g-MdRhBmgUIXBvtbxDbb-6OuvHKSZStkKpELrNaEcDk", path: "/api", name: "🇳🇱 Atlas Dev" },
+  { ip: "5.255.126.237", port: 443, sni: "www.apple.com", fp: "chrome", type: "tcp", flow: true, sid: "3f9fa000", pbk: "pWt4oLKF9VOzHfjpYfJwlIHqAXJawVXX6mvtrGYw5AI", name: "Данная версия" },
+  { ip: "77.221.156.97", port: 4443, sni: "api-maps.yandex.ru", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "6j_Z1QMNfGfLod_aBZdVWlt0nonNSVUt5Yg7sgpP9Co", name: "Неактуальна" },
+  { ip: "5.255.126.237", port: 4443, sni: "cloud.google.com", fp: "chrome", type: "grpc", flow: false, sid: "baf8f64e79f48f20", pbk: "IqEWCxU-micaCyO4ebs3VM8HAfc__Xo_HXXlhGorR2A", serviceName: "67dfb5c91893", mode: "gun", multiMode: true, name: "Обновите в боте тг" },
+  { ip: "45.144.55.159", port: 4443, sni: "flowgrocery.com", fp: "chrome", type: "tcp", flow: true, sid: "a1b2c3d4", pbk: "5b38RSRtlEw-HMYj1PmvS0QL8mZco2Bj_58sw2wikjA", name: "Бот:" },
+  { ip: "92.255.76.7", port: 443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "d4a09544", pbk: "bqKBZB2CyyD28LXcCVXxIVS12J4J7mVd9Gm4hD3SLVU", name: "@atlassecure_bot" },
+  { ip: "us1.atlassecure.uk", port: 443, sni: "www.netflix.com", fp: "chrome", type: "tcp", flow: true, sid: "af819b4bfd529732", pbk: "teH1wJW96tJosjZBhjCIb2u2v9cLUS9aj9mJA_blUVE", name: "Поддержка" },
+  { ip: "es1.atlassecure.uk", port: 443, sni: "e-estonia.com", fp: "chrome", type: "tcp", flow: true, sid: "6b49d21ebeb946e9", pbk: "H4D8yC4-7KP30cQJVo_28OCPgPWNnvMEUaKY3RWXAHA", name: "Данной" },
+  { ip: "185.35.139.195", port: 4443, sni: "max.ru", fp: "chrome", type: "tcp", flow: true, sid: "fe6cccae", pbk: "0vnUxsBSJO7Id1bbOcRH5RRNGJ1-Es1liVeBFLfBN0s", name: "Версии" },
+  { ip: "5.255.126.237", port: 8443, sni: "ign.com", fp: "firefox", type: "xhttp", flow: false, sid: "75c72fb73639b286", pbk: "g-MdRhBmgUIXBvtbxDbb-6OuvHKSZStkKpELrNaEcDk", path: "/api", name: "Приостановлена 18.05" },
 ];
 
 const PLUS_EXTRA_CONFIGS: ServerConfig[] = [];

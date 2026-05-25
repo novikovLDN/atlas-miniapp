@@ -244,15 +244,15 @@ v2raytun://install?url=<base64(vless://...)>
 
 | # | Имя | Address:Port | Network | SNI | FP | shortId |
 |---|-----|--------------|---------|-----|----|---------|
-| 1 | Обновите ключ в боте | `5.255.126.237:443` | tcp + flow | `www.apple.com` | chrome | `3f9fa000` |
-| 2 | Бот: | `77.221.156.97:4443` | tcp + flow | `api-maps.yandex.ru` | chrome | `a1b2c3d4` |
-| 3 | @AtlasSecure_bot | `5.255.126.237:4443` | grpc `67dfb5c91893` (mode=gun, multiMode) | `cloud.google.com` | chrome | `baf8f64e79f48f20` |
-| 4 | 🇩🇪 Atlas Fast #3 ⚡️ | `45.144.55.159:4443` | tcp + flow | `flowgrocery.com` | chrome | `a1b2c3d4` |
-| 5 | 🇷🇺 YouTube \| Без рекламы | `92.255.76.7:443` | tcp + flow | `max.ru` | chrome | `d4a09544` |
-| 6 | 🇺🇸 Atlas USA ⚡️ | `us1.atlassecure.uk:443` | tcp + flow | `www.netflix.com` | chrome | `af819b4bfd529732` |
-| 7 | 🇪🇪 Atlas Estonia ⚡️ | `es1.atlassecure.uk:443` | tcp + flow | `e-estonia.com` | chrome | `6b49d21ebeb946e9` |
-| 8 | 🇳🇱 Atlas Fast #4 ⚡️ | `185.35.139.195:4443` | tcp + flow | `max.ru` | chrome | `fe6cccae` |
-| 9 | 🇳🇱 Atlas Dev | `5.255.126.237:8443` | xhttp `/api` | `ign.com` | firefox | `75c72fb73639b286` |
+| 1 | Данная версия | `5.255.126.237:443` | tcp + flow | `www.apple.com` | chrome | `3f9fa000` |
+| 2 | Неактуальна | `77.221.156.97:4443` | tcp + flow | `api-maps.yandex.ru` | chrome | `a1b2c3d4` |
+| 3 | Обновите в боте тг | `5.255.126.237:4443` | grpc `67dfb5c91893` (mode=gun, multiMode) | `cloud.google.com` | chrome | `baf8f64e79f48f20` |
+| 4 | Бот: | `45.144.55.159:4443` | tcp + flow | `flowgrocery.com` | chrome | `a1b2c3d4` |
+| 5 | @atlassecure_bot | `92.255.76.7:443` | tcp + flow | `max.ru` | chrome | `d4a09544` |
+| 6 | Поддержка | `us1.atlassecure.uk:443` | tcp + flow | `www.netflix.com` | chrome | `af819b4bfd529732` |
+| 7 | Данной | `es1.atlassecure.uk:443` | tcp + flow | `e-estonia.com` | chrome | `6b49d21ebeb946e9` |
+| 8 | Версии | `185.35.139.195:4443` | tcp + flow | `max.ru` | chrome | `fe6cccae` |
+| 9 | Приостановлена 18.05 | `5.255.126.237:8443` | xhttp `/api` | `ign.com` | firefox | `75c72fb73639b286` |
 
 Все они **используют один и тот же UUID** юзера — тот, что в `vpn_key` в БД. То есть UUID, выданный изначально RemnaWave, валиден на всех серверах: на каждом VLESS-инбаунде должен быть прописан этот UUID (или общий пул через Remnawave-sync).
 
